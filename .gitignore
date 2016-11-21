@@ -2,3 +2,5 @@ tpl/
 ImagerOut/
 token/
 uploads/
+Data/Config/
+Data/FileCache/
