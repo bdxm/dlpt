@@ -1,0 +1,80 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Moudles/Menus/1020000';
+$cache[LastModified]=1447212847;
+$cache[LastModified_string]='2015-11-11 11:34:07';
+$cache[LifeTimeLimit]=1478748847;
+$cache[LifeTimeLimit_string]='2016-11-10 11:34:07';
+$cache[data]=array (
+  0 => 
+  array (
+    'ModuleID' => '1020100',
+    'AppsID' => '0',
+    'ParentModuleID' => '1020000',
+    'Property' => '1',
+    'ModuleName' => '创建管理员',
+    'Level' => '2',
+    'ModuleClass' => 'Users',
+    'ModuleAction' => 'NewUser',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '1',
+    'GlobalDisplayOrder' => '1020100',
+  ),
+  1 => 
+  array (
+    'ModuleID' => '1020200',
+    'AppsID' => '0',
+    'ParentModuleID' => '1020000',
+    'Property' => '1',
+    'ModuleName' => '管理员管理',
+    'Level' => '2',
+    'ModuleClass' => 'Users',
+    'ModuleAction' => 'Manager',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '2',
+    'GlobalDisplayOrder' => '1020200',
+  ),
+  2 => 
+  array (
+    'ModuleID' => '1020300',
+    'AppsID' => '0',
+    'ParentModuleID' => '1020000',
+    'Property' => '1',
+    'ModuleName' => '用户组管理',
+    'Level' => '2',
+    'ModuleClass' => 'Users',
+    'ModuleAction' => 'Groups',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '3',
+    'GlobalDisplayOrder' => '1020300',
+  ),
+  3 => 
+  array (
+    'ModuleID' => '1020400',
+    'AppsID' => '0',
+    'ParentModuleID' => '1020000',
+    'Property' => '1',
+    'ModuleName' => '账户资料',
+    'Level' => '2',
+    'ModuleClass' => 'Users',
+    'ModuleAction' => 'Profile',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '4',
+    'GlobalDisplayOrder' => '1020400',
+  ),
+  4 => 
+  array (
+    'ModuleID' => '1020500',
+    'AppsID' => '0',
+    'ParentModuleID' => '1020000',
+    'Property' => '1',
+    'ModuleName' => '设置密码',
+    'Level' => '2',
+    'ModuleClass' => 'Users',
+    'ModuleAction' => 'NewPassword',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '5',
+    'GlobalDisplayOrder' => '1020500',
+  ),
+);
+?>

@@ -1,0 +1,66 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Moudles/Menus/1070000';
+$cache[LastModified]=1447212847;
+$cache[LastModified_string]='2015-11-11 11:34:07';
+$cache[LifeTimeLimit]=1478748847;
+$cache[LifeTimeLimit_string]='2016-11-10 11:34:07';
+$cache[data]=array (
+  0 => 
+  array (
+    'ModuleID' => '1070100',
+    'AppsID' => '0',
+    'ParentModuleID' => '1070000',
+    'Property' => '1',
+    'ModuleName' => '财务一览表',
+    'Level' => '2',
+    'ModuleClass' => 'Financial',
+    'ModuleAction' => 'Lists',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '1',
+    'GlobalDisplayOrder' => '1060100',
+  ),
+  1 => 
+  array (
+    'ModuleID' => '1070300',
+    'AppsID' => '0',
+    'ParentModuleID' => '1070000',
+    'Property' => '1',
+    'ModuleName' => '财务统计',
+    'Level' => '2',
+    'ModuleClass' => 'Financial',
+    'ModuleAction' => 'Seach',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '2',
+    'GlobalDisplayOrder' => '1060200',
+  ),
+  2 => 
+  array (
+    'ModuleID' => '1070400',
+    'AppsID' => '0',
+    'ParentModuleID' => '1070000',
+    'Property' => '1',
+    'ModuleName' => '导入日志',
+    'Level' => '2',
+    'ModuleClass' => 'AdminLogs',
+    'ModuleAction' => 'AddLogs',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '3',
+    'GlobalDisplayOrder' => '1060300',
+  ),
+  3 => 
+  array (
+    'ModuleID' => '1070500',
+    'AppsID' => '0',
+    'ParentModuleID' => '1070000',
+    'Property' => '1',
+    'ModuleName' => '查看日志',
+    'Level' => '2',
+    'ModuleClass' => 'AdminLogs',
+    'ModuleAction' => 'LogsLists',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '4',
+    'GlobalDisplayOrder' => '1060400',
+  ),
+);
+?>

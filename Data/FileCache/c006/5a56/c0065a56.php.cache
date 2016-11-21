@@ -1,0 +1,108 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Moudles/Menus/1000000';
+$cache[LastModified]=1447745372;
+$cache[LastModified_string]='2015-11-17 15:29:32';
+$cache[LifeTimeLimit]=1479281372;
+$cache[LifeTimeLimit_string]='2016-11-16 15:29:32';
+$cache[data]=array (
+  0 => 
+  array (
+    'ModuleID' => '1020000',
+    'AppsID' => '0',
+    'ParentModuleID' => '1000000',
+    'Property' => '0',
+    'ModuleName' => '管理员中心',
+    'Level' => '1',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '2',
+    'GlobalDisplayOrder' => '1020000',
+  ),
+  1 => 
+  array (
+    'ModuleID' => '1080000',
+    'AppsID' => '0',
+    'ParentModuleID' => '1000000',
+    'Property' => '0',
+    'ModuleName' => '服务器管理',
+    'Level' => '1',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '3',
+    'GlobalDisplayOrder' => '1030000',
+  ),
+  2 => 
+  array (
+    'ModuleID' => '1030000',
+    'AppsID' => '0',
+    'ParentModuleID' => '1000000',
+    'Property' => '0',
+    'ModuleName' => '产品中心',
+    'Level' => '1',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '4',
+    'GlobalDisplayOrder' => '1040000',
+  ),
+  3 => 
+  array (
+    'ModuleID' => '1040000',
+    'AppsID' => '0',
+    'ParentModuleID' => '1000000',
+    'Property' => '0',
+    'ModuleName' => '客户管理',
+    'Level' => '1',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '5',
+    'GlobalDisplayOrder' => '1050000',
+  ),
+  4 => 
+  array (
+    'ModuleID' => '1050000',
+    'AppsID' => '0',
+    'ParentModuleID' => '1000000',
+    'Property' => '0',
+    'ModuleName' => '代理商管理',
+    'Level' => '1',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '6',
+    'GlobalDisplayOrder' => '1060000',
+  ),
+  5 => 
+  array (
+    'ModuleID' => '1070000',
+    'AppsID' => '0',
+    'ParentModuleID' => '1000000',
+    'Property' => '0',
+    'ModuleName' => '财务管理',
+    'Level' => '1',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '6',
+    'GlobalDisplayOrder' => '1060000',
+  ),
+  6 => 
+  array (
+    'ModuleID' => '1060000',
+    'AppsID' => '0',
+    'ParentModuleID' => '1000000',
+    'Property' => '0',
+    'ModuleName' => '系统设置',
+    'Level' => '1',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '7',
+    'GlobalDisplayOrder' => '1070000',
+  ),
+);
+?>

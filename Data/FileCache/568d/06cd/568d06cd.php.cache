@@ -1,0 +1,52 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Moudles/Menus/1060700';
+$cache[LastModified]=1395280392;
+$cache[LastModified_string]='2014-03-20 09:53:12';
+$cache[LifeTimeLimit]=1426816392;
+$cache[LifeTimeLimit_string]='2015-03-20 09:53:12';
+$cache[data]=array (
+  0 => 
+  array (
+    'ModuleID' => '1060701',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060700',
+    'Property' => '1',
+    'ModuleName' => '友情链接',
+    'Level' => '3',
+    'ModuleClass' => 'Links',
+    'ModuleAction' => 'Index',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '1',
+    'GlobalDisplayOrder' => '1060301',
+  ),
+  1 => 
+  array (
+    'ModuleID' => '1060702',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060700',
+    'Property' => '1',
+    'ModuleName' => '外链目录管理',
+    'Level' => '3',
+    'ModuleClass' => 'LinksCategory',
+    'ModuleAction' => 'Index',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '2',
+    'GlobalDisplayOrder' => '1060302',
+  ),
+  2 => 
+  array (
+    'ModuleID' => '1060703',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060700',
+    'Property' => '1',
+    'ModuleName' => '创建外链目录',
+    'Level' => '3',
+    'ModuleClass' => 'LinksCategory',
+    'ModuleAction' => 'Create',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '3',
+    'GlobalDisplayOrder' => '1060303',
+  ),
+);
+?>

@@ -1,0 +1,38 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Moudles/Menus/1060100';
+$cache[LastModified]=1447212847;
+$cache[LastModified_string]='2015-11-11 11:34:07';
+$cache[LifeTimeLimit]=1478748847;
+$cache[LifeTimeLimit_string]='2016-11-10 11:34:07';
+$cache[data]=array (
+  0 => 
+  array (
+    'ModuleID' => '1060101',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060100',
+    'Property' => '1',
+    'ModuleName' => '添加模块',
+    'Level' => '3',
+    'ModuleClass' => 'Modules',
+    'ModuleAction' => 'Create',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '1',
+    'GlobalDisplayOrder' => '1070101',
+  ),
+  1 => 
+  array (
+    'ModuleID' => '1060104',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060100',
+    'Property' => '1',
+    'ModuleName' => '模块列表',
+    'Level' => '3',
+    'ModuleClass' => 'Modules',
+    'ModuleAction' => 'Lists',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '4',
+    'GlobalDisplayOrder' => '1070104',
+  ),
+);
+?>

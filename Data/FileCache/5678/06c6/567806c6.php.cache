@@ -1,0 +1,24 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Moudles/Menus/1060000';
+$cache[LastModified]=1447212847;
+$cache[LastModified_string]='2015-11-11 11:34:07';
+$cache[LifeTimeLimit]=1478748847;
+$cache[LifeTimeLimit_string]='2016-11-10 11:34:07';
+$cache[data]=array (
+  0 => 
+  array (
+    'ModuleID' => '1060100',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060000',
+    'Property' => '0',
+    'ModuleName' => '模块管理',
+    'Level' => '2',
+    'ModuleClass' => '',
+    'ModuleAction' => '',
+    'ViewerEngine' => '',
+    'DisplayOrder' => '1',
+    'GlobalDisplayOrder' => '1070100',
+  ),
+);
+?>

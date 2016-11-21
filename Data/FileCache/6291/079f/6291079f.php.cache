@@ -1,0 +1,20 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Users/UserGroupID/1005';
+$cache[LastModified]=1395301333;
+$cache[LastModified_string]='2014-03-20 15:42:13';
+$cache[LifeTimeLimit]=1426837333;
+$cache[LifeTimeLimit_string]='2015-03-20 15:42:13';
+$cache[data]=array (
+  'UserGroupID' => '1005',
+  'GroupName' => '售后组',
+  'IsRoot' => '1',
+  'IsDefault' => '0',
+  'RegStatus' => '0',
+  'LoginStatus' => '1',
+  'RegEnable' => '0',
+  'Roles' => '["AdminCPFrameMain","1020000","UsersProfile","UsersNewPassword"]',
+  'DisplayOrder' => '4',
+  'LastModified' => '0000-00-00 00:00:00',
+);
+?>

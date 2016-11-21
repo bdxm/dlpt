@@ -1,0 +1,52 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Moudles/Menus/1060200';
+$cache[LastModified]=1395280392;
+$cache[LastModified_string]='2014-03-20 09:53:12';
+$cache[LifeTimeLimit]=1426816392;
+$cache[LifeTimeLimit_string]='2015-03-20 09:53:12';
+$cache[data]=array (
+  0 => 
+  array (
+    'ModuleID' => '1060201',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060200',
+    'Property' => '1',
+    'ModuleName' => '模板管理',
+    'Level' => '3',
+    'ModuleClass' => 'Template',
+    'ModuleAction' => 'Lists',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '1',
+    'GlobalDisplayOrder' => '1060201',
+  ),
+  1 => 
+  array (
+    'ModuleID' => '1060204',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060200',
+    'Property' => '1',
+    'ModuleName' => '检查模板缓存',
+    'Level' => '3',
+    'ModuleClass' => 'Template',
+    'ModuleAction' => 'CompiledChecker',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '4',
+    'GlobalDisplayOrder' => '1060204',
+  ),
+  2 => 
+  array (
+    'ModuleID' => '1060205',
+    'AppsID' => '0',
+    'ParentModuleID' => '1060200',
+    'Property' => '1',
+    'ModuleName' => '更新模板缓存',
+    'Level' => '3',
+    'ModuleClass' => 'Template',
+    'ModuleAction' => 'Compiler',
+    'ViewerEngine' => 'Template',
+    'DisplayOrder' => '5',
+    'GlobalDisplayOrder' => '1060205',
+  ),
+);
+?>

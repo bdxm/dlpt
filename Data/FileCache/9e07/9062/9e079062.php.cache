@@ -1,0 +1,20 @@
+<?php 
+ //Create by Cache File Class!
+$cache[cacheid]='/Users/UserGroupID/1004';
+$cache[LastModified]=1446255827;
+$cache[LastModified_string]='2015-10-31 09:43:47';
+$cache[LifeTimeLimit]=1477791827;
+$cache[LifeTimeLimit_string]='2016-10-30 09:43:47';
+$cache[data]=array (
+  'UserGroupID' => '1004',
+  'GroupName' => '管理员',
+  'IsRoot' => '1',
+  'IsDefault' => '1',
+  'RegStatus' => '0',
+  'LoginStatus' => '1',
+  'RegEnable' => '0',
+  'Roles' => '["AdminCPFrameMain","1030000","ProjectLists","ProjectAdd","ProjectEdit","ProjectDelete","PropertyLists","PropertyAdd","PropertyDelete","1040000","CustomersLists","CustomersAdd","CustomersEdit","CustomersDelete","CustProLists","CustProAdd","CustProDelete","1070000","AgentDelete","AgentEdit","1050000","FinancialLists","AgentLists","FinancialSeach","FinancialInfo","AgentAdd","AdminLogsAddLogs","AgentPriceLists","AgentPriceAdd","AdminLogsLogsLists","AgentAddAccount","AgentPriceEdit","AgentPriceDelete","AgentInfo"]',
+  'DisplayOrder' => '3',
+  'LastModified' => '2009-06-10 08:46:54',
+);
+?>
