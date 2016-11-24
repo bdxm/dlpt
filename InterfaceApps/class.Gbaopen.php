@@ -1188,7 +1188,7 @@ class Gbaopen extends InterfaceVIEWS {
                 $this->LogsFunction->LogsCusRecord(111, 1, 0, $result['msg']);
             }elseif ($post['type'] == 'cuspro') {
                 //默认值设置
-                $Data['Capacity'] = 300;
+                $Data['Capacity'] = 300*1024*1024;
                 $Data['Link_Cus'] = '0';
                 $Data['status'] = 1;
 
