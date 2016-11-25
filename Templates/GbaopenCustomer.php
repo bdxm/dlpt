@@ -55,6 +55,7 @@
                                                 <th>网站服务</th>
                                                 <th>网站状态</th>
                                                 <th>推荐案例</th>
+                                                <th>客服人员</th>
                                                 <th class="text-right" width="25%">操作/管理</th>
                                             </tr>
                                         </tbody>
