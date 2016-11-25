@@ -160,6 +160,7 @@ jQuery(document).ready(function() {
                                 <td><font style="color:#090">' + v.type + '</font></td>\
                                 <td><div class="a"></div></td>\
                                 <td>' + ((v.name != '--' && v.type != '--') ? '<div class="cases' + (v.Place == 0 ? '"' : ' place" data="' + v.Place + '"') + '><span>' + v.PlaceName + '</span>' + dataInit.area + '</div>' : '--') + '</td>\
+                                <td><font style="color:#090">' + v.agent_username + '</font></td>\
                                 <td class="text-right">' + oper_each + '</td>\
                                 <input type="hidden" value="' + v.id + '">\
                             </tr>';
