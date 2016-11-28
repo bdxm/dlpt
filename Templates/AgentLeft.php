@@ -67,7 +67,7 @@
         </li>
     </ul>
     <div class="second-menu transition1">
-        <p>*</p>
+        <p><i class="fa fa-close" style="cursor: pointer;"></i></p>
         <?PHP if ($_SESSION['Level'] == 1) { ?>
             <div class="model">
                 <h1>模板服务</h1>

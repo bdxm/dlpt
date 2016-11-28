@@ -54,8 +54,9 @@
 .second-menu li a{color: #666;padding-left: 20px;}
 .second-menu li a:hover{background-color: #E4E9EC;}
 .second-menu h1{font-size: 16px;color: #000;padding: 20px 0 20px 20px;}
-.second-menu p {width: 15px;height: 15px;margin:5px;float: right;background-color: #0099CC;}
-
+.second-menu p {width: 20px;height: 20px;margin:5px;float: right;background-color: rgba(0, 153, 204, 0);cursor: pointer;color: #09c;}
+.second-menu p:hover{color: #a1a4a5;}
+.second-menu p i:hover{font-size: 18px;}
 .cont-right{position: fixed;left: 178px;top: 48px;width: 88%;height: 100%;overflow: hidden;margin: 0px;padding: 0px;z-index: 200;background-color: #d7dfe6;-webkit-transition: all .5s;-moz-transition: all .5s;-o-transition: all .5s;-ms-transition: all .5s;}
 .mianBox{padding: 20px;height: 100%;min-width: 340px;}
 .infobox{/*height: 130px;margin-bottom: 2%;*/overflow: hidden;}

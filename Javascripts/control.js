@@ -108,6 +108,8 @@ jQuery(document).ready(function() {
                     $('.topright').animate({width: _this.topright_w});
                     $('.cont-right').css({'left': _this.contright_l, 'width': changwidth});
                     $('.second-menu').css({'left': _this.secondmenu_l});
+                    $(this).find("i").removeClass("fa-more");
+                    $(this).find("i").addClass("fa-back");
                 }
             });
         };

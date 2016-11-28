@@ -22,7 +22,7 @@
             <img src="Images/logo.png" alt=""></a>
     </div>
     <div class="topright" style="width: 1267px;">
-        <div class="mini-menu fl"> <i class="iconfont"></i>
+        <div class="mini-menu fl"><i class="fa fa-back"></i>
         </div>
         <div class="top-box">
             <div class="toppublic login">
