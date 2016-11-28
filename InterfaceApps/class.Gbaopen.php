@@ -1828,7 +1828,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $search_cuspro .= $this->_GET['domain'] != '' ? '(PC_domain LIKE \'%' . $this->_GET['domain'] . '%\' or Mobile_domain LIKE \'%' . $this->_GET['domain'] . '%\')' : '';
                     //查询优化
                     $sel1 = $search_cus ? '(select AgentID,CustomersID,CompanyName,CustomersName from tb_customers where ' . $search_cus . ')' : 'tb_customers';
-                    $sel2 = $search_cuspro ? 'inner join (select CustomersID,G_name,Cases,CPhone,PC_StartTime,PC_EndTime,Mobile_StartTime,Mobile_EndTime from tb_customers_project where ' . $search_cuspro . ')' : 'left join tb_customers_project';
+                    $sel2 = $search_cuspro ? 'inner join (select CustomersID,G_name,Cases,CPhone,PC_StartTime,PC_EndTime,Mobile_StartTime,Mobile_EndTime,AgentID from tb_customers_project where ' . $search_cuspro . ')' : 'left join tb_customers_project';
                     $search_cus = $search_cus ? ' and (' . $search_cus . ')' : '';
                     //根据权限来获取客户信息量
                     if ($level == 1) {
