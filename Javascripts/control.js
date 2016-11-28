@@ -98,11 +98,13 @@ jQuery(document).ready(function() {
                     var newleftsecond = parseInt($('.second-menu').css('left')) - minus;
                     this.secondmenu_l = newleftsecond;
                     $('.second-menu').css({'left': this.secondmenu_l});
-                }else{
+                    $(this).find("i").removeClass("fa-back");
+                    $(this).find("i").addClass("fa-more");
+                } else {
                     var changwidth = parseInt($('.cont-right').width()) - ($('.left-menu.main').width() - $('.left-menu li i').width());
-                    if(_this.SecondIsShow){
+                    if (_this.SecondIsShow) {
                         _this.contright_l = $('.cont-left').width();
-                    }else{
+                    } else {
                         _this.contright_l = $('.left-menu.main').width();
                     }
                     $('.topright').animate({width: _this.topright_w});
