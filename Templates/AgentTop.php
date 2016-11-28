@@ -26,14 +26,14 @@
         </div>
         <div class="top-box">
             <div class="toppublic login">
-                <span><?php echo $Data['user']['contactemail'];?></span> <i class="iconfont">&#xe669;</i>
+                <span><?php echo $Data['user']['contactemail'];?></span> <i class="fa fa-account"></i>
             </div>
             <div class="toppublic mag">
                 <span>工单管理</span>
-                <i class="iconfont">&#xe669;</i>
+                <i class="fa fa-bussinesscard"></i>
             </div>
             <div class="toppublic msg">
-                <i class="iconfont">&#xe669;</i>
+                <i class="fa fa-comments"></i>
                 消息（0）
             </div>
         </div>

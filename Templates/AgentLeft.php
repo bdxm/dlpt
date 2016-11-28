@@ -2,7 +2,7 @@
     <ul class="left-menu main">
         <li <?PHP if ($MyModule == 'Agent' && $MyAction == 'Customer') { ?>class="on"<?php } ?>>
             <a href="<?php echo UrlRewriteSimple('Agent', 'Customer', true); ?>">
-                <i class="iconfont">&#xe669;</i>
+                <i class="fa fa-all"></i>
                 <span>首页</span>
             </a>
         </li>
@@ -14,54 +14,54 @@
         </li>-->
         <li <?PHP if ($MyModule == 'Gbaopen' && $MyAction == 'Customer') { ?>class="on"<?php } ?>>
             <a href="<?php echo UrlRewriteSimple('Gbaopen', 'Customer', true); ?>">
-                <i class="iconfont">&#xe669;</i>
+                <i class="fa fa-similarproduct"></i>
                 <span>客户管理</span>
             </a>
         </li>
 
         <li <?PHP if ($MyModule == 'Agent' && $MyAction == 'UserInfo') { ?>class="on"<?php } ?>>
             <a href="<?php echo UrlRewriteSimple('Agent', 'UserInfo', true); ?>">
-                <i class="iconfont">&#xe669;</i>
+                <i class="fa fa-supplierfeatures"></i>
                 <span>用户中心</span>
             </a>
         </li>
         <?PHP if ($_SESSION['Level'] == 1) { ?>
             <li class="nav <?PHP if ($MyModule == 'Model') { ?>on<?php } ?>" action="model">
                 <a href="javascript:;">
-                    <i class="iconfont">&#xe669;</i>
+                    <i class="fa fa-rfq"></i>
                     <span>模板管理</span>
                 </a>
             </li>
             <li <?PHP if ($MyModule == 'Agent' && $MyAction == 'Process') { ?>class="on"<?php } ?>>
                 <a href="<?php echo UrlRewriteSimple('Agent', 'Process', true); ?>">
-                    <i class="iconfont">&#xe669;</i>
+                    <i class="fa fa-process"></i>
                     <span>代理商管理</span>
                 </a>
             </li>
         <?PHP } elseif ($_SESSION['Level'] == 2) { ?>
             <li <?PHP if ($MyModule == 'Agent' && $MyAction == 'Process') { ?>class="on"<?php } ?>>
                 <a href="<?php echo UrlRewriteSimple('Agent', 'Process', true); ?>">
-                    <i class="iconfont">&#xe669;</i>
+                    <i class="fa fa-onepage48"></i>
                     <span>客服管理</span>
                 </a>
             </li>
             <li <?PHP if ($MyModule == 'Gbaopen' && $MyAction == 'Create') { ?>class="on"<?php } ?>>
                 <a href="<?php echo UrlRewriteSimple('Gbaopen', 'Create', true); ?>">
-                    <i class="iconfont">&#xe669;</i>
+                    <i class="fa fa-atm"></i>
                     <span>创建G宝盆客户</span>
                 </a>
             </li>
         <?PHP } elseif ($_SESSION['Level'] == 3) { ?>
             <li <?PHP if ($MyModule == 'Gbaopen' && $MyAction == 'Create') { ?>class="on"<?php } ?>>
                 <a href="<?php echo UrlRewriteSimple('Gbaopen', 'Create', true); ?>">
-                    <i class="iconfont">&#xe669;</i>
+                    <i class="fa fa-atm"></i>
                     <span>创建G宝盆客户</span>
                 </a>
             </li>
         <?PHP } ?>
         <li class="nav <?PHP if ($MyModule == 'Report') { ?>on<?php } ?>" action="report">
             <a href="javascript:;">
-                <i class="iconfont">&#xe669;</i>
+                <i class="fa fa-data"></i>
                 <span>数据统计</span>
             </a>
         </li>
