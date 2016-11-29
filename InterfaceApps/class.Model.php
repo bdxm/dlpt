@@ -286,6 +286,7 @@ class Model extends InterfaceVIEWS {
             $data[$k]['price'] = $v['Price'];
             $data[$k]['tuijian'] = $v['TuiJian'];
             $data[$k]['id'] = $v['ID'];
+            $data[$k]['devname'] = $v['DeveloperName'];
         }
         return $data;
     }
