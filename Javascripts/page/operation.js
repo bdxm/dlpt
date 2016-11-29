@@ -120,9 +120,9 @@ jQuery(document).ready(function() {
                         modelList += '<tr><!--<td><input type="checkbox" name="ID"></td>-->\
                                 <td class="text-left"><a href="javascript:;" class="dName modify">' + v.name + '</a></td>\
                                 <td class="poptip"><font class="orange"><a href="' + v.url[0] + '" target="_blank">' + v.url[0] + '</a></font>' + (v.url[1] ? '<div class="popfrm"><b class="phpicn">◆</b><p>' + v.url[1] + '</p></div>' : '') + '</td>\
-                                <td class="poptip">' + v.youhui + '<div class="popfrm"><b class="phpicn">◆</b><p class="strickout">' + v.price + '</p></div></td>\
-                                <td class="poptip">' + v.devname + '</td>\
-                                <td><div class="cases ' + (v.tuijian == 0 ? '' : 'place" data="' + v.tuijian) + '"><span>' + tjInit[v.tuijian] + '</span><ul class="one"><span>▬▶</span>\
+                                <td class="poptip">' + v.youhui + '<div class="popfrm"><b class="phpicn">◆</b><p class="strickout">' + v.price + '</p></div></td>'
+                                +(_this.listID!=3?('<td class="devname">' + v.devname + '</td>'):'')+
+                                '<td><div class="cases ' + (v.tuijian == 0 ? '' : 'place" data="' + v.tuijian) + '"><span>' + tjInit[v.tuijian] + '</span><ul class="one"><span>▬▶</span>\
                                     <li data="0">' + tjInit[0] + '</li><li data="1">' + tjInit[1] + '</li><li data="2">' + tjInit[2] + '</li></ul></div></td>\
                                 <td class="text-right"><a href="javascript:;" class="process"> 模板处理 </a>'+((_this.listID==1||_this.listID==2)?'<a href="/?module=Model&action=LoadTpl&name='+v.name+'" class="loadtemplate"> 模板下载 </a>':'')+'</td>\
                                 <input type="hidden" value="' + v.id + '">\
@@ -132,6 +132,11 @@ jQuery(document).ready(function() {
                         $("#listtbody").html(modelList);
                         $("#listtbody").show("slow");
                     });
+                    if(_this.listID==3){
+                        $(".devname").hide();
+                    }else{
+                        $(".devname").show();
+                    }
                     _this.onLoad(true);
                 } else {
                     Msg(2, result.msg);

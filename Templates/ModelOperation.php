@@ -62,7 +62,7 @@
                                                 <th class="text-left">模板名称</th>
                                                 <th>模板网址</th>
                                                 <th>优惠价</th>
-                                                <th>开发人员</th>
+                                                <th class="devname">开发人员</th>
                                                 <th>推荐</th>
                                                 <th class="text-right" width="25%">操作/管理</th>
                                             </tr>
