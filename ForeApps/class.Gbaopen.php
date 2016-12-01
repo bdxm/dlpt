@@ -34,7 +34,7 @@ class Gbaopen extends ForeVIEWS {
         $power = $_SESSION ['Power'];
         if ($this->Assess($power, $this->create)){
             $fuwuqi=new FuwuqiModule();
-            $fuwuqiinfo = $fuwuqi->GetListsByWhere(array('ID','FuwuqiName','CName'));
+            $fuwuqiinfo = $fuwuqi->GetListsByWhere(array('ID','FuwuqiName','CName'),' order by ID asc');
             $data['power'] = true;
             $cusmodel = new CustomersModule;
             $cuspromodel = new CustProModule;
@@ -48,7 +48,7 @@ class Gbaopen extends ForeVIEWS {
                     $cuslist[] = $v;
             }
             if ($this->_GET['cus']){
-                $data['cussel'] = $cusmodel->GetOneByWhere('where AgentID='.$agent_id.' and CustomersID='.$this->_GET['cus']." order by ID asc");
+                $data['cussel'] = $cusmodel->GetOneByWhere('where AgentID='.$agent_id.' and CustomersID='.$this->_GET['cus']);
             }
             $data['cus'] = $cuslist;
             $data['server'] = $fuwuqiinfo;
