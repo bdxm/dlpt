@@ -48,7 +48,7 @@ class Gbaopen extends ForeVIEWS {
                     $cuslist[] = $v;
             }
             if ($this->_GET['cus']){
-                $data['cussel'] = $cusmodel->GetOneByWhere('where AgentID='.$agent_id.' and CustomersID='.$this->_GET['cus']);
+                $data['cussel'] = $cusmodel->GetOneByWhere('where AgentID='.$agent_id.' and CustomersID='.$this->_GET['cus']." order by ID asc");
             }
             $data['cus'] = $cuslist;
             $data['server'] = $fuwuqiinfo;
