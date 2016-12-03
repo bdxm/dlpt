@@ -72,6 +72,16 @@ jQuery(document).ready(function() {
         changetype($(this).val());
     });
     
+    $("#companyFTP").change(function(){
+        var pcdomain=$("input[name='pcdomain']").val();
+        var mobiledomain=$("input[name='mobiledomain']").val();
+        if(/\.5067\.org/.test(pcdomain)&&$("input[name='pcdomain']").val()!=''){
+            $("input[name='pcdomain']").val("http://" + $("input[name='account']").val() + $("#companyFTP option:selected").attr("content"));
+        }
+        if(/\.5067\.org/.test(mobiledomain)&&$("input[name='mobiledomain']").val()!=''){
+            $("input[name='mobiledomain']").val("http://m." + $("input[name='account']").val() + $("#companyFTP option:selected").attr("content"));
+        }
+    });
     //ftp选择
     $("input[type='radio'][name='ftp_c']").change(function() {
         if ($(this).val() == 1) {
