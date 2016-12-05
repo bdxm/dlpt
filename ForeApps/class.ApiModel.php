@@ -12,22 +12,22 @@ class ApiModel extends ForeVIEWS {
         $ModelClass = new ModelClassModule();
         $ModelClassLists = $ModelClass->GetListsAll();
         $DB=new DB();
-        $get=  $this->_GET;
-        if($get["type"]==1){
-           $sql="select count(*) as num from tb_model_packages where TuiJian>0 and ModelClassID like "; 
-        }else if($get["type"]==2){
-           $sql="select count(*) as num from tb_model where Type='PC' and TuiJian>0 and ModelClassID like ";  
-        }else{
-           $sql="select count(*) as num from tb_model where Type='手机' and TuiJian>0 and ModelClassID like "; 
-        }
-        
-        foreach($ModelClassLists as $k=>$v){
-            $count=0;
-            $count=$DB->select($sql."'%,".$v["ID"].",%'");
-            if($count[0]["num"]==0){
-                unset($ModelClassLists[$k]);
-            }
-        }
+//        $get=  $this->_GET;
+//        if($get["type"]==1){
+//           $sql="select count(*) as num from tb_model_packages where TuiJian>0 and ModelClassID like "; 
+//        }else if($get["type"]==2){
+//           $sql="select count(*) as num from tb_model where Type='PC' and TuiJian>0 and ModelClassID like ";  
+//        }else{
+//           $sql="select count(*) as num from tb_model where Type='手机' and TuiJian>0 and ModelClassID like "; 
+//        }
+//        
+//        foreach($ModelClassLists as $k=>$v){
+//            $count=0;
+//            $count=$DB->select($sql."'%,".$v["ID"].",%'");
+//            if($count[0]["num"]==0){
+//                unset($ModelClassLists[$k]);
+//            }
+//        }
         $DB->Select("select * from tb_model Group by");
         $String = '';
         foreach ($ModelClassLists as $Value) {
