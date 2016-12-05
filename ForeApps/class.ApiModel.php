@@ -760,9 +760,9 @@ class ApiModel extends ForeVIEWS {
                 $Where .= ' and Youhui<' . $Eprice;
             if ($lang)
                 $Where .= ' and ModelLan = \'' . $lang . '\'';
-            if ($SortGUID){
-                $Where .= ' and ModelClassID like \'%,' . $SortGUID . ',%\'';
-            }
+//            if ($SortGUID){
+//                $Where .= ' and ModelClassID like \'%,' . $SortGUID . ',%\'';
+//            }
             $Model = new ModelModule();
             $Offset = ($Page - 1) * $Number;
             $ModelList = $Model->GetPackagesLists($Where, $Offset, $Number);
@@ -771,12 +771,12 @@ class ApiModel extends ForeVIEWS {
             foreach ($ModelList as $Value) {
                 $ModelPC = $Model->GetOneInfoByKeyID('\'' . $Value['PCNum'] . '\'', 'NO');
                 $ModelPhone = $Model->GetOneInfoByKeyID('\'' . $Value['PhoneNum'] . '\'', 'NO');
-//                if ($SortGUID) {
-//                    if (!strstr($ModelPC['ModelClassID'], ',' . $SortGUID . ',') or !strstr($ModelPhone['ModelClassID'], ',' . $SortGUID . ',')) {
-//                        $ModelListNun['Num'] --;
-//                        continue;
-//                    }
-//                }
+                if ($SortGUID) {
+                    if (!strstr($ModelPC['ModelClassID'], ',' . $SortGUID . ',') or !strstr($ModelPhone['ModelClassID'], ',' . $SortGUID . ',')) {
+                        $ModelListNun['Num'] --;
+                        continue;
+                    }
+                }
                 if (!$Value['Url_status']) {
                     $Value['PCUrl'] = '';
                     $Value['EWM'] = '';
