@@ -958,5 +958,17 @@ class ApiModel extends ForeVIEWS {
             die($Coupons);
         }
     }
-
+    public function GetDoubleStModelListAll(){
+        $modelpack=new ModelPackageModule();
+        $data=$modelpack->GetListByWhere();
+        $String .= '<?xml version="1.0" encoding="utf-8"?>
+		<main>
+		  <model>
+			<data>' . json_encode($data) . '</data>
+		  </model>
+		</main>
+		';
+            echo $String;
+            exit;
+    }
 }
