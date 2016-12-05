@@ -994,6 +994,7 @@ class ApiModel extends ForeVIEWS {
 			<ewm>' . $Value['EWM'] . '</ewm>
 			<content>' . $Value['Content'] . '</content>
 			<time>' . $Value['AddTime'] . '</time>
+                        <modelsortid>' . $Value['ModelSortID'] . '</modelsortid>
 		  </model>
 		';
             }
