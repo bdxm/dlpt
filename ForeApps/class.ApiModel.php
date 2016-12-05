@@ -959,15 +959,48 @@ class ApiModel extends ForeVIEWS {
         }
     }
     public function GetDoubleStModelListAll(){
+        $Model=new ModelModule();
         $modelpack=new ModelPackageModule();
         $data=$modelpack->GetListByWhere();
-        $String .= '<?xml version="1.0" encoding="utf-8"?>
-		<main>
-		  <model>
-			<data>' . json_encode($data) . '</data>
+//        file_put_contents("uploads/model.json", json_encode($data));
+        
+        foreach ($data as $Value) {
+                $ModelPC = $Model->GetOneInfoByKeyID('\'' . $Value['PCNum'] . '\'', 'NO');
+                $ModelPhone = $Model->GetOneInfoByKeyID('\'' . $Value['PhoneNum'] . '\'', 'NO');
+                $ModelPC['Pic'] = IMG_DOMAIN . $ModelPC['Pic'];
+                $ModelPhone['Pic'] = IMG_DOMAIN . $ModelPhone['Pic'];
+                if (!$Value['Url_status']) {
+                    $Value['PCUrl'] = '';
+                    $Value['EWM'] = '';
+                } else {
+                    $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['PhoneUrl'];
+                }
+                $String .= '<model>
+			<id>' . $Value['ID'] . '</id>
+			<no>' . $Value['PackagesNum'] . '</no>
+			<title>' . $Value['PackagesName'] . '</title>
+			<color>' . $Value['Color'] . '</color>
+			<star>' . $Value['BaiDuXingPing'] . '</star>
+			<descript>' . $Value['Descript'] . '</descript>
+			<price>' . $Value['Price'] . '</price>
+                        <pcpic>' . $ModelPC['Pic'] . '</pcpic>
+                        <mobilepic>' . $ModelPhone['Pic'] . '</mobilepic>
+			<youhui>' . $Value['Youhui'] . '</youhui>
+			<sort>' . $Value['Num'] . '</sort>
+			<tone>' . $Value['ZhuSeDiao'] . '</tone>
+			<pl>' . $Value['Language'] . '</pl>
+			<website>' . $Value['PCUrl'] . '</website>
+			<time>' . $Value['AddTime'] . '</time>
+			<ewm>' . $Value['EWM'] . '</ewm>
+			<content>' . $Value['Content'] . '</content>
+			<time>' . $Value['AddTime'] . '</time>
 		  </model>
-		</main>
 		';
+            }
+            $String = '<?xml version="1.0" encoding="utf-8"?>
+			<models>
+			' . $String .
+                    ' </models>';
             echo $String;
             exit;
     }
