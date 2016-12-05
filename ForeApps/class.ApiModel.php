@@ -1005,4 +1005,44 @@ class ApiModel extends ForeVIEWS {
             echo $String;
             exit;
     }
+    public function GetModelListAll(){
+        $Model=new ModelModule();
+        $data=$Model->GetListByWhere();
+        
+        foreach ($data as $Value) {
+                if (!$Value['Url_status']) {
+                    $Value['EWM'] = '';
+                } else {
+                    $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['Url'];
+                }
+                $String .= '<model>
+			<id>' . $Value['ID'] . '</id>
+			<no>' . $Value['NO'] . '</no>
+			<title>' . $Value['Name'] . '</title>
+			<color>' . $Value['Color'] . '</color>
+			<star>' . $Value['BaiDuXingPing'] . '</star>
+			<descript>' . $Value['Descript'] . '</descript>
+			<price>' . $Value['Price'] . '</price>
+                        <pic>' . $Value['Pic'] . '</pic>
+			<youhui>' . $Value['Youhui'] . '</youhui>
+			<sort>' . $Value['Num'] . '</sort>
+			<tone>' . $Value['ZhuSeDiao'] . '</tone>
+			<pl>' . $Value['Language'] . '</pl>
+			<website>' . $Value['Url'] . '</website>
+			<time>' . $Value['AddTime'] . '</time>
+			<ewm>' . $Value['EWM'] . '</ewm>
+			<content>' . $Value['Content'] . '</content>
+			<time>' . $Value['AddTime'] . '</time>
+                        <modelsortid>' . $Value['ModelSortID'] . '</modelsortid>
+                        <type>' . $Value['type'] . '</type>
+		  </model>
+		';
+            }
+            $String = '<?xml version="1.0" encoding="utf-8"?>
+			<models>
+			' . $String .
+                    ' </models>';
+            echo $String;
+            exit;
+    }
 }
