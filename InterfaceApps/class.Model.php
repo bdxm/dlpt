@@ -95,6 +95,7 @@ class Model extends InterfaceVIEWS {
             $Data['ModelClassID'] = trim($PCModel['ModelClassID'], ',') . ',' . trim($PhoneModel['ModelClassID'], ',');
             $Data['AddTime'] = date("Y-m-d H:i:s", time());
             if ($PackModule->InsertArray($Data, true)) {
+                $this->updateModel(array("PackagesNum"=>$Data['PackagesNum']), "model_packages");
                 $result['err'] = 0;
                 $result['msg'] = '添加双站模板成功';
             } else {
@@ -125,6 +126,7 @@ class Model extends InterfaceVIEWS {
             $Data['ModelClassID'] = ',' . trim($this->_POST['typetage']) . ',';
             $Data['Color'] = $this->_POST['colortag'];
             $Model->UpdateArrayByKeyID($Data, $modelID);
+            $this->updateModel(array("ID"=>$modelID), $this->_POST['type'] == 3?"model_package":"model");
             $result['err'] = 0;
             $result['msg'] = '模板信息修改成功';
         } else {
@@ -200,6 +202,7 @@ class Model extends InterfaceVIEWS {
                 $Model = new ModelModule();
                 $Model->UpdateArrayByKeyID($Data, $modelID);
             }
+            $this->updateModel(array("ID"=>$modelID), $this->_POST['type'] == 3?"model_package":"model");
             $result['err'] = 0;
             $result['msg'] = '状态修改成功';
         } else {
@@ -730,9 +733,9 @@ class Model extends InterfaceVIEWS {
                                     $ModelModule->InsertArray($Data);
                                 }
                             }
-							
-							//将模板备份存储	
-							copy($uploadZip,"tpl/".$filename);
+                            //将模板备份存储	
+                            copy($uploadZip,"tpl/".$filename);
+                            $this->updateModel(array("NO"=>$Modelname), "model");
 
                             unlink($configLoad);
                             unlink($uploadZip);
@@ -890,4 +893,84 @@ class Model extends InterfaceVIEWS {
         }
     }
 
+    public function updateModel($where,$table){
+        $result=array();
+        if($table=="model"){
+            $Model=new ModelModule();
+            $data=$Model->GetOneByWhere(array(),$where);
+            if (!$data['Url_status']) {
+                $data['EWM'] = '';
+            } else {
+                $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['Url'];
+            }
+            $data["PCNum"]="";
+            $data["PhoneNum"]="";
+//            $result["no"]=$data["NO"];
+//            $result["title"]=$data["Name"];
+//            $result["pic"]=$data["Pic"];
+        }else{
+            $modelpack=new ModelPackageModule();
+            $data=$modelpack->GetOneByWhere(array(),$where);
+            $data["Type"]='双站';
+            if (!$data['Url_status']) {
+                $data['Url'] = '';
+                $data['EWM'] = '';
+            } else {
+                 $data['Url'] = $data['PCUrl'];
+                $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['PhoneUrl'];
+            }
+            $data['NO']=$data["PackagesNum"];
+            $data['Name']=$data["PackagesName"];
+//            $result["no"]=$data["PackagesNum"];
+//            $result["title"]=$data["PackagesName"];
+//            $result["pcnum"]=$data["PCNum"];
+//            $result["mobilenum"]=$data["PhoneNum"];
+        }
+//        $result["id"]=$data["ID"];
+//        $result["tuijian"]=$data["Tuijian"];
+//        $result["color"]=$data["Color"];
+//        $result["star"]=$data["BaiDuXingPing"];
+//        $result["descript"]=$data["Descript"];
+//        $result["price"]=$data["Price"];
+//        $result["youhui"]=$data["Youhui"];
+//        $result["sort"]=$data["Num"];
+//        $result["tone"]=$data["ZhuSeDiao"];
+//        $result["pl"]=$data["Language"];
+//        $result["website"]=$data["Url"];
+//        $result["time"]=$data["AddTime"];
+//        $result["ewm"]=$data["EWM"];
+//        $result["content"]=$data["Content"];
+//        $result["modelclassid"]=$data["ModelClassID"];
+//        $result["type"]=$data["Type"];
+        $String .= '<?xml version="1.0" encoding="utf-8"?>
+            <main>
+              <model>
+                <id>' . $data['ID'] . '</id>
+                <no>' . $data['NO'] . '</no>
+                <title>' . $data['Name'] . '</title>
+                <color>' . $data['Color'] . '</color>
+                <tuijian>'. $data['Tuijian'] .'</tuijian>
+                <star>' . $data['BaiDuXingPing'] . '</star>
+                <descript>' . $data['Descript'] . '</descript>
+                <price>' . $data['Price'] . '</price>
+                <pcnum>' . $data['PCNum'] . '</pcnum>
+                <mobilenum>' . $data['PhoneNum'] . '</mobilenum>
+                <youhui>' . $data['Youhui'] . '</youhui>
+                <sort>' . $data['Num'] . '</sort>
+                <tone>' . $data['ZhuSeDiao'] . '</tone>
+                <pl>' . $data['Language'] . '</pl>
+                <website>' . $data['Url'] . '</website>
+                <time>' . $data['AddTime'] . '</time>
+                <ewm>' . $data['EWM'] . '</ewm>
+                <modellan>' . $data['ModelLan'] . '</modellan>
+                <content>' . $data['Content'] . '</content>
+                <modelclassid>' . $data['ModelClassID'] . '</modelclassid>
+              </model>
+            </main>
+            ';
+        $code="data=".  $String;
+        $url = 'http://www.gbpen.com/UpdateData.aspx';
+        $Coupons = request_by_other($url, $code);
+        exit();
+    }
 }

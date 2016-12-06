@@ -959,16 +959,10 @@ class ApiModel extends ForeVIEWS {
         }
     }
     public function GetDoubleStModelListAll(){
-        $Model=new ModelModule();
         $modelpack=new ModelPackageModule();
         $data=$modelpack->GetListByWhere();
-//        file_put_contents("uploads/model.json", json_encode($data));
         
         foreach ($data as $Value) {
-                $ModelPC = $Model->GetOneInfoByKeyID('\'' . $Value['PCNum'] . '\'', 'NO');
-                $ModelPhone = $Model->GetOneInfoByKeyID('\'' . $Value['PhoneNum'] . '\'', 'NO');
-                $ModelPC['Pic'] = IMG_DOMAIN . $ModelPC['Pic'];
-                $ModelPhone['Pic'] = IMG_DOMAIN . $ModelPhone['Pic'];
                 if (!$Value['Url_status']) {
                     $Value['PCUrl'] = '';
                     $Value['EWM'] = '';
@@ -980,11 +974,12 @@ class ApiModel extends ForeVIEWS {
 			<no>' . $Value['PackagesNum'] . '</no>
 			<title>' . $Value['PackagesName'] . '</title>
 			<color>' . $Value['Color'] . '</color>
+                        <tuijian>'. $Value['Tuijian'] .'</tuijian>
 			<star>' . $Value['BaiDuXingPing'] . '</star>
 			<descript>' . $Value['Descript'] . '</descript>
 			<price>' . $Value['Price'] . '</price>
-                        <pcpic>' . $ModelPC['Pic'] . '</pcpic>
-                        <mobilepic>' . $ModelPhone['Pic'] . '</mobilepic>
+                        <pcnum>' . $Value['PCNum'] . '</pcnum>
+                        <mobilenum>' . $Value['PhoneNum'] . '</mobilenum>
 			<youhui>' . $Value['Youhui'] . '</youhui>
 			<sort>' . $Value['Num'] . '</sort>
 			<tone>' . $Value['ZhuSeDiao'] . '</tone>
@@ -992,9 +987,9 @@ class ApiModel extends ForeVIEWS {
 			<website>' . $Value['PCUrl'] . '</website>
 			<time>' . $Value['AddTime'] . '</time>
 			<ewm>' . $Value['EWM'] . '</ewm>
+                        <modellan>' . $Value['ModelLan'] . '</modellan>
 			<content>' . $Value['Content'] . '</content>
-			<time>' . $Value['AddTime'] . '</time>
-                        <modelsortid>' . $Value['ModelSortID'] . '</modelsortid>
+                        <modelclassid>' . $Value['ModelClassID'] . '</modelclassid>
 		  </model>
 		';
             }
@@ -1008,7 +1003,6 @@ class ApiModel extends ForeVIEWS {
     public function GetModelListAll(){
         $Model=new ModelModule();
         $data=$Model->GetListByWhere();
-        
         foreach ($data as $Value) {
                 if (!$Value['Url_status']) {
                     $Value['EWM'] = '';
@@ -1019,6 +1013,7 @@ class ApiModel extends ForeVIEWS {
 			<id>' . $Value['ID'] . '</id>
 			<no>' . $Value['NO'] . '</no>
 			<title>' . $Value['Name'] . '</title>
+                        <tuijian>'. $Value['Tuijian'] .'</tuijian>
 			<color>' . $Value['Color'] . '</color>
 			<star>' . $Value['BaiDuXingPing'] . '</star>
 			<descript>' . $Value['Descript'] . '</descript>
@@ -1031,10 +1026,10 @@ class ApiModel extends ForeVIEWS {
 			<website>' . $Value['Url'] . '</website>
 			<time>' . $Value['AddTime'] . '</time>
 			<ewm>' . $Value['EWM'] . '</ewm>
+                        <modellan>' . $Value['ModelLan'] . '</modellan>
 			<content>' . $Value['Content'] . '</content>
-			<time>' . $Value['AddTime'] . '</time>
-                        <modelsortid>' . $Value['ModelSortID'] . '</modelsortid>
-                        <type>' . $Value['type'] . '</type>
+                        <modelclassid>' . $Value['ModelClassID'] . '</modelclassid>
+                        <type>' . $Value['Type'] . '</type>
 		  </model>
 		';
             }
