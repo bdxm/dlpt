@@ -978,7 +978,7 @@ class Model extends InterfaceVIEWS {
             </main>
             ';
         $code="data=".  $String;
-        $url = GBAOPEN_DOMAIN.'/UpdateData.aspx';
+        $url = 'http://www.gbpen.com/UpdateData.aspx';
         $Coupons = request_by_other($url, $code);
         exit();
     }
