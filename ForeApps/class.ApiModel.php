@@ -3,7 +3,7 @@
 class ApiModel extends ForeVIEWS {
 
     public function __Public() {
-//        header('Content-type: application/json');
+        header('Content-type: application/json');
     }
 
 //==========================================PC==============
