@@ -2,9 +2,9 @@
 
 session_start();
 # 屏蔽警告提示错误
-error_reporting(7);
-set_magic_quotes_runtime(0);
-ini_set('display_errors', 1);
+//error_reporting(7);
+//set_magic_quotes_runtime(0);
+//ini_set('display_errors', 1);
 
 //定义网站根目录物理路径
 define('DocumentRoot', dirname(__FILE__));
