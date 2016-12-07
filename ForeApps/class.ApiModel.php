@@ -982,7 +982,7 @@ class ApiModel extends ForeVIEWS {
 			<no>' . $Value['PackagesNum'] . '</no>
 			<title>' . $Value['PackagesName'] . '</title>
 			<color>' . $Value['Color'] . '</color>
-                        <tuijian>'. $Value['Tuijian'] .'</tuijian>
+                        <tuijian>'. $Value['TuiJian'] .'</tuijian>
 			<star>' . $Value['BaiDuXingPing'] . '</star>
 			<descript>' . $Value['Descript'] . '</descript>
 			<price>' . $Value['Price'] . '</price>
@@ -1029,7 +1029,7 @@ class ApiModel extends ForeVIEWS {
 			<id>' . $Value['ID'] . '</id>
 			<no>' . $Value['NO'] . '</no>
 			<title>' . $Value['Name'] . '</title>
-                        <tuijian>'. $Value['Tuijian'] .'</tuijian>
+                        <tuijian>'. $Value['TuiJian'] .'</tuijian>
 			<color>' . $Value['Color'] . '</color>
 			<star>' . $Value['BaiDuXingPing'] . '</star>
 			<descript>' . $Value['Descript'] . '</descript>

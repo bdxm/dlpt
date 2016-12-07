@@ -957,7 +957,7 @@ class Model extends InterfaceVIEWS {
                 <no>' . $data['NO'] . '</no>
                 <title>' . $data['Name'] . '</title>
                 <color>' . $data['Color'] . '</color>
-                <tuijian>'. $data['Tuijian'] .'</tuijian>
+                <tuijian>'. $data['TuiJian'] .'</tuijian>
                 <star>' . $data['BaiDuXingPing'] . '</star>
                 <descript>' . $data['Descript'] . '</descript>
                 <price>' . $data['Price'] . '</price>
