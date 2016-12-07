@@ -926,6 +926,7 @@ class Model extends InterfaceVIEWS {
 //            $result["pcnum"]=$data["PCNum"];
 //            $result["mobilenum"]=$data["PhoneNum"];
         }
+        $ModelClassInfo="";
         $ModelClass=new ModelClassModule();
         $ModelClassID = explode(',', $data['ModelClassID']);
         foreach ($ModelClassID as $val) {

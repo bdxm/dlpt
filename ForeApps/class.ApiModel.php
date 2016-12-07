@@ -3,7 +3,7 @@
 class ApiModel extends ForeVIEWS {
 
     public function __Public() {
-        header('Content-type: application/json');
+//        header('Content-type: application/json');
     }
 
 //==========================================PC==============
@@ -969,6 +969,7 @@ class ApiModel extends ForeVIEWS {
                 } else {
                     $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['PhoneUrl'];
                 }
+                $ModelClassInfo="";
                 $ModelClass=new ModelClassModule();
                 $ModelClassID = explode(',', $Value['ModelClassID']);
                 foreach ($ModelClassID as $val) {
@@ -1012,6 +1013,7 @@ class ApiModel extends ForeVIEWS {
         $Model=new ModelModule();
         $data=$Model->GetListByWhere();
         foreach ($data as $Value) {
+                $ModelClassInfo="";
                 if (!$Value['Url_status']) {
                     $Value['EWM'] = '';
                 } else {
