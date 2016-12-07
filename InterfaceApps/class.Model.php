@@ -926,6 +926,14 @@ class Model extends InterfaceVIEWS {
 //            $result["pcnum"]=$data["PCNum"];
 //            $result["mobilenum"]=$data["PhoneNum"];
         }
+        $ModelClass=new ModelClassModule();
+        $ModelClassID = explode(',', $data['ModelClassID']);
+        foreach ($ModelClassID as $val) {
+            if ($val) {
+                $CName = $ModelClass->GetOneInfoByKeyID($val);
+                $ModelClassInfo .= $CName['CName'];
+            }
+        }
 //        $result["id"]=$data["ID"];
 //        $result["tuijian"]=$data["Tuijian"];
 //        $result["color"]=$data["Color"];
@@ -956,7 +964,7 @@ class Model extends InterfaceVIEWS {
                 <pcnum>' . $data['PCNum'] . '</pcnum>
                 <mobilenum>' . $data['PhoneNum'] . '</mobilenum>
                 <youhui>' . $data['Youhui'] . '</youhui>
-                <sort>' . $data['Num'] . '</sort>
+                <sort>' . $ModelClassInfo . '</sort>
                 <tone>' . $data['ZhuSeDiao'] . '</tone>
                 <pl>' . $data['Language'] . '</pl>
                 <website>' . $data['Url'] . '</website>

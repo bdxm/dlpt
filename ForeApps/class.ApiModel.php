@@ -969,6 +969,14 @@ class ApiModel extends ForeVIEWS {
                 } else {
                     $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['PhoneUrl'];
                 }
+                $ModelClass=new ModelClassModule();
+                $ModelClassID = explode(',', $Value['ModelClassID']);
+                foreach ($ModelClassID as $val) {
+                    if ($val) {
+                        $CName = $ModelClass->GetOneInfoByKeyID($val);
+                        $ModelClassInfo .= $CName['CName'];
+                    }
+                }
                 $String .= '<model>
 			<id>' . $Value['ID'] . '</id>
 			<no>' . $Value['PackagesNum'] . '</no>
@@ -981,7 +989,7 @@ class ApiModel extends ForeVIEWS {
                         <pcnum>' . $Value['PCNum'] . '</pcnum>
                         <mobilenum>' . $Value['PhoneNum'] . '</mobilenum>
 			<youhui>' . $Value['Youhui'] . '</youhui>
-			<sort>' . $Value['Num'] . '</sort>
+			<sort>' . $ModelClassInfo . '</sort>
 			<tone>' . $Value['ZhuSeDiao'] . '</tone>
 			<pl>' . $Value['Language'] . '</pl>
 			<website>' . $Value['PCUrl'] . '</website>
@@ -1009,6 +1017,14 @@ class ApiModel extends ForeVIEWS {
                 } else {
                     $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['Url'];
                 }
+                $ModelClass=new ModelClassModule();
+                $ModelClassID = explode(',', $Value['ModelClassID']);
+                foreach ($ModelClassID as $val) {
+                    if ($val) {
+                        $CName = $ModelClass->GetOneInfoByKeyID($val);
+                        $ModelClassInfo .= $CName['CName'];
+                    }
+                }
                 $String .= '<model>
 			<id>' . $Value['ID'] . '</id>
 			<no>' . $Value['NO'] . '</no>
@@ -1020,7 +1036,7 @@ class ApiModel extends ForeVIEWS {
 			<price>' . $Value['Price'] . '</price>
                         <pic>' . $Value['Pic'] . '</pic>
 			<youhui>' . $Value['Youhui'] . '</youhui>
-			<sort>' . $Value['Num'] . '</sort>
+			<sort>' . $ModelClassInfo . '</sort>
 			<tone>' . $Value['ZhuSeDiao'] . '</tone>
 			<pl>' . $Value['Language'] . '</pl>
 			<website>' . $Value['Url'] . '</website>
