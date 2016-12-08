@@ -15,6 +15,7 @@
 .none{display: none;}
 .transition1{-webkit-transition: all .5s .1s;-moz-transition: all .5s .1s;-o-transition: all .5s .1s;-ms-transition: all .5s .1s;}
 .strickout{text-decoration: line-through;color: #9E;}
+.mainBox{max-height: 90%;overflow: auto;}
 
 /*End*/
 .mainTop{width: 100%;height: 48px;position: fixed;top: 0;left: 0;z-index: 200;}

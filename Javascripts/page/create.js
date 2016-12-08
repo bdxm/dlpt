@@ -1,4 +1,25 @@
 jQuery(document).ready(function() {
+    $(".Experience-btn,.Experience").click(function() {
+        if ($(".Experience").val() == "是") {
+            $(".Experience-btn").animate({"left": "-70px"});
+            $(".Experience").removeClass("text-left");
+            $(".Experience").addClass("text-right");
+            $(".Experience").val("否");
+            $("Input[name=stilltime]").parent("span").prev(".content-l").show();
+            $("Input[name=stilltime]").parent("span").show();
+            $("Input[name=capacity]").parent("span").prev(".content-l").show();
+            $("Input[name=capacity]").parent("span").show();
+        } else {
+            $(".Experience-btn").animate({"left": "-46px"});
+            $(".Experience").removeClass("text-right");
+            $(".Experience").addClass("text-left");
+            $(".Experience").val("是");
+            $("Input[name=stilltime]").parent("span").prev(".content-l").hide();
+            $("Input[name=stilltime]").parent("span").hide();
+            $("Input[name=capacity]").parent("span").prev(".content-l").hide();
+            $("Input[name=capacity]").parent("span").hide();
+        }
+    });
     //优惠券
     $("#Coupons").change(function() {
         var Coupons = $(this).val();
@@ -28,6 +49,14 @@ jQuery(document).ready(function() {
                 $('.Btn2').attr('value', '下一页');
                 $('.Btn3').attr('value', '创建客户');
             });
+            $(".Experience-btn").animate({"left": "-70px"});
+            $(".Experience").removeClass("text-left");
+            $(".Experience").addClass("text-right");
+            $(".Experience").val("否");
+            $("Input[name=stilltime]").parent("span").prev(".content-l").show();
+            $("Input[name=stilltime]").parent("span").show();
+            $("Input[name=capacity]").parent("span").prev(".content-l").show();
+            $("Input[name=capacity]").parent("span").show();
         } else {
             $.get("Apps?module=Gbaopen&action=Operation&type=modify&cus=" + $(this).val(), function(result) {
                 if (result.err == 0) {
@@ -36,8 +65,29 @@ jQuery(document).ready(function() {
                     $.each(result, function(i, v) {
                         if (i == 'remark') {
                             $("textarea[name='remark']").val(v[1]);
-                        } else
+                        } else if (i == 'experience') {
+                            if (v[1] == "0") {
+                                $(".Experience-btn").animate({"left": "-70px"});
+                                $(".Experience").removeClass("text-left");
+                                $(".Experience").addClass("text-right");
+                                $(".Experience").val("否");
+                                $("Input[name=stilltime]").parent("span").prev(".content-l").show();
+                                $("Input[name=stilltime]").parent("span").show();
+                                $("Input[name=capacity]").parent("span").prev(".content-l").show();
+                                $("Input[name=capacity]").parent("span").show();
+                            } else {
+                                $(".Experience-btn").animate({"left": "-46px"});
+                                $(".Experience").removeClass("text-right");
+                                $(".Experience").addClass("text-left");
+                                $(".Experience").val("是");
+                                $("Input[name=stilltime]").parent("span").prev(".content-l").hide();
+                                $("Input[name=stilltime]").parent("span").hide();
+                                $("Input[name=capacity]").parent("span").prev(".content-l").hide();
+                                $("Input[name=capacity]").parent("span").hide();
+                            }
+                        } else {
                             $('input[name=' + i + ']').val(v[1]);
+                        }
                     })
                     $('input[name=email]').attr("disabled", "true");
                     crelist.eq(1).hide('slow', function() {
@@ -71,14 +121,14 @@ jQuery(document).ready(function() {
     $("input[type='radio'][name='pc_mobile']").change(function() {
         changetype($(this).val());
     });
-    
-    $("#companyFTP").change(function(){
-        var pcdomain=$("input[name='pcdomain']").val();
-        var mobiledomain=$("input[name='mobiledomain']").val();
-        if(/\.5067\.org/.test(pcdomain)&&$("input[name='pcdomain']").val()!=''){
+
+    $("#companyFTP").change(function() {
+        var pcdomain = $("input[name='pcdomain']").val();
+        var mobiledomain = $("input[name='mobiledomain']").val();
+        if (/\.5067\.org/.test(pcdomain) && $("input[name='pcdomain']").val() != '') {
             $("input[name='pcdomain']").val("http://" + $("input[name='account']").val() + $("#companyFTP option:selected").attr("content"));
         }
-        if(/\.5067\.org/.test(mobiledomain)&&$("input[name='mobiledomain']").val()!=''){
+        if (/\.5067\.org/.test(mobiledomain) && $("input[name='mobiledomain']").val() != '') {
             $("input[name='mobiledomain']").val("http://m." + $("input[name='account']").val() + $("#companyFTP option:selected").attr("content"));
         }
     });
@@ -142,10 +192,28 @@ jQuery(document).ready(function() {
                 Msg(1, '账号只能由数字，字母，分隔号构成。首字符和尾字符只能是数字或字母');
                 return false;
             }
-            html += '<p><span>邮箱地址：</span><span class="major">'+$(".userdata-content input[name='email']").val()+'</span></p>\n';
-            html += '<p><span>客户账号：</span><span class="major">'+$(".userdata-content input[name='account']").val()+'</span></p></div>';
+            html += '<p><span>邮箱地址：</span><span class="major">' + $(".userdata-content input[name='email']").val() + '</span></p>\n';
+            html += '<p><span>客户账号：</span><span class="major">' + $(".userdata-content input[name='account']").val() + '</span></p></div>';
+
+            var data = {};
+            data["Experience"] = ($(".Experience").val() == "是") ? 1 : 0;
+            data["Capacity"] = $(".capacity:checked").val();
+            data["CPhone"] = $("input[name=pc_mobile]:checked").val();
+            data["PC_model"] = $("input[name=pcmodel]").val();
+            data["Mobile_model"] = $("input[name=mobilemodel]").val();
+            data["PK_model"] = $("input[name=pkmodel]").val();
+            data["stilltime"] = $("input[name=stilltime]").val() > 0 ? $("input[name=stilltime]").val() : 1;
+            $.ajax({
+                    url:"Apps?module=Gbaopen&action=getcost",
+                    data:data,
+                    async:false,
+                    type:"POST",
+                    success:function(result) {
+                    html += '<p><span>总消费费用：</span><span class="major">￥' + result["price"] + '元</span></p></div>';
+                    }
+                });
         } else if ($(this).attr('value') == '创建客户') {
-            html += '<p><span>邮箱地址：</span><span class="major">'+$(".userdata-content input[name='email']").val()+'</span></p>\n';
+            html += '<p><span>邮箱地址：</span><span class="major">' + $(".userdata-content input[name='email']").val() + '</span></p>\n';
         } else {
             Msg(2, '非法请求');
             return false;
@@ -187,9 +255,11 @@ jQuery(document).ready(function() {
         }
         data += '"' + text.attr('name') + '":"' + text.val() + '"}';
         data = $.parseJSON(data);
+        data["experience"] = ($(".Experience").val() == "是") ? 1 : 0;
+        data["capacity"] = $(".capacity:checked").val();
         if (!r_num.test(data['tel'])) {
             Msg(1, '您输入的电话号码不正确');
-        }else{
+        } else {
             if (data["name"] && data["companyname"] && data["email"] && data["tel"]) {
                 Msg(1, '<span>正在处理，请稍等...</span><span class="flower-loader" style="opacity: 1;"></span>');
                 $.post("Apps?module=Gbaopen&action=NewCus", data, function(result) {

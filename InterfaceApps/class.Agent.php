@@ -260,6 +260,7 @@ class Agent extends InterfaceVIEWS {
                     $agent_Data['ContactTel'] = $post['tel'];
                     $agent_Data['ContactEmail'] = $post['email'];
                     $agent_Data['GBaoPenAgentPriceID'] = 6;
+                    $agent_Data['ExperienceCount'] = $level == 1 ? 3 : 0;
                     $ser_id = $agent->InsertArray($agent_Data, true);
                     if ($ser_id) {
                         $power = 0;
@@ -465,6 +466,13 @@ class Agent extends InterfaceVIEWS {
             return $result;
         }
         return $result;
+    }
+    //获取余额
+    public function getbalance(){
+        $Agent_id = $_SESSION ['AgentID'];
+        $balancemodule=new BalanceModule();
+        $balance=$balancemodule->GetBalance($Agent_id);
+        return json_encode($balance);
     }
 
 }

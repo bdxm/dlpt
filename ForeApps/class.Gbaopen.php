@@ -32,6 +32,8 @@ class Gbaopen extends ForeVIEWS {
         $this->MyAction = 'Create';
         $agent_id = $_SESSION ['AgentID'];
         $power = $_SESSION ['Power'];
+        $account=new AccountModule();
+        $data["ExperienceCount"]=$account->GetExperienceCount($agent_id);
         if ($this->Assess($power, $this->create)){
             $fuwuqi=new FuwuqiModule();
             $fuwuqiinfo = $fuwuqi->GetListsByWhere(array('ID','FuwuqiName','CName'),' order by ID asc');
@@ -152,5 +154,23 @@ class Gbaopen extends ForeVIEWS {
             }
         }
         return $re;
+    }
+    /**
+     *代理消费日志展示
+     */
+    public function LogCost(){
+        $this->MyAction = 'LogCost';
+        $get=$this->_GET;
+        if(isset($get["month"])){
+            $date_start=$get["month"];
+        }else{
+            $date_start=date('Y-m', strtotime(date("Y-m")));
+        }
+//        $date_end=date('Y-m', strtotime("+1 month",$date_start));
+        $DB=new DB();
+        $Data=array();
+        $Data["log"]=$DB->Select("select a.OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.UserName from tb_logcost a inner join tb_customers b on a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
+        $Data["month"]=$date_start;
+        $this->Data = $Data;
     }
 }

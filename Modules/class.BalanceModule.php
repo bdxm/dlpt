@@ -73,4 +73,8 @@ class BalanceModule {
         }
         return $DB->GetOne ( 'select * from ' . $this->TableName . ' where '. $Where);
     }
+    public function GetBalance($AgentID){
+        $DB = new DB ();
+        return $DB->GetOne ( 'select Balance from ' . $this->TableName . ' where ' . $this->AgentID . ' = ' . $AgentID );
+    }
 }

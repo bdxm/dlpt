@@ -25,6 +25,11 @@
         <div class="mini-menu fl"><i class="fa fa-back"></i>
         </div>
         <div class="top-box">
+            <?php if($_SESSION['Level'] == 2){?>
+            <div class="balance" style="display: inline;color: #fff;padding: 15px;">
+                <i class="fa fa-dollar"></i>余额 : <span class="money">0</span>
+            </div>
+            <?php }?>
             <div class="toppublic login">
                 <span><?php echo $Data['user']['contactemail'];?></span> <i class="fa fa-account"></i>
             </div>

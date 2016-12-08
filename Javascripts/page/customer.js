@@ -657,6 +657,14 @@ jQuery(document).ready(function() {
                     default:
                         break;
                 }
+                var capa_price=0;
+                if(result.data.capacity==(300*1024*1024)){
+                    capa_price=500;
+                }else if(result.data.capacity==(500*1024*1024)){
+                    capa_price=800;
+                }else if(result.data.capacity==(1000*1024*1024)){
+                    capa_price=1500;
+                }
                 html += radioCho ? '<p><span class="content-l">续费选择</span><span class="Input">' + radioCho + '</span></p><p>\
                         <span class="content-l">续费时间</span>\
                         <span>\
@@ -707,7 +715,7 @@ jQuery(document).ready(function() {
                             var _this = this;\n\
                             var newprice,newyear;\n\
                             ' + (data.pc.exist ? 'if(_this.radioCho == 1){\n\
-                                newprice = _this.pcPrice*_this.year;\n\
+                                newprice = (_this.pcPrice+'+capa_price+')*_this.year;\n\
                                 newyear = new Date(_this.pcDate);\n\
                                 newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
                                 newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
@@ -715,7 +723,7 @@ jQuery(document).ready(function() {
                                 $(".userdata-content input[name=\'mobile_time\']").val(_this.mobileDate);\n\
                                 $(".userdata-content input[name=\'money\']").val(newprice);\n\
                             }\n' : '') + (data.mobile.exist ? 'if(_this.radioCho == 2){\n\
-                                newprice = _this.mobilePrice*_this.year;\n\
+                                newprice = (_this.mobilePrice+'+capa_price+')*_this.year;\n\
                                 newyear = new Date(_this.mobileDate);\n\
                                 newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
                                 newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
@@ -731,7 +739,7 @@ jQuery(document).ready(function() {
                                 newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
                                 newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
                                 $(".userdata-content input[name=\'mobile_time\']").val(newyear);\n\
-                                newprice = (_this.mobilePrice+_this.pcPrice)*_this.year;\n\
+                                newprice = (_this.mobilePrice+_this.pcPrice+'+capa_price+')*_this.year;\n\
                                 $(".userdata-content input[name=\'money\']").val(newprice);\n\
                             }\n' : '') + (data.state == 2 ? 'if(_this.radioCho == 4){\n\
                                 newyear = new Date(_this.pcDate);\n\
@@ -742,7 +750,7 @@ jQuery(document).ready(function() {
                                 newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
                                 newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
                                 $(".userdata-content input[name=\'mobile_time\']").val(newyear);\n\
-                                newprice = _this.pkPrice*_this.year;\n\
+                                newprice =( _this.pkPrice+'+capa_price+')*_this.year;\n\
                                 $(".userdata-content input[name=\'money\']").val(newprice);\n\
                             }\n' : '') + '\
                         }\n\
@@ -770,25 +778,28 @@ jQuery(document).ready(function() {
                 var data = result.data, html, p = '';
                 html = '<div class="userdata-content"><p style="font-size:20px;">确定对' + data.name[1] + '进行修改信息操作？</p>';
                 $.each(data, function(i, v) {
-                    if (i == 'remark')
-                        html += '<p>\
-                                <span class="content-l" style="vertical-align:top">' + v[0] + '</span>\
-                                <textarea name="remark" class="Input" style=" height:100%;"></textarea>\
-                                <span class="as"></span>\
-                            </p>';
-                    else if (i == 'email')
-                        html += '<p>\
-                                <span class="content-l">' + v[0] + '</span>\
-                                <span><input type="text" name="' + i + '" class="Input" value="' + v[1] + '" disabled="true"></span>\
-                                <span class="as"></span>\
-                            </p>';
-                    else
-                        html += '<p>\
-                                <span class="content-l">' + v[0] + '</span>\
-                                <span><input type="text" name="' + i + '" class="Input" value="' + v[1] + '"></span>\
-                                <span class="as"></span>\
-                            </p>';
-                })
+                    if(i != 'experience'){
+                        if (i == 'remark')
+                            html += '<p>\
+                                    <span class="content-l" style="vertical-align:top">' + v[0] + '</span>\
+                                    <textarea name="remark" class="Input" style=" height:100%;"></textarea>\
+                                    <span class="as"></span>\
+                                </p>';
+                        else if (i == 'email'){
+                            html += '<p>\
+                                    <span class="content-l">' + v[0] + '</span>\
+                                    <span><input type="text" name="' + i + '" class="Input" value="' + v[1] + '" disabled="true"></span>\
+                                    <span class="as"></span>\
+                                </p>';
+                        }else{
+                            html += '<p>\
+                                    <span class="content-l">' + v[0] + '</span>\
+                                    <span><input type="text" name="' + i + '" class="Input" value="' + v[1] + '"></span>\
+                                    <span class="as"></span>\
+                                </p>';
+                        }
+                    }
+                });
                 html += '<input type="hidden" class="Input" value="' + cus + '"></div>\
                     <script type="text/javascript">\
                     </script>';

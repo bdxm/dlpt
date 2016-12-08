@@ -65,6 +65,14 @@
                 <span>数据统计</span>
             </a>
         </li>
+        <?PHP if ($_SESSION['Level'] == 2) { ?>
+            <li <?PHP if ($MyModule == 'Gbaopen' && $MyAction == 'LogCost') { ?>class="on"<?php } ?>>
+                <a href="<?php echo UrlRewriteSimple('Gbaopen', 'LogCost', true); ?>">
+                    <i class="fa fa-calendar"></i>
+                    <span>消费日志</span>
+                </a>
+            </li>
+        <?PHP } ?>
     </ul>
     <div class="second-menu transition1">
         <p><i class="fa fa-close" style="cursor: pointer;"></i></p>

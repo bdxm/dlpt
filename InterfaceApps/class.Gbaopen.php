@@ -351,7 +351,7 @@ class Gbaopen extends InterfaceVIEWS {
                 case 'renew':
                     if ($this->Assess($power, $this->renew)) {
                         $cuspromodel = new CustProModule;
-                        $lists = array('CPhone', 'PK_model', 'PC_model', 'Mobile_model', 'PC_EndTime', 'Mobile_EndTime');
+                        $lists = array('CPhone', 'PK_model', 'PC_model', 'Mobile_model', 'PC_EndTime', 'Mobile_EndTime','Capacity');
                         $cuspro = $cuspromodel->GetOneByWhere($lists, 'where CustomersID=' . $cus_id);
                         if ($cuspro) {
                             $model = new ModelModule;
@@ -359,6 +359,7 @@ class Gbaopen extends InterfaceVIEWS {
                             $data['state'] = 0;
                             $data['type'] = $cuspro['CPhone'];
                             $data['name'] = $cus['CompanyName'];
+                            $data['capacity'] = (int)$cuspro['Capacity'];
                             switch ($cuspro['CPhone']) {
                                 case 4:
                                     $pc_price = $mobile_price = array();
@@ -422,7 +423,7 @@ class Gbaopen extends InterfaceVIEWS {
                     break;
                 case 'modify':
                     if ($this->Assess($power, $this->modify)) {
-                        $data = array('companyname' => array('公司', $cus['CompanyName']), 'name' => array('联系人姓名', $cus['CustomersName']), 'tel' => array('联系人电话', $cus['Tel']), 'fax' => array('传真', $cus['Fax']), 'email' => array('Email', $cus['Email']), 'address' => array('地址', $cus['Address']), 'remark' => array('备注', $cus['Remark']));
+                        $data = array('companyname' => array('公司', $cus['CompanyName']), 'name' => array('联系人姓名', $cus['CustomersName']), 'tel' => array('联系人电话', $cus['Tel']), 'fax' => array('传真', $cus['Fax']), 'email' => array('Email', $cus['Email']), 'address' => array('地址', $cus['Address']), 'remark' => array('备注', $cus['Remark']), 'experience' => array('体验用户', $cus['Experience']));
                         $result['data'] = $data;
                     } else {
                         $result['err'] = 1002;
@@ -439,7 +440,7 @@ class Gbaopen extends InterfaceVIEWS {
                             $agent = $accountModel->GetListByBossAgentID($agent['BossAgentID'], array('ContactName', 'AgentID'));
                         } elseif ($level == 2) {
                             $agent = $accountModel->GetListByBossAgentID($agentinfo['BossAgentID'], array('ContactName', 'AgentID'));
-                            if($agent_id != $cus['AgentID']){
+                            if ($agent_id != $cus['AgentID']) {
                                 $self = $accountModel->GetOneInfoByKeyID($agent_id);
                                 $data['obj'][$agent_id] = $self['ContactName'];
                             }
@@ -548,29 +549,31 @@ class Gbaopen extends InterfaceVIEWS {
             $model = new ModelModule;
             $package = new ModelPackageModule;
             $balance = new BalanceModule;
-            if ($level == 3) {
-                $agentinfo = $agent->GetOneInfoByKeyID($agent_id);
+            $cuspro = $cuspromodel->GetOneByWhere('where CustomersID=' . $cus_id);
+            $agentinfo = $agent->GetOneInfoByKeyID($cuspro["AgentID"]);
+            if ($agentinfo["Level"] == 3) {
+//                $agentinfo = $agent->GetOneInfoByKeyID($agent_id);
                 $costID = $agentinfo['BossAgentID'];
                 $agent_bal = $balance->GetOneInfoByAgentID($agent_id);
                 $boss_agent_bal = $balance->GetOneInfoByAgentID($costID);
                 unset($agent_bal['ID']);
                 unset($boss_agent_bal['ID']);
-                $cuspro = $cuspromodel->GetOneByWhere('where AgentID=' . $agent_id . ' and CustomersID=' . $cus_id);
-            } elseif ($level == 2 or $level == 1) {
-                $cuspro = $cuspromodel->GetOneByWhere('where CustomersID=' . $cus_id);
-                if ($level == 2) {
-                    if ($cuspro['AgentID'] != $agent_id) {
-                        $agentinfo = $agent->GetOneInfoByKeyID($cuspro['AgentID']);
-                        if ($agentinfo['BossAgentID'] != $agent_id) {
-                            $result['err'] = 1001;
-                            $result['msg'] = '此用户资料不存在';
-                            $this->LogsFunction->LogsCusRecord(115, 2, $cus_id, $result['msg']);
-                            return $result;
-                        }
-                    }
-                }
-                $costID = $agent_id;
-                $boss_agent_bal = $balance->GetOneInfoByAgentID($agent_id);
+//                $cuspro = $cuspromodel->GetOneByWhere('where AgentID=' . $agent_id . ' and CustomersID=' . $cus_id);
+            } elseif ($agentinfo["Level"] == 2 or $agentinfo["Level"] == 1) {
+//                $cuspro = $cuspromodel->GetOneByWhere('where CustomersID=' . $cus_id);
+//                if ($level == 2) {
+//                    if ($cuspro['AgentID'] != $agent_id) {
+//                        $agentinfo = $agent->GetOneInfoByKeyID($cuspro['AgentID']);
+//                        if ($agentinfo['BossAgentID'] != $agent_id) {
+//                            $result['err'] = 1001;
+//                            $result['msg'] = '此用户资料不存在';
+//                            $this->LogsFunction->LogsCusRecord(115, 2, $cus_id, $result['msg']);
+//                            return $result;
+//                        }
+//                    }
+//                }
+                $costID = $agentinfo["AgentID"];
+                $boss_agent_bal = $balance->GetOneInfoByAgentID($agentinfo["AgentID"]);
                 unset($boss_agent_bal['ID']);
             } else {
                 $result['err'] = 1001;
@@ -659,6 +662,15 @@ class Gbaopen extends InterfaceVIEWS {
                         return $result;
                         break;
                 }
+                
+                if ($cuspro["Capacity"] == (300 * 1024 * 1024)) {
+                    $price+=500;
+                } elseif($cuspro["Capacity"] == (500 * 1024 * 1024)){
+                    $price+=800;
+                }elseif($cuspro["Capacity"] == (1000 * 1024 * 1024)){
+                    $price+=1500;
+                }
+                
                 if ($agentinfo['Level'] == 3) {
                     if ($boss_agent_bal['Balance'] < $price) {
                         $result['err'] = 1003;
@@ -685,25 +697,27 @@ class Gbaopen extends InterfaceVIEWS {
                     }
                     $update_self['CostMon'] = $update_self['CostMon'] + $price;
                     $update_self['CostAll'] = $update_self['CostAll'] + $price;
+                    $balance_money=$update_boss['Balance'];
                 } else {
-                    if ($agent_bal['Balance'] < $price) {
+                    if ($boss_agent_bal['Balance'] < $price) {
                         $result['err'] = 1003;
                         $result['msg'] = '您的余额不足，请及时充值';
                         $this->LogsFunction->LogsCusRecord(115, 4, $cus_id, $result['msg']);
                         return $result;
                     }
-                    $updatetime = explode('-', $agent_bal['UpdateTime']);
-                    $update_self['CostMon'] = $agent_bal['CostMon'];
+                    $updatetime = explode('-', $boss_agent_bal['UpdateTime']);
+                    $update_self['CostMon'] = $boss_agent_bal['CostMon'];
                     if (date('m', time()) != $updatetime[1]) {
                         $update_self['UpdateTime'] = date('Y-m-d', time());
                         $update_self['CostMon'] = 0;
                     }
-                    $update_self['Balance'] = $agent_bal['Balance'] - $price;
+                    $update_self['Balance'] = $boss_agent_bal['Balance'] - $price;
                     $update_self['CostMon'] = $update_self['CostMon'] + $price;
                     $update_self['CostAll'] = $update_self['CostAll'] + $price;
+                    $balance_money=$update_self['Balance'];
                 }
                 //PC续费处理
-                $cuspro_time = array('UpdateTime'=>  date('Y-m-d H:i:s', time()));
+                $cuspro_time = array('UpdateTime' => date('Y-m-d H:i:s', time()));
                 if ($type == 1 or $type == 3 or $type == 4) {
                     $nowyear = strtotime($cuspro['PC_EndTime']);
                     $newyear = (date('Y', $nowyear) + $addyear) . '-' . date('m-d H:i:s', $nowyear);
@@ -722,7 +736,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $result['data'] = $IsOk;
                     return $result;
                 }
-                if (!$balance->UpdateArrayByAgentID($update_self, $agent_id)) {
+                if (!$balance->UpdateArrayByAgentID($update_self, $costID)) {
                     $this->ToGbaoPenEditInfo($cuspro);
                     $result['err'] = 1004;
                     $result['msg'] = '续费失败，请重试，若依然无效，酌情联系管理员1';
@@ -732,7 +746,7 @@ class Gbaopen extends InterfaceVIEWS {
                 if ($agentinfo['Level'] == 3) {
                     if (!$balance->UpdateArrayByAgentID($update_boss, $agentinfo['BossAgentID'])) {
                         $this->ToGbaoPenEditInfo($cuspro);
-                        $balance->UpdateArrayByAgentID($agent_bal, $agent_id);
+                        $balance->UpdateArrayByAgentID($agent_bal, $costID);
                         $result['err'] = 1004;
                         $result['msg'] = '续费失败，请重试，若依然无效，酌情联系管理员2';
                         $this->LogsFunction->LogsCusRecord(115, 0, $cus_id, $result['msg']);
@@ -741,15 +755,23 @@ class Gbaopen extends InterfaceVIEWS {
                 }
                 if (!$cuspromodel->UpdateArray($cuspro_time, $cus_id)) {
                     $this->ToGbaoPenEditInfo($cuspro);
-                    $balance->UpdateArrayByAgentID($agent_bal, $agent_id);
-                    $agentinfo['Level'] == 3 ? $balance->UpdateArrayByAgentID($boss_agent_bal, $agent_id) : '';
+                    $balance->UpdateArrayByAgentID($agent_bal, $costID);
+                    $agentinfo['Level'] == 3 ? $balance->UpdateArrayByAgentID($boss_agent_bal, $costID) : '';
                     $result['err'] = 1004;
                     $result['msg'] = '续费失败，请重试，若依然无效，酌情联系管理员3';
                     $this->LogsFunction->LogsCusRecord(115, 0, $cus_id, $result['msg']);
                     return $result;
                 }
+                $CustProModule=new CustProModule();
+                $orderID= time().rand(1000,9999);
+                $order_data = array("OrderID"=>$orderID,"OrderAmount" => $price, "CustomersID" => $cus_id, "CreateTime" => date('Y-m-d H:i:s', time()), "StillTime" =>1, "CPhone" => $cuspro["CPhone"], "PK_model" => $cuspro["PK_model"], "PC_model" => $cuspro["PC_model"], "Mobile_model" => $cuspro["Mobile_model"],"Capacity"=>$cuspro["Capacity"]);
+                $ordermodule = new OrderModule();
+                $ordermodule->InsertArray($order_data);
+                $logcost_data = array("ip" => $_SERVER["REMOTE_ADDR"], "cost" => (0-$price), "type" => 2, "description" => "网站续费", "adddate" => date('Y-m-d H:i:s', time()), "CustomersID" => $cus_id,"AgentID"=>$agent_id,"CostID"=>$costID,"Balance"=>$balance_money,"OrderID"=>$orderID);
+                $logcost = new LogcostModule();
+                $logcost->InsertArray($logcost_data);
                 $this->LogsFunction->LogsCusRecord(115, 5, $cus_id, '续费同步成功');
-                $cus = $cusmodel->GetOneByWhere(array('CompanyName'), 'where AgentID=' . $agent_id . ' and CustomersID=' . $cus_id);
+                $cus = $cusmodel->GetOneByWhere(array('CompanyName'), 'where CustomersID=' . $cus_id);
                 $result['data']['name'] = $cus['CompanyName'];
             } else {
                 if (!$cuspro) {
@@ -1056,10 +1078,10 @@ class Gbaopen extends InterfaceVIEWS {
                 $Data['PK_model'] = 0;
                 $Data['PC_model'] = $post['pcmodel'];
                 if ($this->GetModleIDByName($Data['PC_model']) > 0) {
-                    if ($post['pcdomain']){
+                    if ($post['pcdomain']) {
                         $Data['PC_domain'] = 'http://' . str_replace('http://', '', $post['pcdomain']);
                         $Data['PC_domain'] = str_replace(' ', '', $Data['PC_domain']);
-                    }else {
+                    } else {
                         $result['err'] = 1004;
                         $result['msg'] = '请填写 PC域名';
                         return $result;
@@ -1071,10 +1093,10 @@ class Gbaopen extends InterfaceVIEWS {
                 }
                 $Data['Mobile_model'] = $post['mobilemodel'];
                 if ($this->GetModleIDByName($Data['Mobile_model']) > 0) {
-                    if ($post['mobiledomain']){
+                    if ($post['mobiledomain']) {
                         $Data['Mobile_domain'] = 'http://' . str_replace('http://', '', $post['mobiledomain']);
                         $Data['Mobile_domain'] = str_replace(' ', '', $Data['Mobile_domain']);
-                    }else {
+                    } else {
                         $result['err'] = 1004;
                         $result['msg'] = '请填写 手机域名';
                         return $result;
@@ -1104,18 +1126,18 @@ class Gbaopen extends InterfaceVIEWS {
                       echo jsonp($result);
                       exit();
                       } */
-                    if ($post['pcdomain']){
+                    if ($post['pcdomain']) {
                         $Data['PC_domain'] = 'http://' . str_replace('http://', '', $post['pcdomain']);
                         $Data['PC_domain'] = str_replace(' ', '', $Data['PC_domain']);
-                    }else {
+                    } else {
                         $result['err'] = 1004;
                         $result['msg'] = '请填写 PC域名';
                         return $result;
                     }
-                    if ($post['mobiledomain']){
+                    if ($post['mobiledomain']) {
                         $Data['Mobile_domain'] = 'http://' . str_replace('http://', '', $post['mobiledomain']);
                         $Data['Mobile_domain'] = str_replace(' ', '', $Data['Mobile_domain']);
-                    }else {
+                    } else {
                         $result['err'] = 1004;
                         $result['msg'] = '请填写 手机域名';
                         return $result;
@@ -1126,6 +1148,147 @@ class Gbaopen extends InterfaceVIEWS {
                     return $result;
                 }
             }
+//            $ordermodule = new OrderModule();
+//            $order_data = $ordermodule->GetOneInfoByKeyID($cuspro["OrderID"]);
+//            $ordermodule->UpdateArray(array("OrderEndDate"=> date("Y-m-d H:i:s",time())),array("OrderID"=>$order_data["OrderID"]));
+//            $price = 0;
+//            $all_month = ceil((strtotime($order_data["OrderEndDate"]) - strtotime($order_data["OrderStartDate"])) / 60 / 60 / 24 / 30);
+//            if (strtotime($order_data["OrderEndDate"]) > time()) {
+//                $need_month = ceil((strtotime($order_data["OrderEndDate"]) - time()) / 60 / 60 / 24 / 30);
+//            } else {
+//                $need_month = 0;
+//            }
+//            $model = new ModelModule();
+//            if ($cuspro["CPhone"] == $Data["CPhone"]) {
+//                if ($Data["CPhone"] == 1) {
+//                    if ($cuspro["PC_model"] != $Data["PC_model"]) {
+//                        //重新计费
+//                        $price = 0;
+//                        $modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["PC_model"]));
+//                        $have_p_month = ceil((strtotime($cuspro["PC_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                        $price = ($modelinfo["Youhui"] / 12 * $have_p_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                    }
+//                }
+//                if ($Data["CPhone"] == 2) {
+//                    if ($cuspro["Mobile_model"] != $Data["Mobile_model"]) {
+//                        //重新计费
+//                        $price = 0;
+//                        $modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["Mobile_model"]));
+//                        $have_m_month = ceil((strtotime($cuspro["Mobile_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                        $price = ($modelinfo["Youhui"] / 12 * $have_m_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                    }
+//                }
+//                if ($Data["CPhone"] == 3) {
+//                    if ($cuspro["Mobile_model"] != $Data["Mobile_model"] || $cuspro["PC_model"] != $Data["PC_model"]) {
+//                        //重新计费
+//                        $price = 0;
+//                        $Mobile_modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["Mobile_model"]));
+//                        $PC_modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["PC_model"]));
+//                        $have_p_month = ceil((strtotime($cuspro["PC_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                        $have_m_month = ceil((strtotime($cuspro["Mobile_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                        $price = ($Mobile_modelinfo["Youhui"] / 12 * $have_m_month) + ($PC_modelinfo["Youhui"] / 12 * $have_p_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                    }
+//                }
+//                if ($Data["CPhone"] == 4) {
+//                    if ($cuspro["PK_model"] != $Data["PK_model"]) {
+//                        //重新计费
+//                        $price = 0;
+//                        $model = new ModelPackageModule();
+//                        $modelinfo = $model->GetOneByWhere(array(), array("PackagesNum" => $Data["PK_model"]));
+//                        $have_p_month = ceil((strtotime($cuspro["PC_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                        $price = ($modelinfo["Youhui"] / 12 * $have_p_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                    }
+//                }
+//            } else {
+//                //重新计费
+//                if ($Data["CPhone"] == 1) {
+//                    //重新计费
+//                    $price = 0;
+//                    $modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["PC_model"]));
+//                    $have_p_month = ceil((strtotime($cuspro["PC_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                    $price = ($modelinfo["Youhui"] / 12 * $have_p_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                }
+//                if ($Data["CPhone"] == 2) {
+//                    //重新计费
+//                    $price = 0;
+//                    $modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["Mobile_model"]));
+//                    $have_m_month = ceil((strtotime($cuspro["Mobile_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                    $price = ($modelinfo["Youhui"] / 12 * $have_m_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                }
+//                if ($Data["CPhone"] == 3) {
+//                    //重新计费
+//                    $price = 0;
+//                    $Mobile_modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["Mobile_model"]));
+//                    $PC_modelinfo = $model->GetOneByWhere(array(), array("NO" => $Data["PC_model"]));
+//                    $have_p_month = ceil((strtotime($cuspro["PC_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                    $have_m_month = ceil((strtotime($cuspro["Mobile_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                    $price = ($Mobile_modelinfo["Youhui"] / 12 * $have_m_month) + ($PC_modelinfo["Youhui"] / 12 * $have_p_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                }
+//                if ($Data["CPhone"] == 4) {
+//                    //重新计费
+//                    $price = 0;
+//                    $model = new ModelPackageModule();
+//                    $modelinfo = $model->GetOneByWhere(array(), array("PackagesNum" => $Data["PK_model"]));
+//                    $have_p_month = ceil((strtotime($cuspro["PC_EndTime"]) - time()) / 60 / 60 / 24 / 30);
+//                    $price = ($modelinfo["Youhui"] / 12 * $have_p_month) - ($need_month / $all_month * $order_data["OrderAmount"]);
+//                }
+//            }
+//            //价格计算开始，根据等级得到扣款的代理商账户
+//            
+//            $balance=new BalanceModule();
+//            $agent=new AccountModule();
+//            $costID=$cuspro["AgentID"];
+//            $agentinfo = $agent->GetOneInfoByKeyID($cuspro["AgentID"]);
+//            if ($cuspro["level"] == 3) {
+//                $costAccount = $balance->GetOneInfoByAgentID($agentinfo['BossAgentID']);
+//                $agentAccount = $balance->GetOneInfoByAgentID($cuspro["AgentID"]);
+//                unset($agentAccount['ID']);
+//                unset($costAccount['ID']);
+//                if ($costAccount['Balance'] < $price) {
+//                    $result['err'] = 1003;
+//                    $result['msg'] = '您的余额不足，请及时充值';
+//                    $this->LogsFunction->LogsCusRecord(115, 4, $cus_id, $result['msg']);
+//                    return $result;
+//                }
+//                //代理商消费计算
+//                $updatetime = explode('-', $costAccount['UpdateTime']);
+//                $update_boss['CostMon'] = $costAccount['CostMon'];
+//                if (date('m', time()) != $updatetime[1]) {
+//                    $update_boss['UpdateTime'] = date('Y-m-d', time());
+//                    $update_boss['CostMon'] = 0;
+//                }
+//                $update_boss['Balance'] = $costAccount['Balance'] - $price;
+//                $update_boss['CostMon'] = $update_boss['CostMon'] + $price;
+//                $update_boss['CostAll'] = $update_boss['CostAll'] + $price;
+//                //客服消费计算
+//                $updatetime = explode('-', $agentAccount['UpdateTime']);
+//                $update_self['CostMon'] = $agentAccount['CostMon'];
+//                if (date('m', time()) != $updatetime[1]) {
+//                    $update_self['UpdateTime'] = date('Y-m-d', time());
+//                    $update_self['CostMon'] = 0;
+//                }
+//                $update_self['CostMon'] = $update_self['CostMon'] + $price;
+//                $update_self['CostAll'] = $update_self['CostAll'] + $price;
+//            } else {
+//                $costAccount = $balance->GetOneInfoByAgentID($agentinfo['AgentID']);
+//                unset($costAccount['ID']);
+//                if ($costAccount['Balance'] < $price) {
+//                    $result['err'] = 1003;
+//                    $result['msg'] = '您的余额不足，请及时充值';
+//                    $this->LogsFunction->LogsCusRecord(115, 4, $cus_id, $result['msg']);
+//                    return $result;
+//                }
+//                //扣款消费
+//                $updatetime = explode('-', $costAccount['UpdateTime']);
+//                $update_self['CostMon'] = $costAccount['CostMon'];
+//                if (date('m', time()) != $updatetime[1]) {
+//                    $update_self['UpdateTime'] = date('Y-m-d', time());
+//                    $update_self['CostMon'] = 0;
+//                }
+//                $update_self['Balance'] = $costAccount['Balance'] - $price;
+//                $update_self['CostMon'] = $update_self['CostMon'] + $price;
+//                $update_self['CostAll'] = $update_self['CostAll'] + $price;
+//            }
             $Data['UpdateTime'] = date('Y-m-d H:i:s', time());
             $IsOk = $this->ToGbaoPenEditInfo(array_replace($cuspro, $Data));
             if ($IsOk['err'] != 1000) {
@@ -1135,10 +1298,35 @@ class Gbaopen extends InterfaceVIEWS {
                 $result['data'] = $IsOk;
                 return $result;
             }
+//            if (!$balance->UpdateArrayByAgentID($update_self, $costID)) {
+//                $this->ToGbaoPenEditInfo($cuspro);
+//                $result['err'] = 1004;
+//                $result['msg'] = '网站处理失败，请重试，若依然无效，酌情联系管理员1';
+//                $this->LogsFunction->LogsCusRecord(115, 0, $cus_id, $result['msg']);
+//                return $result;
+//            }
+//            if ($agentinfo['Level'] == 3) {
+//                if (!$balance->UpdateArrayByAgentID($update_boss, $agentinfo['BossAgentID'])) {
+//                    $this->ToGbaoPenEditInfo($cuspro);
+//                    $balance->UpdateArrayByAgentID($agent_bal, $costID);
+//                    $result['err'] = 1004;
+//                    $result['msg'] = '网站处理失败，请重试，若依然无效，酌情联系管理员2';
+//                    $this->LogsFunction->LogsCusRecord(115, 0, $cus_id, $result['msg']);
+//                    return $result;
+//                }
+//            }
             $cuspromodel->UpdateArray($Data, $cus_id);
             $result['data']['name'] = '您选择的客户';
             $result['msg'] = '修改成功';
             $this->LogsFunction->LogsCusRecord(114, 5, $cus_id, $result['msg']);
+//            $order_data = array("OrderAmount" => $price, "CustomersID" => $cuspro['CustomersID'], "OrderStartDate" => date('Y-m-d H:i:s', time()), "OrderEndDate" => $cuspro["PC_EndTime"], "CPhone" => $Data["CPhone"], "PK_model" => $Data["PK_model"], "PC_model" => $Data["PC_model"], "Mobile_model" => $Data["Mobile_model"]);
+//            $ordermodule = new OrderModule();
+//            $orderID = $ordermodule->InsertArray($order_data);
+//            $CustProModule=new CustProModule;
+//            $CustProModule->UpdateArrayByKeyID(array("OrderID" => $orderID), $cuspro["CustomersProjectID"]);
+//            $logcost_data = array("ip" => $_SERVER["REMOTE_ADDR"], "cost" => $price, "type" => 2, "description" => "修改订单", "adddate" => date('Y-m-d H:i:s', time()), "CustomersID" => $Data['CustomersID']);
+//            $logcost = new LogcostModule();
+//            $logcost->InsertArray($logcost_data);
         } else {
             $result['err'] = 1001;
             $result['msg'] = '非法请求';
@@ -1159,7 +1347,6 @@ class Gbaopen extends InterfaceVIEWS {
         $balance = new BalanceModule;
         $CustProModule = new CustProModule;
         $agentinfo = $agent->GetOneInfoByKeyID($agent_id);
-
         if ($this->Assess($power, $this->create)) {
             $CustomersModule = new CustomersModule ();
             $crtdata ['CompanyName'] = trim($post ['companyname']);
@@ -1169,6 +1356,7 @@ class Gbaopen extends InterfaceVIEWS {
             $crtdata ['Address'] = trim($post ['address']);
             $crtdata ['Remark'] = addslashes($post ['remark']);
             $crtdata ['UpdateTime'] = date('Y-m-d H:i:s', time());
+            $crtdata ['Experience'] = trim(isset($post['experience']) && $level == 2 && $agentinfo["ExperienceCount"] > 0 ? $post['experience'] : 0);
             if (!($crtdata ['CompanyName'] && $crtdata ['CustomersName'] && $crtdata ['Tel'])) {
                 $result['err'] = 1004;
                 $result['msg'] = '公司名称，联系人，电话都不能为空';
@@ -1183,12 +1371,16 @@ class Gbaopen extends InterfaceVIEWS {
                     $result['err'] = $return['err'];
                     $result['msg'] = $return['msg'];
                     return $result;
-                } else
+                } else {
                     $result['msg'] = $return['msg'];
+                    if ($crtdata ['Experience'] == "1") {
+                        $agent->UpdateArray(array("ExperienceCount" => ($agentinfo["ExperienceCount"] - 1)), array('AgentID' => $agent_id));
+                    }
+                }
                 $this->LogsFunction->LogsCusRecord(111, 1, 0, $result['msg']);
-            }elseif ($post['type'] == 'cuspro') {
+            } elseif ($post['type'] == 'cuspro') {
                 //默认值设置
-                $Data['Capacity'] = 300*1024*1024;
+                $Data['Capacity'] = $post['capacity'] * 1024 * 1024;
                 $Data['Link_Cus'] = '0';
                 $Data['status'] = 1;
 
@@ -1245,20 +1437,20 @@ class Gbaopen extends InterfaceVIEWS {
                     $Data['PC_model'] = $post['pcmodel'];
                     $modelMsg = $this->GetModleIDByName($Data['PC_model']);
                     if (is_array($modelMsg)) {
-                        if ($post['pcdomain']){
+                        if ($post['pcdomain']) {
                             $Data['PC_domain'] = 'http://' . str_replace('http://', '', $post['pcdomain']);
                             $Data['PC_domain'] = str_replace(' ', '', $Data['PC_domain']);
-                        }else {
+                        } else {
                             $result['err'] = 1004;
                             $result['msg'] = '请填写 PC域名';
                             return $result;
                         }
                         $Data['Mobile_model'] = 0;
-                        if ($post['outmobile_add']){
+                        if ($post['outmobile_add']) {
                             $Data['Mobile_domain'] = 'http://' . str_replace('http://', '', $post['outmobiledomain']);
                             $Data['Mobile_domain'] = str_replace(' ', '', $Data['Mobile_domain']);
                         }
-                    }else {
+                    } else {
                         $result['err'] = 1002;
                         $result['msg'] = '当前PC模板不存在';
                         return $result;
@@ -1276,14 +1468,14 @@ class Gbaopen extends InterfaceVIEWS {
                     $modelMsg = $this->GetModleIDByName($Data['Mobile_model']);
                     if (is_array($modelMsg)) {
                         $Data['PC_model'] = 0;
-                        if ($post['outpc_add']){
+                        if ($post['outpc_add']) {
                             $Data['PC_domain'] = 'http://' . str_replace('http://', '', $post['outpcdomain']);
                             $Data['PC_domain'] = str_replace(' ', '', $Data['PC_domain']);
                         }
-                        if ($post['mobiledomain']){
+                        if ($post['mobiledomain']) {
                             $Data['Mobile_domain'] = 'http://' . str_replace('http://', '', $post['mobiledomain']);
                             $Data['Mobile_domain'] = str_replace(' ', '', $Data['Mobile_domain']);
-                        }else {
+                        } else {
                             $result['err'] = 1004;
                             $result['msg'] = '请填写 手机域名';
                             return $result;
@@ -1299,10 +1491,10 @@ class Gbaopen extends InterfaceVIEWS {
                     $Data['PC_model'] = $post['pcmodel'];
                     $modelMsg = $this->GetModleIDByName($Data['PC_model']);
                     if (is_array($modelMsg)) {
-                        if ($post['pcdomain']){
+                        if ($post['pcdomain']) {
                             $Data['PC_domain'] = 'http://' . str_replace('http://', '', $post['pcdomain']);
                             $Data['PC_domain'] = str_replace(' ', '', $Data['PC_domain']);
-                        }else {
+                        } else {
                             $result['err'] = 1004;
                             $result['msg'] = '请填写 PC域名';
                             return $result;
@@ -1318,10 +1510,10 @@ class Gbaopen extends InterfaceVIEWS {
 
                     $modelMsg = $this->GetModleIDByName($Data['Mobile_model']);
                     if (is_array($modelMsg)) {
-                        if ($post['mobiledomain']){
+                        if ($post['mobiledomain']) {
                             $Data['Mobile_domain'] = 'http://' . str_replace('http://', '', $post['mobiledomain']);
                             $Data['Mobile_domain'] = str_replace(' ', '', $Data['Mobile_domain']);
-                        }else {
+                        } else {
                             $result['err'] = 1004;
                             $result['msg'] = '请填写 手机域名';
                             return $result;
@@ -1351,18 +1543,18 @@ class Gbaopen extends InterfaceVIEWS {
                           $result['msg'] = '当前选择的套餐中包含的手机模板不存在';
                           return $result;
                           } */
-                        if ($post['pcdomain']){
+                        if ($post['pcdomain']) {
                             $Data['PC_domain'] = 'http://' . str_replace('http://', '', $post['pcdomain']);
                             $Data['PC_domain'] = str_replace(' ', '', $Data['PC_domain']);
-                        }else {
+                        } else {
                             $result['err'] = 1004;
                             $result['msg'] = '请填写 PC域名';
                             return $result;
                         }
-                        if ($post['mobiledomain']){
+                        if ($post['mobiledomain']) {
                             $Data['Mobile_domain'] = 'http://' . str_replace('http://', '', $post['mobiledomain']);
                             $Data['Mobile_domain'] = str_replace(' ', '', $Data['Mobile_domain']);
-                        }else {
+                        } else {
                             $result['err'] = 1004;
                             $result['msg'] = '请填写 手机域名';
                             return $result;
@@ -1375,20 +1567,31 @@ class Gbaopen extends InterfaceVIEWS {
                     //模板价格
                     $price = $modelMsg['Youhui'];
                 }
-
+                if ($Data["Capacity"] == (300 * 1024 * 1024)) {
+                    $price+=500;
+                } elseif($Data["Capacity"] == (500 * 1024 * 1024)){
+                    $price+=800;
+                }elseif($Data["Capacity"] == (1000 * 1024 * 1024)){
+                    $price+=1500;
+                }
+                
                 //时间处理
                 if ($post['stilltime'])
-                    $stilltime = intval($post['stilltime']);
+                    $stilltime = intval($post['stilltime'])>0?intval($post['stilltime']):1;
                 else
                     $stilltime = 1;
                 $price = $price * $stilltime;
-
+                if ($crtdata ['Experience'] == "1") {
+                    $price = 0;
+                    $stilltime = 0;
+                }
                 $nowtime = time();
 
                 //价格计算开始，根据等级得到扣款的代理商账户
                 if ($level == 3) {
                     $costAccount = $balance->GetOneInfoByAgentID($agentinfo['BossAgentID']);
                     $agentAccount = $balance->GetOneInfoByAgentID($agent_id);
+                    $CostID=$agentinfo['BossAgentID'];
                     unset($agentAccount['ID']);
                     unset($costAccount['ID']);
                     if ($costAccount['Balance'] < $price) {
@@ -1399,26 +1602,27 @@ class Gbaopen extends InterfaceVIEWS {
                     }
                     //扣款
                     $updatetime = explode('-', $costAccount['UpdateTime']);
-                    $update_cost['CostMon'] = $costAccount['CostMon'];
+                    $update_boss['CostMon'] = $costAccount['CostMon'];
                     if (date('m', $nowtime) != $updatetime[1]) {
-                        $update_cost['UpdateTime'] = date('Y-m-d', $nowtime);
-                        $update_cost['CostMon'] = 0;
+                        $update_boss['UpdateTime'] = date('Y-m-d', $nowtime);
+                        $update_boss['CostMon'] = 0;
                     }
-                    $update_cost['Balance'] = $costAccount['Balance'] - $price;
-                    $update_cost['CostMon'] = $update_cost['CostMon'] + $price;
-                    $update_cost['CostAll'] = $update_cost['CostAll'] + $price;
+                    $update_boss['Balance'] = $costAccount['Balance'] - $price;
+                    $update_boss['CostMon'] = $update_cost['CostMon'] + $price;
+                    $update_boss['CostAll'] = $update_cost['CostAll'] + $price;
                     //消费
                     $updatetime = explode('-', $agentAccount['UpdateTime']);
-                    $update_cost['CostMon'] = $agentAccount['CostMon'];
+                    $update_self['CostMon'] = $agentAccount['CostMon'];
                     if (date('m', $nowtime) != $updatetime[1]) {
-                        $update_cost['UpdateTime'] = date('Y-m-d', $nowtime);
-                        $update_cost['CostMon'] = 0;
+                        $update_self['UpdateTime'] = date('Y-m-d', $nowtime);
+                        $update_self['CostMon'] = 0;
                     }
-                    $update_cost['Balance'] = $agentAccount['Balance'] - $price;
-                    $update_cost['CostMon'] = $update_cost['CostMon'] + $price;
-                    $update_cost['CostAll'] = $update_cost['CostAll'] + $price;
+                    $update_self['CostMon'] = $update_cost['CostMon'] + $price;
+                    $update_self['CostAll'] = $update_cost['CostAll'] + $price;
+                    $balance_money=$update_boss['Balance'];
                 } else {
                     $costAccount = $balance->GetOneInfoByAgentID($agent_id);
+                    $CostID=$agent_id;
                     unset($costAccount['ID']);
                     if ($costAccount['Balance'] < $price) {
                         $result['err'] = 1003;
@@ -1428,15 +1632,71 @@ class Gbaopen extends InterfaceVIEWS {
                     }
                     //扣款消费
                     $updatetime = explode('-', $costAccount['UpdateTime']);
-                    $update_cost['CostMon'] = $costAccount['CostMon'];
+                    $update_self['CostMon'] = $costAccount['CostMon'];
                     if (date('m', $nowtime) != $updatetime[1]) {
-                        $update_cost['UpdateTime'] = date('Y-m-d', $nowtime);
-                        $update_cost['CostMon'] = 0;
+                        $update_self['UpdateTime'] = date('Y-m-d', $nowtime);
+                        $update_self['CostMon'] = 0;
                     }
-                    $update_cost['Balance'] = $costAccount['Balance'] - $price;
-                    $update_cost['CostMon'] = $update_cost['CostMon'] + $price;
-                    $update_cost['CostAll'] = $update_cost['CostAll'] + $price;
+                    $update_self['Balance'] = $costAccount['Balance'] - $price;
+                    $update_self['CostMon'] = $update_cost['CostMon'] + $price;
+                    $update_self['CostAll'] = $update_cost['CostAll'] + $price;
+                    $balance_money=$update_self['Balance'];
                 }
+
+//                $balance=new BalanceModule();
+//                $agent=new AccountModule();
+//                $costID=$cuspro["AgentID"];
+//                $agentinfo = $agent->GetOneInfoByKeyID($cuspro["AgentID"]);
+//                if ($cuspro["level"] == 3) {
+//                    $costAccount = $balance->GetOneInfoByAgentID($agentinfo['BossAgentID']);
+//                    $agentAccount = $balance->GetOneInfoByAgentID($cuspro["AgentID"]);
+//                    unset($agentAccount['ID']);
+//                    unset($costAccount['ID']);
+//                    if ($costAccount['Balance'] < $price) {
+//                        $result['err'] = 1003;
+//                        $result['msg'] = '您的余额不足，请及时充值';
+//                        $this->LogsFunction->LogsCusRecord(115, 4, $cus_id, $result['msg']);
+//                        return $result;
+//                    }
+//                    //代理商消费计算
+//                    $updatetime = explode('-', $costAccount['UpdateTime']);
+//                    $update_boss['CostMon'] = $costAccount['CostMon'];
+//                    if (date('m', time()) != $updatetime[1]) {
+//                        $update_boss['UpdateTime'] = date('Y-m-d', time());
+//                        $update_boss['CostMon'] = 0;
+//                    }
+//                    $update_boss['Balance'] = $costAccount['Balance'] - $price;
+//                    $update_boss['CostMon'] = $update_boss['CostMon'] + $price;
+//                    $update_boss['CostAll'] = $update_boss['CostAll'] + $price;
+//                    //客服消费计算
+//                    $updatetime = explode('-', $agentAccount['UpdateTime']);
+//                    $update_self['CostMon'] = $agentAccount['CostMon'];
+//                    if (date('m', time()) != $updatetime[1]) {
+//                        $update_self['UpdateTime'] = date('Y-m-d', time());
+//                        $update_self['CostMon'] = 0;
+//                    }
+//                    $update_self['CostMon'] = $update_self['CostMon'] + $price;
+//                    $update_self['CostAll'] = $update_self['CostAll'] + $price;
+//                } else {
+//                    $costAccount = $balance->GetOneInfoByAgentID($agentinfo['AgentID']);
+//                    unset($costAccount['ID']);
+//                    if ($costAccount['Balance'] < $price) {
+//                        $result['err'] = 1003;
+//                        $result['msg'] = '您的余额不足，请及时充值';
+//                        $this->LogsFunction->LogsCusRecord(115, 4, $cus_id, $result['msg']);
+//                        return $result;
+//                    }
+//                    //扣款消费
+//                    $updatetime = explode('-', $costAccount['UpdateTime']);
+//                    $update_self['CostMon'] = $costAccount['CostMon'];
+//                    if (date('m', time()) != $updatetime[1]) {
+//                        $update_self['UpdateTime'] = date('Y-m-d', time());
+//                        $update_self['CostMon'] = 0;
+//                    }
+//                    $update_self['Balance'] = $costAccount['Balance'] - $price;
+//                    $update_self['CostMon'] = $update_self['CostMon'] + $price;
+//                    $update_self['CostAll'] = $update_self['CostAll'] + $price;
+//                }
 
                 $addtime = strtotime("+1 month", $nowtime);
                 if (in_array($Data['CPhone'], array(1, 3, 4))) {
@@ -1471,6 +1731,10 @@ class Gbaopen extends InterfaceVIEWS {
                 if (intval($post['cus'])) {
                     $Data['CustomersID'] = intval($post['cus']);
                     $CustomersModule->UpdateArray($crtdata, array('AgentID' => $agent_id, 'CustomersID' => $Data['CustomersID'], 'GOpen' => '1'));
+                    $customerinfo = $CustomersModule->GetOneInfoByKeyID($Data['CustomersID']);
+                    if ($crtdata ['Experience'] == "1" && $customerinfo['Experience'] != '1') {
+                        $agent->UpdateArray(array("ExperienceCount" => ($agentinfo["ExperienceCount"] - 1)), array('AgentID' => $agent_id));
+                    }
                 } else {
                     $crtdata ['Email'] = trim($post ['email']);
                     $crtdata ['GOpen'] = '1';
@@ -1481,6 +1745,9 @@ class Gbaopen extends InterfaceVIEWS {
                         return $result;
                     } else
                         $Data['CustomersID'] = $return['msg'];
+                    if ($crtdata ['Experience'] == "1") {
+                        $agent->UpdateArray(array("ExperienceCount" => ($agentinfo["ExperienceCount"] - 1)), array('AgentID' => $agent_id));
+                    }
                 }
                 $Data['CreateTime'] = date('Y-m-d H:i:s', time());
                 $IsOk = $this->ToGbaoPenEditInfo(array_replace($Data, $crtdata));
@@ -1497,10 +1764,32 @@ class Gbaopen extends InterfaceVIEWS {
                     return $result;
                 }
                 $CustomersProjectID = $CustProModule->InsertArray($Data, true);
+                $balance = new BalanceModule();
+                if (!$balance->UpdateArrayByAgentID($update_self, $agent_id)) {
+                    $result['err'] = 1004;
+                    $result['msg'] = '新建用户失败，请重试，若依然无效，酌情联系管理员1';
+                    $this->LogsFunction->LogsCusRecord(113, 0, $Data['CustomersID'], $result['msg']);
+                    return $result;
+                }
+                if ($level == 3) {
+                    if (!$balance->UpdateArrayByAgentID($update_boss, $agentinfo['BossAgentID'])) {
+                        $result['err'] = 1004;
+                        $result['msg'] = '新建用户失败，请重试，若依然无效，酌情联系管理员2';
+                        $this->LogsFunction->LogsCusRecord(113, 0, $Data['CustomersID'], $result['msg']);
+                        return $result;
+                    }
+                }
                 if ($CustomersProjectID) {
                     $coupons ? file_get_contents(DAILI_DOMAIN . '?module=ApiModel&action=GetCoupons&code=' . $coupons . '&use=1') : '';
                     $result['msg'] = '创建客户及开通G宝盆成功';
                     $this->LogsFunction->LogsCusRecord(113, 5, $Data['CustomersID'], $result['msg']);
+                    $orderID= time().rand(1000,9999);
+                    $order_data = array("orderID"=>$orderID,"OrderAmount" => $price, "CustomersID" => $Data['CustomersID'], "CreateTime" => date('Y-m-d H:i:s', time()), "StillTime" => $stilltime, "CPhone" => $Data["CPhone"], "PK_model" => $Data["PK_model"], "PC_model" => $Data["PC_model"], "Mobile_model" => $Data["Mobile_model"],"Capacity"=>$Data["Capacity"]);
+                    $ordermodule = new OrderModule();
+                    $ordermodule->InsertArray($order_data);
+                    $logcost_data = array("ip" => $_SERVER["REMOTE_ADDR"], "cost" => (0-$price), "type" => 1, "description" => ($crtdata ['Experience']==1?"创建体验客户及开通G宝盆":"创建客户及开通G宝盆"), "adddate" => date('Y-m-d H:i:s', time()), "CustomersID" => $Data['CustomersID'],"AgentID"=>$agent_id,"CostID"=>$CostID,"Balance"=>$balance_money,"OrderID"=>$orderID);
+                    $logcost = new LogcostModule();
+                    $logcost->InsertArray($logcost_data);
                 } else {
                     if (!intval($post['cus'])) {
                         $CustomersModule->DeleteInfoByKeyID($Data['CustomersID']);
@@ -1806,11 +2095,11 @@ class Gbaopen extends InterfaceVIEWS {
     protected function GetCusByType($type = 0, $page = 1, $num = 5) {
         $agent_id = $_SESSION ['AgentID'];
         $level = $_SESSION ['Level'];
-        $usernames=array();
-        $account=new AccountModule();
-        $account_infos=$account->GetListsByWhere(array("0"=>"AgentID","1"=>"UserName"), array());
-        foreach($account_infos as $k=>$v){
-            $usernames[$v["AgentID"]]=$v["UserName"];
+        $usernames = array();
+        $account = new AccountModule();
+        $account_infos = $account->GetListsByWhere(array("0" => "AgentID", "1" => "UserName"), array());
+        foreach ($account_infos as $k => $v) {
+            $usernames[$v["AgentID"]] = $v["UserName"];
         }
         $page = $page > 0 ? $page : 1;
         $num = $num > 0 ? $num : 5;
@@ -1865,7 +2154,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $cases = explode('-', $val['Cases']);
                     $data[$key]['PlaceName'] = $cases[0] ? $cases[1] : '关闭';
                     $data[$key]['Place'] = $cases[0];
-                    $data[$key]['agent_username'] =$usernames[$val["AgentID"]];
+                    $data[$key]['agent_username'] = $usernames[$val["AgentID"]];
                 }
                 break;
             case 0:
@@ -1901,7 +2190,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $cases = explode('-', $val['Cases']);
                     $data[$key]['PlaceName'] = $cases[0] ? $cases[1] : '关闭';
                     $data[$key]['Place'] = $cases[0];
-                    $data[$key]['agent_username'] =$usernames[$val["AgentID"]];
+                    $data[$key]['agent_username'] = $usernames[$val["AgentID"]];
                 }
                 break;
             case 1:
@@ -1936,7 +2225,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $cases = explode('-', $val['Cases']);
                     $data[$key]['PlaceName'] = $cases[0] ? $cases[1] : '关闭';
                     $data[$key]['Place'] = $cases[0];
-                    $data[$key]['agent_username'] =$usernames[$val["AgentID"]];
+                    $data[$key]['agent_username'] = $usernames[$val["AgentID"]];
                 }
                 break;
             case 2:
@@ -1963,7 +2252,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $data[$key]['PCTimeEnd'] = false;
                     $data[$key]['MobileTimeStart'] = false;
                     $data[$key]['MobileTimeEnd'] = false;
-                    $data[$key]['agent_username'] =$usernames[$val["AgentID"]];
+                    $data[$key]['agent_username'] = $usernames[$val["AgentID"]];
                 }
                 break;
             case 3:
@@ -1999,7 +2288,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $cases = explode('-', $val['Cases']);
                     $data[$key]['PlaceName'] = $cases[0] ? $cases[1] : '关闭';
                     $data[$key]['Place'] = $cases[0];
-                    $data[$key]['agent_username'] =$usernames[$val["AgentID"]];
+                    $data[$key]['agent_username'] = $usernames[$val["AgentID"]];
                 }
                 break;
             case 4:
@@ -2036,7 +2325,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $cases = explode('-', $val['Cases']);
                     $data[$key]['PlaceName'] = $cases[0] ? $cases[1] : '关闭';
                     $data[$key]['Place'] = $cases[0];
-                    $data[$key]['agent_username'] =$usernames[$val["AgentID"]];
+                    $data[$key]['agent_username'] = $usernames[$val["AgentID"]];
                 }
                 break;
             default:
@@ -2093,5 +2382,101 @@ class Gbaopen extends InterfaceVIEWS {
         echo implode('and', $a);
         exit;
     }
-
+    
+    /**
+     * 计算费用
+     */
+    public function getcost(){
+        $post=$this->_POST;
+        $price=0;
+        if($post["Experience"]==1){
+            $price=0;
+            $result["price"]=$price;
+            return $result;
+        }else{
+            $package=new ModelPackageModule();
+            $model=new ModelModule();
+            switch ($post['CPhone']) {
+                case 4:
+                    $price = $package->GetOneByWhere(array('Youhui', 'PCNum', 'PhoneNum'), 'where PackagesNum=\'' . $post['PK_model'] . '\'');
+                    if ($price) {
+                            $pk_exist = true;
+                    } else {
+                        $pk_exist = false;
+                    }
+                    break;
+                case 3:
+                    $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $post['PC_model'] . '\'');
+                    $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $post['Mobile_model'] . '\'');
+                    break;
+                case 2:
+                    $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $post['Mobile_model'] . '\'');
+                    break;
+                case 1:
+                    $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $post['PC_model'] . '\'');
+                    break;
+                default:
+                    $result['err'] = 1002;
+                    $result['msg'] = '请联系程序猿协助';
+                    return $result;
+                    break;
+            }
+            switch ($post['CPhone']) {
+                case 4:
+                    if ($pk_exist) {
+                        $price = $price['Youhui'];
+                    } else {
+                        $result['err'] = 1003;
+                        $result['msg'] = '套餐--非法请求，不存在';
+                        return $result;
+                    }
+                    break;
+                case 3:
+                    if ($pc_price && $mobile_price) {
+                        $price = $pc_price['Youhui'] + $mobile_price['Youhui'];
+                    } else {
+                        $result['err'] = 1003;
+                        $result['msg'] = '双站--非法请求，不存在';
+                        return $result;
+                    }
+                    break;
+                case 2:
+                    if ($mobile_price) {
+                        $price = $mobile_price['Youhui'];
+                    } else {
+                        $result['err'] = 1003;
+                        $result['msg'] = '手机--非法请求，不存在';
+                        return $result;
+                    }
+                    break;
+                case 1:
+                    if ($pc_price) {
+                        $price = $pc_price['Youhui'];
+                    } else {
+                        $result['err'] = 1003;
+                        $result['msg'] = 'PC--非法请求，不存在';
+                        return $result;
+                    }
+                    break;
+                default :
+                    $result['err'] = 1003;
+                    $result['msg'] = '非法请求，不存在';
+                    return $result;
+                    break;
+            }
+            $result["model_price"]=$price;
+            if ($post["Capacity"] == 300) {
+                $price+=500;
+                $result["capacity_price"]=500;
+            } elseif($post["Capacity"] == 500){
+                $price+=800;
+                $result["capacity_price"]=800;
+            }elseif($post["Capacity"] == 1000){
+                $price+=1500;
+                $result["capacity_price"]=1500;
+            }
+            $result["price"]=$price*$post["stilltime"];
+            return $result;
+        }
+    }
 }

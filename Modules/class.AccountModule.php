@@ -113,4 +113,9 @@ class AccountModule {
         }
         return $DB->GetOne ( 'select * from ' . $this->TableName . ' where '. $Where);
     }
+    public function GetExperienceCount($agent_id) {
+        $DB = new DB ();
+        $data=$DB->Select ( 'select ExperienceCount from ' . $this->TableName . ' where AgentID='.$agent_id);
+        return (int)$data[0]["ExperienceCount"];
+    }
 }

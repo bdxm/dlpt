@@ -1,8 +1,19 @@
 jQuery(document).ready(function() {
     //当前js版本
     var Version = '3.1';
-    $.get("config.json?" + Math.random(), function(result){
-        if(result.Version != Version){
+    function getmoney() {
+        $.get("Apps?module=Agent&action=getbalance",function(data){
+            data=$.parseJSON(data);
+            $(".balance .money").text(data["Balance"]);
+        });
+    }
+    if ($(".balance .money").length > 0) {
+        getmoney();
+//        setInterval(getmoney, 10000);
+    }
+    $.get("config.json?" + Math.random(), function(result) {
+//        result=$.parseJSON(result);
+        if (result.Version != Version) {
             alert("当前版本较低，为了避免错误，请清空浏览器缓存，刷新页面");
         }
     });

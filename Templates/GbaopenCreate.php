@@ -1,4 +1,5 @@
 <?php include 'AgentHead.php'; ?>
+<link rel="stylesheet" type="text/css" href="Css/create.css">
 <body>
     <div id="dialog-overlay"></div>
     <div id="dialog-box">
@@ -58,6 +59,13 @@
                                 <span class="content-l" style="vertical-align:top">备注</span>
                                 <span>
                                     <textarea name="remark" class="Input" style=" height:100%;" <?php if ($Data['cussel']) echo 'value="' . $Data['cussel']['Remark'] . '"'; ?>></textarea>
+                                </span>
+                                <?php if ($Data['ExperienceCount'] > 0) { ?>
+                                    <span class="content-l" style="vertical-align:top">体验用户:</span>
+                                    <input type="text" class="Experience text-right" value="否" disabled="disabled"/>
+                                    <span class="Experience-btn"></span>
+                                    <span style="vertical-align:top">体验用户剩余<font style="color:red;"><?php echo $Data['ExperienceCount']; ?></font>个名额;说明:体验用户可享受一个月免费体验使用！</span>
+                                <?php } ?>
                             </p>
                         </div>
                         <div class="userdata-content" style="display:none">
@@ -90,9 +98,15 @@
                             </p>
                             <p>
                                 <span class="content-l">FTP</span>
-                                <span>
+                                <span class="Input">
                                     <input type="radio" name="ftp_c" value="1" checked>公司FTP
                                     <input type="radio" name="ftp_c" value="0">客户FTP
+                                </span>
+                                <span class="content-l">容量</span>
+                                <span class="Input">
+                                    <input type="radio" name="capacity" class="capacity" value="300" checked>300M
+                                    <input type="radio" name="capacity" class="capacity" value="500">500M
+                                    <input type="radio" name="capacity" class="capacity" value="1000">1000M
                                 </span>
                             </p>
                             <p id="companyFTP">
@@ -199,8 +213,12 @@
                         </div>
                         <div class="btnDD" style="text-align:center;">
                             <input type="submit" class="Btn2" value="下一页">
-                            <input type="submit" class="Btn3" value="<?php if ($Data['cussel']) echo '创建并开通';
-                                        else echo'创建客户'; ?>">
+                            <input type="submit" class="Btn3" value="<?php
+                                   if ($Data['cussel'])
+                                       echo '创建并开通';
+                                   else
+                                       echo'创建客户';
+                                   ?>">
                         </div>
                     </div>
 <?php } else echo '您没有权限执行此操作！！'; ?>
