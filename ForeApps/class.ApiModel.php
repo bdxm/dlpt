@@ -1057,5 +1057,23 @@ class ApiModel extends ForeVIEWS {
                     ' </models>';
             echo $String;
             exit;
+
+    public function GetModelClassListAll() {
+        $ModelClass = new ModelClassModule();
+        $data = $ModelClass->GetListsAll();
+        foreach ($data as $Value) {
+            $String .= '<model>
+			<id>' . $Value['ID'] . '</id>
+			<name>' . $Value['CName'] . '</name>
+		  </model>
+		';
+        }
+        $String = '<?xml version="1.0" encoding="utf-8"?>
+			<models>
+			' . $String .
+                ' </models>';
+        echo $String;
+        exit;
     }
+
 }
