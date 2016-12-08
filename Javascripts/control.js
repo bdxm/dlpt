@@ -1,6 +1,6 @@
 jQuery(document).ready(function() {
     //当前js版本
-    var Version = '3.1';
+    var Version = '3.2';
     function getmoney() {
         $.get("Apps?module=Agent&action=getbalance",function(data){
             data=$.parseJSON(data);
