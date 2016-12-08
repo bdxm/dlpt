@@ -1057,6 +1057,7 @@ class ApiModel extends ForeVIEWS {
                     ' </models>';
             echo $String;
             exit;
+    }
 
     public function GetModelClassListAll() {
         $ModelClass = new ModelClassModule();
