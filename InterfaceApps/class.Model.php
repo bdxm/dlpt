@@ -980,6 +980,6 @@ class Model extends InterfaceVIEWS {
         $code="data=".  $String;
         $url = GUANWANG_DOMAIN.'UpdateData.aspx';
         $Coupons = request_by_other($url, $code);
-        exit();
+        return $Coupons;
     }
 }
