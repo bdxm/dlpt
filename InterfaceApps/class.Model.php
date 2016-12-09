@@ -1,5 +1,4 @@
-﻿<?PHP
-
+<?php
 class Model extends InterfaceVIEWS {
 
     public function __Public() {
