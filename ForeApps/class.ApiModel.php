@@ -1017,7 +1017,16 @@ class ApiModel extends ForeVIEWS {
                 if (!$Value['Url_status']) {
                     $Value['EWM'] = '';
                 } else {
-                    $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['Url'];
+                    if($Value["Type"]=="手机"){
+                        $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['Url'];
+                    }else{
+                        if(strpos($Value["Url"], 'http://GM')===false){
+                            $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['Url'];
+                        }else{
+                            $Value['Url']=str_replace('http://GM', 'http://m.GM', $Value['Url']);
+                            $Value['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $Value['Url'];
+                        }
+                    }
                 }
                 $ModelClass=new ModelClassModule();
                 $ModelClassID = explode(',', $Value['ModelClassID']);

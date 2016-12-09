@@ -901,7 +901,16 @@ class Model extends InterfaceVIEWS {
             if (!$data['Url_status']) {
                 $data['EWM'] = '';
             } else {
-                $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['Url'];
+                if($data["Type"]=="æ‰‹æœº"){
+                    $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['Url'];
+                }else{
+                    if(strpos($data["Url"], 'http://GM')===false){
+                        $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['Url'];
+                    }else{
+                        $data['Url']=str_replace('http://GM', 'http://m.GM', $data['Url']);
+                        $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['Url'];
+                    }
+                }
             }
             $data["PCNum"]="";
             $data["PhoneNum"]="";
