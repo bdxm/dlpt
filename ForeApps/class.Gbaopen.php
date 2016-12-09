@@ -169,7 +169,7 @@ class Gbaopen extends ForeVIEWS {
 //        $date_end=date('Y-m', strtotime("+1 month",$date_start));
         $DB=new DB();
         $Data=array();
-        $Data["log"]=$DB->Select("select a.OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.UserName from tb_logcost a inner join tb_customers b on a.AgentID='".$_SESSION['AgentID']."' and a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
+        $Data["log"]=$DB->Select("select a.OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.UserName from tb_logcost a inner join tb_customers b on a.CostID='".$_SESSION['AgentID']."' and a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
         $Data["month"]=$date_start;
         $this->Data = $Data;
     }
