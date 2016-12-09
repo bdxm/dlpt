@@ -1,4 +1,4 @@
-<?PHP
+﻿<?PHP
 
 class Model extends InterfaceVIEWS {
 
@@ -895,13 +895,17 @@ class Model extends InterfaceVIEWS {
 
     public function updateModel($where,$table){
         $result=array();
+        $str =" where 1 ";
+        foreach ($where as $key => $value) {
+            $str .="and {$key} = {$value}";
+        }
         if($table=="model"){
             $Model=new ModelModule();
-            $data=$Model->GetOneByWhere(array(),$where);
+            $data=$Model->GetOneByWhere(array(),$str);
             if (!$data['Url_status']) {
                 $data['EWM'] = '';
             } else {
-                if($data["Type"]=="æ‰‹æœº"){
+                if($data["Type"]=="手机"){
                     $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['Url'];
                 }else{
                     if(strpos($data["Url"], 'http://GM')===false){
@@ -919,8 +923,9 @@ class Model extends InterfaceVIEWS {
 //            $result["pic"]=$data["Pic"];
         }else{
             $modelpack=new ModelPackageModule();
-            $data=$modelpack->GetOneByWhere(array(),$where);
-            $data["Type"]='双站';
+            $data=$modelpack->GetOneByWhere(array(),$str);
+            
+            $data["Type"]="双站";
             if (!$data['Url_status']) {
                 $data['Url'] = '';
                 $data['EWM'] = '';
@@ -983,6 +988,8 @@ class Model extends InterfaceVIEWS {
                 <modellan>' . $data['ModelLan'] . '</modellan>
                 <content>' . $data['Content'] . '</content>
                 <modelclassid>' . $data['ModelClassID'] . '</modelclassid>
+                <type>' . $data["Type"] . '</type>
+                <pic>' . ($data["Pic"]?$data["Pic"]:"") . '</pic>
               </model>
             </main>
             ';
