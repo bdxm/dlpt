@@ -669,6 +669,12 @@ class Gbaopen extends InterfaceVIEWS {
                     $price+=800;
                 }elseif($cuspro["Capacity"] == (1000 * 1024 * 1024)){
                     $price+=1500;
+                }elseif($Data["Capacity"] == (100 * 1024 * 1024)){
+                    $price+=300;
+                }else{
+                    $result['err'] = 1003;
+                    $result['msg'] = '容量空间选择错误';
+                    return $result;
                 }
                 
                 if ($agentinfo['Level'] == 3) {
@@ -1573,6 +1579,12 @@ class Gbaopen extends InterfaceVIEWS {
                     $price+=800;
                 }elseif($Data["Capacity"] == (1000 * 1024 * 1024)){
                     $price+=1500;
+                }elseif($Data["Capacity"] == (100 * 1024 * 1024)){
+                    $price+=300;
+                }else{
+                    $result['err'] = 1004;
+                    $result['msg'] = '容量空间选择错误';
+                    return $result;
                 }
                 
                 //时间处理
@@ -2474,6 +2486,12 @@ class Gbaopen extends InterfaceVIEWS {
             }elseif($post["Capacity"] == 1000){
                 $price+=1500;
                 $result["capacity_price"]=1500;
+            }elseif($post["Capacity"] == 100){
+                $price+=300;
+            }else{
+                $result['err'] = 1003;
+                $result['msg'] = '容量空间选择错误';
+                return $result;
             }
             $result["price"]=$price*$post["stilltime"];
             return $result;

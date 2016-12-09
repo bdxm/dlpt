@@ -104,6 +104,7 @@
                                 </span>
                                 <span class="content-l">容量</span>
                                 <span class="Input">
+                                    <input type="radio" name="capacity" class="capacity" value="100" checked>100M
                                     <input type="radio" name="capacity" class="capacity" value="300" checked>300M
                                     <input type="radio" name="capacity" class="capacity" value="500">500M
                                     <input type="radio" name="capacity" class="capacity" value="1000">1000M

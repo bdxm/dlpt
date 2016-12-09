@@ -664,6 +664,8 @@ jQuery(document).ready(function() {
                     capa_price=800;
                 }else if(result.data.capacity==(1000*1024*1024)){
                     capa_price=1500;
+                }else if(result.data.capacity==(100*1024*1024)){
+                    capa_price=300;
                 }
                 html += radioCho ? '<p><span class="content-l">续费选择</span><span class="Input">' + radioCho + '</span></p><p>\
                         <span class="content-l">续费时间</span>\
