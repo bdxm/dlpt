@@ -896,7 +896,7 @@ class Model extends InterfaceVIEWS {
         $result=array();
         $str =" where 1 ";
         foreach ($where as $key => $value) {
-            $str .="and {$key} = {$value}";
+            $str .="and {$key} = '{$value}'";
         }
         if($table=="model"){
             $Model=new ModelModule();
