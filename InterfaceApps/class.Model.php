@@ -904,7 +904,7 @@ class Model extends InterfaceVIEWS {
             if (!$data['Url_status']) {
                 $data['EWM'] = '';
             } else {
-                if($data["Type"]=="手机"){
+                if($data["Type"]=="PC"){
                     $data['EWM'] = 'http://s.jiathis.com/qrcode.php?url=' . $data['Url'];
                 }else{
                     if(strpos($data["Url"], 'http://GM')===false){
