@@ -197,12 +197,13 @@ jQuery(document).ready(function() {
 
             var data = {};
             data["Experience"] = ($(".Experience").val() == "是") ? 1 : 0;
-            data["Capacity"] = $(".capacity:checked").val();
+            data["Capacity"] = $(".capacity:checked").val()>0?$(".capacity:checked").val():300;
             data["CPhone"] = $("input[name=pc_mobile]:checked").val();
             data["PC_model"] = $("input[name=pcmodel]").val();
             data["Mobile_model"] = $("input[name=mobilemodel]").val();
             data["PK_model"] = $("input[name=pkmodel]").val();
             data["stilltime"] = $("input[name=stilltime]").val() > 0 ? $("input[name=stilltime]").val() : 1;
+            data["coupons"] = $("input[name=coupons]").val()? $("input[name=coupons]").val():"";
             $.ajax({
                     url:"Apps?module=Gbaopen&action=getcost",
                     data:data,

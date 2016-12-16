@@ -288,6 +288,15 @@ class Model extends InterfaceVIEWS {
             $data[$k]['price'] = $v['Price'];
             $data[$k]['tuijian'] = $v['TuiJian'];
             $data[$k]['id'] = $v['ID'];
+//            if(($v['DeveloperName']==null||$v['DeveloperName']=="")&&$type != 3){
+//                $TuUrl=GBAOPEN_DOMAIN."getTplDevUser";
+//                $ToString = 'tplname=' . $data[$k]['name'];
+//                $ReturnString = request_by_other($TuUrl, $ToString);
+//                $ReturnArray = json_decode($ReturnString, true);
+//                if($ReturnArray["err"]=="1000"&&$ReturnArray["msg"]!=null){
+//                    $v['DeveloperName']=$ReturnArray["msg"];
+//                }
+//            }
             $data[$k]['devname'] = $v['DeveloperName'];
         }
         return $data;

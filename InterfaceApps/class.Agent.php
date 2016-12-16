@@ -385,13 +385,15 @@ class Agent extends InterfaceVIEWS {
 
     /* 删除客户(接口已关闭) */
 
-    protected function DeleteCustomer() {
+    public function DeleteCustomer() {
         $result = array('err' => 0, 'data' => '', 'msg' => '');
         $this->MyAction = 'UserInfo';
+        $level=$_SESSION["Level"];
         $Agent_id = $_SESSION ['AgentID'];
         $Power = $_SESSION ['Power'];
         $CustomersID = $this->_POST ['num'];
-        if (!($Power & MODEL_ALL)) {
+//        $this->Assess($Power, 'delete');
+        if (!($Power & CUS_DELETE)) {
             $result['err'] = 1001;
             $result['msg'] = '非法请求';
             $this->LogsFunction->LogsAgentRecord(119, 3, $CustomersID, $result['msg']);
@@ -404,7 +406,7 @@ class Agent extends InterfaceVIEWS {
             $Users[$k] = $v['AgentID'];
         }
         $CustomersInfo = $CustomersModule->GetOneByWhere('where CustomersID=' . $CustomersID);
-        if (!in_array($CustomersInfo['AgentID'], $Users)) {
+        if (!in_array($CustomersInfo['AgentID'], $Users)&&$level!=1) {
             $result['err'] = 1001;
             $result['msg'] = '您没有这个用户的信息';
             $this->LogsFunction->LogsAgentRecord(119, 2, $CustomersID, $result['msg']);
@@ -412,10 +414,11 @@ class Agent extends InterfaceVIEWS {
         }
         $CustProModule = new CustProModule ();
         $CustProInfo = $CustProModule->GetInfoByWhere(' where CustomersID = ' . $CustomersID);
-        if ($CustomersModule->DeleteInfoByKeyID($CustomersID)) {
+        if ($CustomersModule->UpdateArray(array("Status"=>0), array("CustomersID"=>$CustomersID))/*$CustomersModule->DeleteInfoByKeyID($CustomersID)*/) {
             if ($CustProInfo) {
-                $CustProModule->DeleteInfoByWhere(' where CustomersID = ' . $CustomersID);
-                $ToString = 'name=' . $CustProInfo['G_name'];
+                $CustProModule->UpdateArray(array("status"=>0), array("CustomersID"=>$CustomersID));
+//                $CustProModule->DeleteInfoByWhere(' where CustomersID = ' . $CustomersID);
+                $ToString = 'username=' . $CustProInfo['G_name'];
                 $TuUrl = GBAOPEN_DOMAIN . 'api/deleteuser';
                 //随机文件名开始生成
                 $randomLock = getstr();
@@ -428,8 +431,9 @@ class Agent extends InterfaceVIEWS {
                 //生成dll文件
                 $myfile = @fopen('./token/' . $password . '.dll', "w+");
                 if (!$myfile) {
-                    $CustomersModule->InsertArray($CustomersInfo);
-                    $CustProModule->InsertArray($CustProInfo);
+                    $CustomersModule->UpdateArray(array("Status"=>1), array("CustomersID"=>$CustomersID));
+//                    $CustomersModule->InsertArray($CustomersInfo);
+//                    $CustProModule->InsertArray($CustProInfo);
                     $result['err'] = 1002;
                     $result['msg'] = '删除客户失败';
                     $this->LogsFunction->LogsAgentRecord(119, 0, $CustomersID, 'token文件创建失败');
@@ -447,8 +451,9 @@ class Agent extends InterfaceVIEWS {
                     $result['msg'] = '删除客户成功';
                     $this->LogsFunction->LogsAgentRecord(119, 1, $CustomersID, $result['msg']);
                 } else {
-                    $CustomersModule->InsertArray($CustomersInfo);
-                    $CustProModule->InsertArray($CustProInfo);
+                    $CustomersModule->UpdateArray(array("Status"=>1), array("CustomersID"=>$CustomersID));
+//                    $CustomersModule->InsertArray($CustomersInfo);
+//                    $CustProModule->InsertArray($CustProInfo);
                     $result['err'] = 1003;
                     $result['data'] = $ReturnArray;
                     $result['msg'] = '统一平台删除客户失败';
@@ -463,6 +468,93 @@ class Agent extends InterfaceVIEWS {
         } else {
             $result['err'] = 1002;
             $result['msg'] = '本地删除客户失败';
+            return $result;
+        }
+        return $result;
+    }
+    public function reductionCustomer() {
+        $result = array('err' => 0, 'data' => '', 'msg' => '');
+        $this->MyAction = 'UserInfo';
+        $level=$_SESSION["Level"];
+        $Agent_id = $_SESSION ['AgentID'];
+        $Power = $_SESSION ['Power'];
+        $CustomersID = $this->_POST ['num'];
+//        $this->Assess($Power, 'delete');
+        if (!($Power & CUS_DELETE)) {
+            $result['err'] = 1001;
+            $result['msg'] = '非法请求';
+            $this->LogsFunction->LogsAgentRecord(119, 3, $CustomersID, $result['msg']);
+            return $result;
+        }
+        $CustomersModule = new CustomersModule ();
+        $Usermodel = new AccountModule;
+        $Users = $Usermodel->GetListsByWhere(array('AgentID'), 'where BossAgentID=' . $Agent_id);
+        foreach ($Users as $k => $v) {
+            $Users[$k] = $v['AgentID'];
+        }
+        $CustomersInfo = $CustomersModule->GetOneByWhere('where Status=0 and CustomersID=' . $CustomersID);
+        if (!in_array($CustomersInfo['AgentID'], $Users)&&$level!=1) {
+            $result['err'] = 1001;
+            $result['msg'] = '您没有这个用户的信息';
+            $this->LogsFunction->LogsAgentRecord(120, 2, $CustomersID, $result['msg']);
+            return $result;
+        }
+        $CustProModule = new CustProModule ();
+        $CustProInfo = $CustProModule->GetInfoByWhere(' where CustomersID = ' . $CustomersID);
+        if ($CustomersModule->UpdateArray(array("Status"=>1), array("CustomersID"=>$CustomersID))/*$CustomersModule->DeleteInfoByKeyID($CustomersID)*/) {
+            if ($CustProInfo) {
+//                $CustProModule->UpdateArray(array("status"=>1), array("CustomersID"=>$CustomersID));
+//                $CustProModule->DeleteInfoByWhere(' where CustomersID = ' . $CustomersID);
+                $ToString = 'username=' . $CustProInfo['G_name'];
+                $TuUrl = GBAOPEN_DOMAIN . 'api/reductionCustomer';
+                //随机文件名开始生成
+                $randomLock = getstr();
+                $password = md5($randomLock);
+                $password = md5($password);
+
+                //生成握手密钥
+                $text = getstr();
+
+                //生成dll文件
+                $myfile = @fopen('./token/' . $password . '.dll', "w+");
+                if (!$myfile) {
+                    $CustomersModule->UpdateArray(array("Status"=>0), array("CustomersID"=>$CustomersID));
+//                    $CustomersModule->InsertArray($CustomersInfo);
+//                    $CustProModule->InsertArray($CustProInfo);
+                    $result['err'] = 1002;
+                    $result['msg'] = '还原客户失败';
+                    $this->LogsFunction->LogsAgentRecord(120, 0, $CustomersID, 'token文件创建失败');
+                    return $result;
+                }
+                fwrite($myfile, $text);
+                fclose($myfile);
+
+                $ToString .= '&timemap=' . $randomLock;
+                $ToString .= '&taget=' . md5($text . $password);
+                $ReturnString = request_by_other($TuUrl, $ToString);
+                $ReturnArray = json_decode($ReturnString, true);
+                if ($ReturnArray['err'] == 1000) {
+                    $result['data'] = array('name' => $CustomersInfo['CompanyName']);
+                    $result['msg'] = '还原客户成功';
+                    $this->LogsFunction->LogsAgentRecord(120, 1, $CustomersID, $result['msg']);
+                } else {
+                    $CustomersModule->UpdateArray(array("Status"=>0), array("CustomersID"=>$CustomersID));
+//                    $CustomersModule->InsertArray($CustomersInfo);
+//                    $CustProModule->InsertArray($CustProInfo);
+                    $result['err'] = 1003;
+                    $result['data'] = $ReturnArray;
+                    $result['msg'] = '统一平台还原客户失败';
+                    $this->LogsFunction->LogsAgentRecord(120, 6, $CustomersID, $result['msg']);
+                    return $result;
+                }
+            } else {
+                $result['data'] = array('name' => $CustomersInfo['CompanyName']);
+                $result['msg'] = '还原客户成功';
+                $this->LogsFunction->LogsAgentRecord(120, 1, $CustomersID, $result['msg']);
+            }
+        } else {
+            $result['err'] = 1002;
+            $result['msg'] = '本地还原客户失败';
             return $result;
         }
         return $result;

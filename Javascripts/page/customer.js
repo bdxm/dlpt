@@ -114,7 +114,11 @@ jQuery(document).ready(function() {
                             oper_each = '',
                             dataNum = data.cus.length;
                     $.each(data.cus, function(i, v) {
-                        oper_each = v.name ? dataInit.operation[0] : dataInit.operation[1];
+                        if(v.Status==0){
+                            oper_each=dataInit.operation[2];
+                        }else{
+                            oper_each = v.name ? dataInit.operation[0] : dataInit.operation[1];
+                        }
                         v.name = v.name ? v.name : '--';
                         switch(v.type){
                             case "1":
@@ -159,7 +163,7 @@ jQuery(document).ready(function() {
                                 ' + nameList + timeList + '\
                                 <td><font style="color:#090">' + v.type + '</font></td>\
                                 <td><div class="a"></div></td>\
-                                <td>' + ((v.name != '--' && v.type != '--') ? '<div class="cases' + (v.Place == 0 ? '"' : ' place" data="' + v.Place + '"') + '><span>' + v.PlaceName + '</span>' + dataInit.area + '</div>' : '--') + '</td>\
+                                <td>' + ((v.name != '--' && v.type != '--'&&v.Status==1) ? '<div class="cases' + (v.Place == 0? '"' : ' place" data="' + v.Place + '"') + '><span>' + v.PlaceName + '</span>' + dataInit.area + '</div>' : '--') + '</td>\
                                 <td><font style="color:#090">' + v.agent_username + '</font></td>\
                                 <td class="text-right">' + oper_each + '</td>\
                                 <input type="hidden" value="' + v.id + '">\
@@ -351,6 +355,7 @@ jQuery(document).ready(function() {
             _this.type = $(".pagebox").prev()[0].tagName.toLowerCase() == 'form' ? "tr" : "li";
             _this.onLoad();
             _this.response = $.get("Apps?module=Gbaopen&action=CusInit&type=" + _this.type, function(result) {
+                console.log(result);
                 var place = '<ul class="one"><span>▬▶</span>\n\
                             <li data="0">关闭</li>\n';
                 $.each(result.data.area, function(i1, v1) {
@@ -379,16 +384,19 @@ jQuery(document).ready(function() {
                 $.each(result.data.operat, function(i2, v2) {
                     if (v2 == 'renew')
                         operation[0] += '<a href="javascript:;" class="renew"> 续费 </a>';
-                    else if (v2 == 'process')
+                    else if (v2 == 'process'){
                         operation[0] += '<a href="javascript:;" class="processing"> 网站处理 </a>';
-                    else if (v2 == 'transfer')
+//                        operation[0] += '<a href="javascript:;" class="sitemove"> 网站迁移 </a>';
+                    }else if (v2 == 'transfer')
                         operation[0] += '<a href="javascript:;" class="custransfer"> 客户转接 </a>';
                     else if (v2 == 'manage')
                         operation[0] += '<a href="javascript:;" class="g-manage"> 管理 </a>';
                     else if (v2 == 'create')
                         operation[1] = '<a href="javascript:;" class="g-create"> 开通 </a>';
-                    else if (v2 == 'delete')
-                        operation[0] += '<a href="javascript:;" class="delete"> 删除 </a>'
+                    else if (v2 == 'delete'){
+                        operation[0] += '<a href="javascript:;" class="delete"> 删除 </a>';
+                        operation[2] = '<a href="javascript:;" class="reduction"> 还原 </a>';
+                    }
                 });
                 result.data.operation = operation;
                 result.data.area = place;
@@ -608,55 +616,55 @@ jQuery(document).ready(function() {
                 var html = '', price,
                         data = result.data;
                 html = '<div class="userdata-content"><p style="font-size:20px;">确定对<strong style="color:red">' + data.name + '</strong>进行续费操作？</p>';
-                var secTitle = '', radioCho = '';
-                switch (parseInt(data.type)) {
-                    case 4:
-                        if (data.state == 2) {
-                            radioCho += '<input type="radio" name="pc_mobile" value="4" data="' + data.package.youhui + '" checked="checked">双站\
-                                        <input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" time"' + data.pc.time + '" value="1">PC\
-                                        <input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" time"' + data.mobile.time + '" value="2">手机';
-                            secTitle += '<p>您当前模板是双站模板:<strong style="color:red">' + data.package.name + '</strong>=<strong style="color:red">' + data.pc.name + '</strong>+<strong style="color:red">' + data.mobile.name + '</strong></p>';
-                        } else if (data.state == 1 || data.state == 0) {
-                            secTitle += '双站模板:<strong style="color:red">' + data.package.name + '</strong>';
-                            radioCho += (data.mobile.exist && data.pc.exist) ? '<input type="radio" name="pc_mobile" data="' + (data.pc.youhui + data.mobile.youhui) + '" value="3" checked="checked">双站' : '';
-                            data.pc.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" time"' + data.pc.time + '" value="1">PC' : secTitle += ',PC模板:' + data.pc.name;
-                            data.mobile.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" time"' + data.mobile.time + '" value="2">手机' : secTitle += ',手机模板:' + data.mobile.name;
-                            secTitle = '<p>您当前选择的' + secTitle + '已变动' + (radioCho ? ',只能进行以下续费操作' : ',无可续费操作') + '</p>';
-                        }
-                        html += secTitle;
-                        break;
-                    case 3:
-                        data.pc.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" value="1">PC' : secTitle += 'PC模板';
-                        data.mobile.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" value="2">手机' : secTitle += (secTitle ? ',' : '') + '手机模板';
-                        radioCho += (data.mobile.exist && data.pc.exist) ? '<input type="radio" name="pc_mobile" data="' + (data.pc.youhui + data.mobile.youhui) + '" value="3" checked="checked">套餐' : '';
-                        if (secTitle == '') {
-                            html += '<p>您当前模板是套餐模板，PC：<strong style="color:red">' + data.pc.name + '</strong> 手机：<strong style="color:red">' + data.mobile.name + '</strong>，选择您要续费的模板操作</p>';
-                        } else {
-                            secTitle = '<p>您当前选择的' + secTitle + '已变动' + (radioCho ? ',只能进行以下续费操作' : ',无可续费操作') + '</p>';
-                        }
-                        html += secTitle;
-                        break;
-                    case 2:
-                        data.mobile.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" value="2">手机' : secTitle += '手机模板';
-                        if (secTitle == '') {
-                            html += '<p>您当前模板是手机模板：<strong style="color:red">' + data.mobile.name + '</strong>，选择您要续费的模板操作</p>';
-                        } else {
-                            secTitle = '<p>您当前选择的' + secTitle + '已变动,无可续费操作</p>';
-                        }
-                        html += secTitle;
-                        break;
-                    case 1:
-                        data.pc.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" value="1">PC' : secTitle += 'PC模板';
-                        if (secTitle == '') {
-                            html += '<p>您当前模板是PC模板：<strong style="color:red">' + data.pc.name + '</strong>，选择您要续费的模板操作</p>';
-                        } else {
-                            secTitle = '<p>您当前选择的' + secTitle + '已变动,无可续费操作</p>';
-                        }
-                        html += secTitle;
-                        break;
-                    default:
-                        break;
-                }
+//                var secTitle = '', radioCho = '';
+//                switch (parseInt(data.type)) {
+//                    case 4:
+//                        if (data.state == 2) {
+//                            radioCho += '<input type="radio" name="pc_mobile" value="4" data="' + data.package.youhui + '" checked="checked">双站\
+//                                        <input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" time"' + data.pc.time + '" value="1">PC\
+//                                        <input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" time"' + data.mobile.time + '" value="2">手机';
+//                            secTitle += '<p>您当前模板是双站模板:<strong style="color:red">' + data.package.name + '</strong>=<strong style="color:red">' + data.pc.name + '</strong>+<strong style="color:red">' + data.mobile.name + '</strong></p>';
+//                        } else if (data.state == 1 || data.state == 0) {
+//                            secTitle += '双站模板:<strong style="color:red">' + data.package.name + '</strong>';
+//                            radioCho += (data.mobile.exist && data.pc.exist) ? '<input type="radio" name="pc_mobile" data="' + (data.pc.youhui + data.mobile.youhui) + '" value="3" checked="checked">双站' : '';
+//                            data.pc.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" time"' + data.pc.time + '" value="1">PC' : secTitle += ',PC模板:' + data.pc.name;
+//                            data.mobile.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" time"' + data.mobile.time + '" value="2">手机' : secTitle += ',手机模板:' + data.mobile.name;
+//                            secTitle = '<p>您当前选择的' + secTitle + '已变动' + (radioCho ? ',只能进行以下续费操作' : ',无可续费操作') + '</p>';
+//                        }
+//                        html += secTitle;
+//                        break;
+//                    case 3:
+//                        data.pc.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" value="1">PC' : secTitle += 'PC模板';
+//                        data.mobile.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" value="2">手机' : secTitle += (secTitle ? ',' : '') + '手机模板';
+//                        radioCho += (data.mobile.exist && data.pc.exist) ? '<input type="radio" name="pc_mobile" data="' + (data.pc.youhui + data.mobile.youhui) + '" value="3" checked="checked">套餐' : '';
+//                        if (secTitle == '') {
+//                            html += '<p>您当前模板是套餐模板，PC：<strong style="color:red">' + data.pc.name + '</strong> 手机：<strong style="color:red">' + data.mobile.name + '</strong>，选择您要续费的模板操作</p>';
+//                        } else {
+//                            secTitle = '<p>您当前选择的' + secTitle + '已变动' + (radioCho ? ',只能进行以下续费操作' : ',无可续费操作') + '</p>';
+//                        }
+//                        html += secTitle;
+//                        break;
+//                    case 2:
+//                        data.mobile.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.mobile.youhui + '" value="2">手机' : secTitle += '手机模板';
+//                        if (secTitle == '') {
+//                            html += '<p>您当前模板是手机模板：<strong style="color:red">' + data.mobile.name + '</strong>，选择您要续费的模板操作</p>';
+//                        } else {
+//                            secTitle = '<p>您当前选择的' + secTitle + '已变动,无可续费操作</p>';
+//                        }
+//                        html += secTitle;
+//                        break;
+//                    case 1:
+//                        data.pc.exist ? radioCho += '<input type="radio" name="pc_mobile" data="' + data.pc.youhui + '" value="1">PC' : secTitle += 'PC模板';
+//                        if (secTitle == '') {
+//                            html += '<p>您当前模板是PC模板：<strong style="color:red">' + data.pc.name + '</strong>，选择您要续费的模板操作</p>';
+//                        } else {
+//                            secTitle = '<p>您当前选择的' + secTitle + '已变动,无可续费操作</p>';
+//                        }
+//                        html += secTitle;
+//                        break;
+//                    default:
+//                        break;
+//                }
                 var capa_price=0;
                 if(result.data.capacity==(300*1024*1024)){
                     capa_price=500;
@@ -667,7 +675,7 @@ jQuery(document).ready(function() {
                 }else if(result.data.capacity==(100*1024*1024)){
                     capa_price=300;
                 }
-                html += radioCho ? '<p><span class="content-l">续费选择</span><span class="Input">' + radioCho + '</span></p><p>\
+                html +='<p>\
                         <span class="content-l">续费时间</span>\
                         <span>\
                             <select class="formstyle" style="width:200px">\
@@ -686,7 +694,15 @@ jQuery(document).ready(function() {
                         <span class="content-l">手机续费到</span>\
                         <span><input type="text" name="mobile_time" class="Input" disabled="true"></span>\
                         <span class="as"></span>\
-                    </p>' : '') + '<p>\
+                    </p>' : '') +'<p>\n\
+                        <span class="content-l">续费空间</span>\
+                        <span class="Input">\
+                            <input type="radio" name="capacity" class="capacity" data-money="300" value="100">100M\
+                            <input type="radio" name="capacity" class="capacity" data-money="500" value="300">300M\
+                            <input type="radio" name="capacity" class="capacity" data-money="800" value="500">500M\
+                            <input type="radio" name="capacity" class="capacity" data-money="1500" value="1000">1000M\
+                        </span>\
+                    </p>'+ '<p>\
                         <span class="content-l">将消费金额</span>\
                         <span>\
                             <input type="text" name="money" class="Input" disabled="true">\
@@ -699,71 +715,41 @@ jQuery(document).ready(function() {
                     var jsUserdata = function (){\n\
                         this.radioCho;\n\
                         this.year\n\
-                        ' + (data.pc.exist ? ';this.pcDate = "' + data.pc.time + '";this.pcPrice = ' + data.pc.youhui : '') + '\n\
-                        ' + ((data.package.exist && data.state == 2) ? ';this.pkPrice = ' + data.package.youhui : '') + '\n\
-                        ' + (data.mobile.exist ? ';this.mobileDate = "' + data.mobile.time + '";this.mobilePrice = ' + data.mobile.youhui : '') + '\n\
+                        ;this.pcDate = "' + data.pc.time + '";\n\
+                        ;this.mobileDate = "' + data.mobile.time + '";\n\
                         ;this.change = function(){\n\
                             var _this = this;\n\
                             $(".userdata-content select").change(function(){\n\
                                 _this.year = $(this).children("option:selected").val();\n\
                                 _this.reset();\n\
                             });\n\
-                            $(".userdata-content input:radio[name=\'pc_mobile\']").change(function(){\n\
-                                _this.radioCho = $("input:radio[name=\'pc_mobile\']:checked").val()\n\
+                            $(".userdata-content input:radio[name=\'capacity\']").change(function(){\n\
                                 _this.reset();\n\
                             });\n\
                         };\n\
                         this.reset = function(){\n\
                             var _this = this;\n\
                             var newprice,newyear;\n\
-                            ' + (data.pc.exist ? 'if(_this.radioCho == 1){\n\
-                                newprice = (_this.pcPrice+'+capa_price+')*_this.year;\n\
-                                newyear = new Date(_this.pcDate);\n\
-                                newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
-                                newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
-                                $(".userdata-content input[name=\'pc_time\']").val(newyear);\n\
-                                $(".userdata-content input[name=\'mobile_time\']").val(_this.mobileDate);\n\
-                                $(".userdata-content input[name=\'money\']").val(newprice);\n\
-                            }\n' : '') + (data.mobile.exist ? 'if(_this.radioCho == 2){\n\
-                                newprice = (_this.mobilePrice+'+capa_price+')*_this.year;\n\
-                                newyear = new Date(_this.mobileDate);\n\
-                                newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
-                                newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
-                                $(".userdata-content input[name=\'mobile_time\']").val(newyear);\n\
-                                $(".userdata-content input[name=\'pc_time\']").val(this.pcDate);\n\
-                                $(".userdata-content input[name=\'money\']").val(newprice);\n\
-                            }\n' : '') + ((data.state != 2 && data.mobile.exist && data.pc.exist) ? 'if(_this.radioCho == 3){\n\
-                                newyear = new Date(_this.pcDate);\n\
-                                newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
-                                newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
-                                $(".userdata-content input[name=\'pc_time\']").val(newyear);\n\
-                                newyear = new Date(_this.mobileDate);\n\
-                                newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
-                                newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
-                                $(".userdata-content input[name=\'mobile_time\']").val(newyear);\n\
-                                newprice = (_this.mobilePrice+_this.pcPrice+'+capa_price+')*_this.year;\n\
-                                $(".userdata-content input[name=\'money\']").val(newprice);\n\
-                            }\n' : '') + (data.state == 2 ? 'if(_this.radioCho == 4){\n\
-                                newyear = new Date(_this.pcDate);\n\
-                                newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
-                                newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
-                                $(".userdata-content input[name=\'pc_time\']").val(newyear);\n\
-                                newyear = new Date(_this.mobileDate);\n\
-                                newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
-                                newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
-                                $(".userdata-content input[name=\'mobile_time\']").val(newyear);\n\
-                                newprice =( _this.pkPrice+'+capa_price+')*_this.year;\n\
-                                $(".userdata-content input[name=\'money\']").val(newprice);\n\
-                            }\n' : '') + '\
+                            var single_money=$("input:radio[name=\'capacity\']:checked").data("money");\n\
+                            newyear = new Date(_this.pcDate);\n\
+                            newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
+                            newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
+                            $(".userdata-content input[name=\'pc_time\']").val(newyear);\n\
+                            newyear = new Date(_this.mobileDate);\n\
+                            newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
+                            newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
+                            $(".userdata-content input[name=\'mobile_time\']").val(newyear);\n\
+                            newprice = single_money * _this.year;\n\
+                            $(".userdata-content input[name=\'money\']").val(newprice);\n\
                         }\n\
                         this.init = function(){\n\
+                            $(".capacity[value=\''+result.data.capacity/1024/1024+'\']").prop("checked", true);\n\
                             this.change();\n\
-                            this.radioCho = $("input:radio[name=\'pc_mobile\']:checked").val();\n\
                             $(".userdata-content select").change();\n\
                         },\n\
                         this.init();\n\
                     }();\n\
-                    </script>' : '';
+                    </script>';
                 popup(html);
             } else {
                 Msg(2, result.msg);
@@ -960,6 +946,84 @@ jQuery(document).ready(function() {
         $(".dialog-content a.dia-ok").addClass('godelete');
         popup(html);
     });
+    $('.leftbox ul,#listtbody').on('click', ".reduction", function() {
+        var cus = $(this).parent().parent().find('input:hidden').attr('value'),
+                html = '<div class="userdata-content"><p style="font-size:20px;">确定还原此客户？</p>\
+                    <input type="hidden" class="Input" value="' + cus + '"></div>';
+        $(".dialog-content a.dia-ok").addClass('reduction');
+        popup(html);
+    });
+    $('.leftbox ul,#listtbody').on('click', ".sitemove", function() {
+        var option_html="";
+        $.ajax({
+            url:"Apps?module=Gbaopen&action=getFuwuqi",
+            async:false,
+            type:"GET",
+            dataType:"json",
+            success:function(data){
+                console.log($.parseJSON(data));
+                var lists=$.parseJSON(data);
+                $.each(lists,function(k,v){
+                    option_html+='<option value="'+v["ID"]+'">'+v["FuwuqiName"]+'</option>';
+                });
+            }
+        });
+        var cus = $(this).parent().parent().find('input:hidden').attr('value'),
+                html = '<div class="userdata-content"><p style="font-size:20px;">确定进行客户迁移？</p>\n\
+                            <p>\
+                                <input type="hidden" class="Input" value="' + cus + '">\
+                                <span class="content-l">FTP:</span>\n\
+                                <span class="Input">\n\
+                                    <input type="radio" name="FTP" value="1" onchange="if($(\'input[name=FTP]:checked\').val()==1){$(\'.FTP_1\').show();$(\'.FTP_0\').hide();}else{$(\'.FTP_0\').show();$(\'.FTP_1\').hide();}"/>公司FTP\n\
+                                    <input type="radio" onchange="if($(\'input[name=FTP]:checked\').val()==1){$(\'.FTP_1\').show();$(\'.FTP_0\').hide();}else{$(\'.FTP_0\').show();$(\'.FTP_1\').hide();}" name="FTP" value="0" checked/>客户FTP\n\
+                                </span>\n\
+                            </p>\
+                            <div class="FTP_0" style="padding-top: 25px;">\n\
+                                <p>\n\
+                                    <span class="content-l">FTP地址:</span>\n\
+                                    <span>\n\
+                                        <input type="text" id="address" name="address" class="Input"/>\n\
+                                    </span>\n\
+                                </p>\n\
+                                <p>\n\
+                                    <span class="content-l">FTP用户名:</span>\n\
+                                    <span>\n\
+                                        <input type="text" id="user" name="user" class="Input"/>\n\
+                                    </span>\n\
+                                </p>\n\
+                                <p>\n\
+                                    <span class="content-l">FTP密码:</span>\n\
+                                    <span>\n\
+                                        <input type="text" id="pwd" name="pwd" class="Input"/>\n\
+                                    </span>\n\
+                                </p>\n\
+                                <p>\n\
+                                    <span class="content-l">访问地址:</span>\n\
+                                    <span>\n\
+                                        <input type="text" id="ftp_url" name="ftp_url" class="Input"/>\n\
+                                    </span>\n\
+                                </p>\n\
+                                <p>\n\
+                                    <span class="content-l">FTP端口:</span>\n\
+                                    <span>\n\
+                                        <input type="text" id="port" name="port" class="Input" value="21"/>\n\
+                                    </span>\n\
+                                </p>\n\
+                                <p>\n\
+                                    <span class="content-l">FTP目录:</span>\n\
+                                    <span>\n\
+                                        <input type="text" id="dir" name="dir" class="Input" value="./www/"/>\n\
+                                    </span>\n\
+                                </p>\n\
+                            </div>\n\
+                            <div class="FTP_1" style="display:none;padding-top: 25px;">\n\
+                                <span class="content-l">服务器选择:</span>\n\
+                                <select class="Input" id="FuwuqiID">'+option_html+'</select>\n\
+                            </div>\n\
+                        </div>';
+        $(".dialog-content a.dia-ok").addClass('sitemove');
+        popup(html);
+    });
 
     /*管理模块*/
     $('.leftbox ul,#listtbody').on('click', ".g-manage", function() {
@@ -1047,9 +1111,9 @@ jQuery(document).ready(function() {
         var number = $(".userdata-content input[type='hidden']").val();
         if ($(this).hasClass("gorenew")) {
             var year = $(".userdata-content select").children("option:selected").val(),
-                    type = $(".userdata-content input:radio[name='pc_mobile']:checked").val(),
+                capacity = $(".userdata-content input[name='capacity']:checked").val(),
                     money = $(".userdata-content input[name='money']").val();
-            $.post("Apps?module=Gbaopen&action=Renew", {num: number, price: money, type: type, yearnum: year}, function(result) {
+            $.post("Apps?module=Gbaopen&action=Renew", {num: number,capacity:capacity,price: money, yearnum: year}, function(result) {
                 if (!result.err) {
                     Msg(3, result.data.name + "已成功续费修改");
                 } else {
@@ -1107,7 +1171,7 @@ jQuery(document).ready(function() {
             });
             $(".dialog-content a.dia-ok").removeClass('goprocessing');
         } else if ($(this).hasClass("godelete")) {
-            $.post("?module=Agent&action=DeleteCustomer", {num: number}, function(result) {
+            $.post("Apps?module=Agent&action=DeleteCustomer", {num: number}, function(result) {
                 if (!result.err) {
                     Msg(3, result.data.name + "已成功删除");
                 } else {
@@ -1115,6 +1179,38 @@ jQuery(document).ready(function() {
                 }
             });
             $(".dialog-content a.dia-ok").removeClass('delete');
+        } else if ($(this).hasClass("reduction")) {
+            $.post("Apps?module=Agent&action=reductionCustomer", {num: number}, function(result) {
+                if (!result.err) {
+                    Msg(3, result.data.name + "已成功还原");
+                } else {
+                    Msg(2, result.msg);
+                }
+            });
+            $(".dialog-content a.dia-ok").removeClass('reduction');
+        } else if ($(this).hasClass("sitemove")) {
+            var data={};
+//            var FTP=$('input[name=FTP]:checked').val();
+            data["FTP"]=$('.userdata-content input[name=FTP]:checked').val();
+            data["num"]=number;
+            if(data["FTP"]==1){
+                data["FuwuqiID"]=$('.userdata-content #FuwuqiID').val();
+            }else{
+                data["address"]=$('.userdata-content #address').val();
+                data["user"]=$('.userdata-content #user').val();
+                data["pwd"]=$('.userdata-content #pwd').val();
+                data["ftp_url"]=$('.userdata-content #ftp_url').val();
+                data["port"]=$('.userdata-content #port').val();
+                data["dir"]=$('.userdata-content #dir').val();
+            }
+            $.post("Apps?module=Gbaopen&action=SiteMove", data, function(result) {
+                if (!result.err) {
+                    Msg(3, result.data.name + "已成功迁移");
+                } else {
+                    Msg(2, result.msg);
+                }
+            });
+            $(".dialog-content a.dia-ok").removeClass('sitemove');
         } else if ($(this).hasClass("goimgupload")) {
             var cases = $("#listtbody .cases.current");
             var area = $(".userdata-content input[type='hidden']").attr("data");

@@ -91,10 +91,11 @@
                                 <span>
                                     <input type="text" name="starttime" class="Input" placeholder="格式:2016-5-1 16:00:00，不填默认当前时间">
                                 </span>
-                                <span class="content-l">开通年限</span>
+<!--                                <span class="content-l">开通年限</span>
                                 <span>
-                                    <input type="number" name="stilltime" class="Input" min="1" max="100" placeholder="可选，不填默认1年">
-                                </span>
+                                    默认1年-->
+                                    <!--<input type="number" name="stilltime" class="Input" min="1" max="100" placeholder="可选，不填默认1年">-->
+                                <!--</span>-->
                             </p>
                             <p>
                                 <span class="content-l">FTP</span>
@@ -102,13 +103,14 @@
                                     <input type="radio" name="ftp_c" value="1" checked>公司FTP
                                     <input type="radio" name="ftp_c" value="0">客户FTP
                                 </span>
-                                <span class="content-l">容量</span>
+<!--                                <span class="content-l">容量</span>
                                 <span class="Input">
-                                    <input type="radio" name="capacity" class="capacity" value="100" checked>100M
+                                    默认300M-->
+<!--                                    <input type="radio" name="capacity" class="capacity" value="100" checked>100M
                                     <input type="radio" name="capacity" class="capacity" value="300" checked>300M
                                     <input type="radio" name="capacity" class="capacity" value="500">500M
-                                    <input type="radio" name="capacity" class="capacity" value="1000">1000M
-                                </span>
+                                    <input type="radio" name="capacity" class="capacity" value="1000">1000M-->
+                                <!--</span>-->
                             </p>
                             <p id="companyFTP">
                                 <span class="content-l">服务器选择</span>
@@ -211,6 +213,7 @@
                                 <span class="as">
                                 </span>
                             </p>
+                            <span style="padding-left: 25px;color: red;">注:默认年限为1年并赠送1个月,除体验用户，体验用户默认为一个月试用期;默认空间为300M</span>
                         </div>
                         <div class="btnDD" style="text-align:center;">
                             <input type="submit" class="Btn2" value="下一页">

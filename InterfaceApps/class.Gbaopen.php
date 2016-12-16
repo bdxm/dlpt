@@ -540,8 +540,8 @@ class Gbaopen extends InterfaceVIEWS {
         $level = (int) $_SESSION ['Level'];
         $power = (int) $_SESSION ['Power'];
         $cus_id = (int) $this->_POST['num'];
-        $type = (int) $this->_POST['type'];
         $addyear = intval($this->_POST['yearnum']);
+        $capacity = intval($this->_POST['capacity']);
         if ($cus_id && $this->Assess($power, $this->renew) && $addyear > 0) {
             $agent = new AccountModule;
             $cusmodel = new CustomersModule;
@@ -550,6 +550,7 @@ class Gbaopen extends InterfaceVIEWS {
             $package = new ModelPackageModule;
             $balance = new BalanceModule;
             $cuspro = $cuspromodel->GetOneByWhere('where CustomersID=' . $cus_id);
+            $type = $cuspro['CPhone'];
             $agentinfo = $agent->GetOneInfoByKeyID($cuspro["AgentID"]);
             if ($agentinfo["Level"] == 3) {
 //                $agentinfo = $agent->GetOneInfoByKeyID($agent_id);
@@ -582,94 +583,94 @@ class Gbaopen extends InterfaceVIEWS {
                 return $result;
             }
             if ($cuspro && $type >= $cuspro['CPhone']) {
-                switch ($cuspro['CPhone']) {
-                    case 4:
-                        $price = $package->GetOneByWhere(array('Youhui', 'PCNum', 'PhoneNum'), 'where PackagesNum=\'' . $cuspro['PK_model'] . '\'');
-                        if ($price) {
-                            if (($cuspro['PC_model'] == $price['PCNum']) && ($cuspro['Mobile_model'] == $price['PhoneNum'])) {
-                                $pk_exist = true;
-                            } else {
-                                $pk_exist = false;
-                            }
-                        } else {
-                            $pk_exist = false;
-                        }
-                        $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['PC_model'] . '\'');
-                        $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['Mobile_model'] . '\'');
-                        break;
-                    case 3:
-                        $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['PC_model'] . '\'');
-                        $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['Mobile_model'] . '\'');
-                        break;
-                    case 2:
-                        $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['Mobile_model'] . '\'');
-                        break;
-                    case 1:
-                        $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['PC_model'] . '\'');
-                        break;
-                    default:
-                        $result['err'] = 1002;
-                        $result['msg'] = '请联系程序猿协助';
-                        $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
-                        return $result;
-                        break;
-                }
-                switch ($type) {
-                    case 4:
-                        if ($pk_exist) {
-                            $price = $price['Youhui'];
-                        } else {
-                            $result['err'] = 1003;
-                            $result['msg'] = '套餐--非法请求，不存在的续费请求';
-                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
-                            return $result;
-                        }
-                        break;
-                    case 3:
-                        if ($pc_price && $mobile_price) {
-                            $price = $pc_price['Youhui'] + $mobile_price['Youhui'];
-                        } else {
-                            $result['err'] = 1003;
-                            $result['msg'] = '双站--非法请求，不存在的续费请求';
-                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
-                            return $result;
-                        }
-                        break;
-                    case 2:
-                        if ($mobile_price) {
-                            $price = $mobile_price['Youhui'];
-                        } else {
-                            $result['err'] = 1003;
-                            $result['msg'] = '手机--非法请求，不存在的续费请求';
-                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
-                            return $result;
-                        }
-                        break;
-                    case 1:
-                        if ($pc_price) {
-                            $price = $pc_price['Youhui'];
-                        } else {
-                            $result['err'] = 1003;
-                            $result['msg'] = 'PC--非法请求，不存在的续费请求';
-                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
-                            return $result;
-                        }
-                        break;
-                    default :
-                        $result['err'] = 1003;
-                        $result['msg'] = '非法请求，不存在的续费请求';
-                        $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
-                        return $result;
-                        break;
-                }
-                
-                if ($cuspro["Capacity"] == (300 * 1024 * 1024)) {
+//                switch ($cuspro['CPhone']) {
+//                    case 4:
+//                        $price = $package->GetOneByWhere(array('Youhui', 'PCNum', 'PhoneNum'), 'where PackagesNum=\'' . $cuspro['PK_model'] . '\'');
+//                        if ($price) {
+//                            if (($cuspro['PC_model'] == $price['PCNum']) && ($cuspro['Mobile_model'] == $price['PhoneNum'])) {
+//                                $pk_exist = true;
+//                            } else {
+//                                $pk_exist = false;
+//                            }
+//                        } else {
+//                            $pk_exist = false;
+//                        }
+//                        $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['PC_model'] . '\'');
+//                        $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['Mobile_model'] . '\'');
+//                        break;
+//                    case 3:
+//                        $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['PC_model'] . '\'');
+//                        $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['Mobile_model'] . '\'');
+//                        break;
+//                    case 2:
+//                        $mobile_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['Mobile_model'] . '\'');
+//                        break;
+//                    case 1:
+//                        $pc_price = $model->GetOneByWhere(array('Youhui'), 'where NO=\'' . $cuspro['PC_model'] . '\'');
+//                        break;
+//                    default:
+//                        $result['err'] = 1002;
+//                        $result['msg'] = '请联系程序猿协助';
+//                        $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
+//                        return $result;
+//                        break;
+//                }
+//                switch ($type) {
+//                    case 4:
+//                        if ($pk_exist) {
+//                            $price = $price['Youhui'];
+//                        } else {
+//                            $result['err'] = 1003;
+//                            $result['msg'] = '套餐--非法请求，不存在的续费请求';
+//                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
+//                            return $result;
+//                        }
+//                        break;
+//                    case 3:
+//                        if ($pc_price && $mobile_price) {
+//                            $price = $pc_price['Youhui'] + $mobile_price['Youhui'];
+//                        } else {
+//                            $result['err'] = 1003;
+//                            $result['msg'] = '双站--非法请求，不存在的续费请求';
+//                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
+//                            return $result;
+//                        }
+//                        break;
+//                    case 2:
+//                        if ($mobile_price) {
+//                            $price = $mobile_price['Youhui'];
+//                        } else {
+//                            $result['err'] = 1003;
+//                            $result['msg'] = '手机--非法请求，不存在的续费请求';
+//                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
+//                            return $result;
+//                        }
+//                        break;
+//                    case 1:
+//                        if ($pc_price) {
+//                            $price = $pc_price['Youhui'];
+//                        } else {
+//                            $result['err'] = 1003;
+//                            $result['msg'] = 'PC--非法请求，不存在的续费请求';
+//                            $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
+//                            return $result;
+//                        }
+//                        break;
+//                    default :
+//                        $result['err'] = 1003;
+//                        $result['msg'] = '非法请求，不存在的续费请求';
+//                        $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
+//                        return $result;
+//                        break;
+//                }
+                $price=0;
+                if ($capacity == 300) {
                     $price+=500;
-                } elseif($cuspro["Capacity"] == (500 * 1024 * 1024)){
+                } elseif($capacity == 500){
                     $price+=800;
-                }elseif($cuspro["Capacity"] == (1000 * 1024 * 1024)){
+                }elseif($capacity == 1000){
                     $price+=1500;
-                }elseif($Data["Capacity"] == (100 * 1024 * 1024)){
+                }elseif($capacity == 100){
                     $price+=300;
                 }else{
                     $result['err'] = 1003;
@@ -734,7 +735,9 @@ class Gbaopen extends InterfaceVIEWS {
                     $newyear = (date('Y', $nowyear) + $addyear) . '-' . date('m-d H:i:s', $nowyear);
                     $cuspro_time['Mobile_EndTime'] = $newyear;
                 }
-                $IsOk = $this->ToGbaoPenEditInfo(array_replace($cuspro, $cuspro_time));
+                $modify_cuspro_info=$cuspro_time;
+                $modify_cuspro_info["Capacity"]=$capacity*1024*1024;
+                $IsOk = $this->ToGbaoPenEditInfo(array_replace($cuspro, $modify_cuspro_info));
                 if ($IsOk['err'] != 1000) {
                     $result['err'] = 1002;
                     $result['msg'] = '数据同步失败，请重试';
@@ -759,7 +762,7 @@ class Gbaopen extends InterfaceVIEWS {
                         return $result;
                     }
                 }
-                if (!$cuspromodel->UpdateArray($cuspro_time, $cus_id)) {
+                if (!$cuspromodel->UpdateArray($modify_cuspro_info, $cus_id)) {
                     $this->ToGbaoPenEditInfo($cuspro);
                     $balance->UpdateArrayByAgentID($agent_bal, $costID);
                     $agentinfo['Level'] == 3 ? $balance->UpdateArrayByAgentID($boss_agent_bal, $costID) : '';
@@ -1386,7 +1389,7 @@ class Gbaopen extends InterfaceVIEWS {
                 $this->LogsFunction->LogsCusRecord(111, 1, 0, $result['msg']);
             } elseif ($post['type'] == 'cuspro') {
                 //默认值设置
-                $Data['Capacity'] = $post['capacity'] * 1024 * 1024;
+                $Data['Capacity'] = 300 * 1024 * 1024;//$post['capacity'] * 1024 * 1024;默认300M
                 $Data['Link_Cus'] = '0';
                 $Data['status'] = 1;
 
@@ -1573,25 +1576,27 @@ class Gbaopen extends InterfaceVIEWS {
                     //模板价格
                     $price = $modelMsg['Youhui'];
                 }
-                if ($Data["Capacity"] == (300 * 1024 * 1024)) {
-                    $price+=500;
-                } elseif($Data["Capacity"] == (500 * 1024 * 1024)){
-                    $price+=800;
-                }elseif($Data["Capacity"] == (1000 * 1024 * 1024)){
-                    $price+=1500;
-                }elseif($Data["Capacity"] == (100 * 1024 * 1024)){
-                    $price+=300;
-                }else{
-                    $result['err'] = 1004;
-                    $result['msg'] = '容量空间选择错误';
-                    return $result;
-                }
+//                if ($Data["Capacity"] == (300 * 1024 * 1024)) {
+//                    $price+=500;
+//                } elseif($Data["Capacity"] == (500 * 1024 * 1024)){
+//                    $price+=800;
+//                }elseif($Data["Capacity"] == (1000 * 1024 * 1024)){
+//                    $price+=1500;
+//                }elseif($Data["Capacity"] == (100 * 1024 * 1024)){
+//                    $price+=300;
+//                }else{
+//                    $result['err'] = 1004;
+//                    $result['msg'] = '容量空间选择错误';
+//                    return $result;
+//                }
                 
-                //时间处理
-                if ($post['stilltime'])
-                    $stilltime = intval($post['stilltime'])>0?intval($post['stilltime']):1;
-                else
-                    $stilltime = 1;
+                //时间处理给成默认值年限1年
+//                if ($post['stilltime'])
+//                    $stilltime = intval($post['stilltime'])>0?intval($post['stilltime']):1;
+//                else{
+//                    $stilltime = 1;
+//                }
+                $stilltime = 1;
                 $price = $price * $stilltime;
                 if ($crtdata ['Experience'] == "1") {
                     $price = 0;
@@ -1599,6 +1604,19 @@ class Gbaopen extends InterfaceVIEWS {
                 }
                 $nowtime = time();
 
+                //优惠码处理
+                $coupons = $post['coupons'];
+                $couprice=0;
+                if ($coupons) {
+                    $couponsprice = file_get_contents(DAILI_DOMAIN . '?module=ApiModel&action=GetCoupons&code=' . $coupons);
+                    if ($couponsprice > 0) {
+                        $Data['Coupons'] = $coupons;
+                        $Data['CouponsPrice'] = $couponsprice;
+                        $couprice=$couponsprice;
+                    }
+                }
+                $price=$price-$couprice;
+                
                 //价格计算开始，根据等级得到扣款的代理商账户
                 if ($level == 3) {
                     $costAccount = $balance->GetOneInfoByAgentID($agentinfo['BossAgentID']);
@@ -1723,15 +1741,6 @@ class Gbaopen extends InterfaceVIEWS {
                 }
                 $Data['UpdateTime'] = $nowtime;
                 $Data['ProjectID'] = 1;
-                //优惠码处理
-                $coupons = $post['coupons'];
-                if ($coupons) {
-                    $couponsprice = file_get_contents(DAILI_DOMAIN . '?module=ApiModel&action=GetCoupons&code=' . $coupons);
-                    if ($couponsprice > 0) {
-                        $Data['Coupons'] = $coupons;
-                        $Data['CouponsPrice'] = $couponsprice;
-                    }
-                }
                 //新建G宝盆信息，并同步统一平台
                 $GnameNum = $CustProModule->GetListsNum("where G_name='" . $Data['G_name'] . "'");
                 if ($GnameNum ['Num'] > 0) {
@@ -1985,7 +1994,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $search_cuspro .= $search_cuspro ? $this->_GET['domain'] ? ' and ' : '' : '';
                     $search_cuspro .= $this->_GET['domain'] != '' ? '(PC_domain LIKE \'%' . $this->_GET['domain'] . '%\' or Mobile_domain LIKE \'%' . $this->_GET['domain'] . '%\')' : '';
                     //查询优化
-                    $sel1 = $search_cus ? '(select AgentID,CustomersID from tb_customers where ' . $search_cus . ')' : 'tb_customers';
+                    $sel1 = $search_cus ? '(select AgentID,CustomersID,Status from tb_customers where ' . $search_cus . ')' : 'tb_customers';
                     //根据权限来获取客户信息量
                     if ($level == 1) {
                         if ($search_cuspro)
@@ -1998,19 +2007,19 @@ class Gbaopen extends InterfaceVIEWS {
                         if ($search_cuspro)
                             $select = 'select count(1) as Num from (select a.CustomersID from '
                                     . '(select AgentID from tb_account where BossAgentID=' . $agent_id . ' or AgentID=' . $agent_id . ') as b inner join '
-                                    . '' . $sel1 . ' a on a.AgentID = b.AgentID) as d inner join '
+                                    . '' . $sel1 . ' a on a.AgentID = b.AgentID and a.Status>0) as d inner join '
                                     . '(select CustomersID from tb_customers_project where ' . $search_cuspro . ') c on d.CustomersID = c.CustomersID ';
                         else
                             $select = 'select count(1) as Num from tb_account b inner join '
-                                    . '' . $sel1 . ' a on a.AgentID = b.AgentID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')';
+                                    . '' . $sel1 . ' a on a.AgentID = b.AgentID and a.Status>0 and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')';
                         $data = $DB->Select($select);
                     }elseif ($level == 3) {
                         if ($search_cuspro) {
                             $search_cus = $search_cus ? ' and ' . $search_cus : '';
-                            $select = 'select count(1) as Num from (select CustomersID from tb_customers where AgentID=' . $agent_id . $search_cus . ') as d inner join '
+                            $select = 'select count(1) as Num from (select CustomersID from tb_customers where AgentID=' . $agent_id . $search_cus . ' and a.Status>0) as d inner join '
                                     . '(select CustomersID from tb_customers_project where ' . $search_cuspro . ') c on d.CustomersID = c.CustomersID';
                         } else
-                            $select = 'select count(1) as Num from tb_customers where AgentID=' . $agent_id . ' and (' . $search_cus . ')';
+                            $select = 'select count(1) as Num from tb_customers where AgentID=' . $agent_id . ' and Status>0 and (' . $search_cus . ')';
                         $data = $DB->Select($select);
                     }else {
                         return false;
@@ -2021,13 +2030,13 @@ class Gbaopen extends InterfaceVIEWS {
             case 0:
                 //根据权限来获取客户信息量--所有
                 if ($level == 1) {
-                    $select = 'select count(1) as Num from tb_customers';
+                    $select = 'select count(1) as Num from tb_customers where Status>0 ';
                     $data = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select count(1) as Num from tb_account b inner join tb_customers a on a.AgentID = b.AgentID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')';
+                    $select = 'select count(1) as Num from tb_account b inner join tb_customers a on a.AgentID = b.AgentID and a.Status>0 and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')';
                     $data = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select count(1) as Num from tb_customers a where AgentID=' . $agent_id;
+                    $select = 'select count(1) as Num from tb_customers a where AgentID=' . $agent_id.' and a.Status>0 ';
                     $data = $DB->Select($select);
                 } else {
                     return false;
@@ -2036,13 +2045,13 @@ class Gbaopen extends InterfaceVIEWS {
             case 1:
                 //根据权限来获取客户信息量--开通
                 if ($level == 1) {
-                    $select = 'select count(1) as Num from tb_customers a inner join tb_customers_project c on a.CustomersID = c.CustomersID and a.GOpen = 1';
+                    $select = 'select count(1) as Num from tb_customers a inner join tb_customers_project c on a.CustomersID = c.CustomersID and a.GOpen = 1 and a.Status>0 ';
                     $data = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select count(1) as Num from tb_customers a inner join tb_account b on a.AgentID = b.AgentID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')' . ' inner join tb_customers_project c on a.CustomersID = c.CustomersID and a.GOpen = 1';
+                    $select = 'select count(1) as Num from tb_customers a inner join tb_account b on a.AgentID = b.AgentID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')' . ' inner join tb_customers_project c on a.CustomersID = c.CustomersID and a.GOpen = 1 and a.Status>0 ';
                     $data = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select count(1) as Num from tb_customers a inner join tb_customers_project c  on a.CustomersID = c.CustomersID and a.GOpen = 1 and a.AgentID=' . $agent_id;
+                    $select = 'select count(1) as Num from tb_customers a inner join tb_customers_project c  on a.CustomersID = c.CustomersID and a.GOpen = 1 and a.Status>0  and a.AgentID=' . $agent_id;
                     $data = $DB->Select($select);
                 } else {
                     return false;
@@ -2067,13 +2076,13 @@ class Gbaopen extends InterfaceVIEWS {
                 $now = date("Y-m-d H:i:s", time());
                 //根据权限来获取客户信息量--过期
                 if ($level == 1) {
-                    $select = 'select count(1) as Num from tb_customers_project c inner join tb_customers a on c.CustomersID=a.CustomersID where (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '")';
+                    $select = 'select count(1) as Num from tb_customers_project c inner join tb_customers a on c.CustomersID=a.CustomersID and (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '") and a.GOpen = 1 and a.Status>0 ';
                     $data = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select count(1) as Num from tb_account b inner join tb_customers_project c on c.AgentID = b.AgentID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ') and (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '")';
+                    $select = 'select count(1) as Num from tb_account b inner join tb_customers_project c on c.AgentID = b.AgentID inner join tb_customers a on c.CustomersID=a.CustomersID  and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ') and (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '") and a.GOpen = 1 and a.Status>0 ';
                     $data = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select count(1) as Num from tb_customers_project where (PC_EndTime<"' . $now . '" or Mobile_EndTime<"' . $now . '") and AgentID=' . $agent_id;
+                    $select = 'select count(1) as Num from tb_customers_project c inner join tb_customers a on c.CustomersID=a.CustomersID  where (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '") and a.GOpen = 1 and a.Status>0  and c.AgentID=' . $agent_id;
                     $data = $DB->Select($select);
                 } else {
                     return false;
@@ -2084,13 +2093,22 @@ class Gbaopen extends InterfaceVIEWS {
                 $after = date("Y-m-d H:i:s", strtotime("+30 day"));
                 //根据权限来获取客户信息量--快过期
                 if ($level == 1) {
-                    $select = 'select count(1) as Num from tb_customers_project where (PC_EndTime<"' . $after . '" and PC_EndTime>"' . $now . '") or (Mobile_EndTime<"' . $after . '" and Mobile_EndTime>"' . $now . '")';
+                    $select = 'select count(1) as Num from tb_customers_project c inner join tb_customers a on c.CustomersID=a.CustomersID where ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '")) and a.GOpen = 1 and a.Status>0 ';
                     $data = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select count(1) as Num from tb_customers_project c inner join tb_account b on c.AgentID = b.AgentID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ') and ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '"))';
+                    $select = 'select count(1) as Num from tb_customers_project c inner join tb_account b on c.AgentID = b.AgentID inner join tb_customers a on c.CustomersID=a.CustomersID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ') and ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '")) and a.GOpen = 1 and a.Status>0 ';
                     $data = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select count(1) as Num from tb_customers_project where ((PC_EndTime<"' . $after . '" and PC_EndTime>"' . $now . '") or (Mobile_EndTime<"' . $after . '" and Mobile_EndTime>"' . $now . '")) and AgentID=' . $agent_id;
+                    $select = 'select count(1) as Num from tb_customers_project c inner join tb_customers a on c.CustomersID=a.CustomersID where ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '")) and c.AgentID=' . $agent_id.' and a.GOpen = 1 and a.Status>0 ';
+                    $data = $DB->Select($select);
+                } else {
+                    return false;
+                }
+                break;
+                case 5:
+                //根据权限来获取客户信息量--快过期
+                if ($level == 1) {
+                    $select = 'select count(1) as Num from tb_customers a where a.Status=0 ';
                     $data = $DB->Select($select);
                 } else {
                     return false;
@@ -2128,24 +2146,24 @@ class Gbaopen extends InterfaceVIEWS {
                     $search_cuspro .= $search_cuspro ? $this->_GET['domain'] ? ' and ' : '' : '';
                     $search_cuspro .= $this->_GET['domain'] != '' ? '(PC_domain LIKE \'%' . $this->_GET['domain'] . '%\' or Mobile_domain LIKE \'%' . $this->_GET['domain'] . '%\')' : '';
                     //查询优化
-                    $sel1 = $search_cus ? '(select AgentID,CustomersID,CompanyName,CustomersName from tb_customers where ' . $search_cus . ')' : 'tb_customers';
+                    $sel1 = $search_cus ? '(select AgentID,CustomersID,CompanyName,CustomersName,Status from tb_customers where ' . $search_cus . ')' : 'tb_customers';
                     $sel2 = $search_cuspro ? 'inner join (select CustomersID,G_name,Cases,CPhone,PC_StartTime,PC_EndTime,Mobile_StartTime,Mobile_EndTime,AgentID from tb_customers_project where ' . $search_cuspro . ')' : 'left join tb_customers_project';
                     $search_cus = $search_cus ? ' and (' . $search_cus . ')' : '';
                     //根据权限来获取客户信息量
                     if ($level == 1) {
-                        $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                                . '(select a.CustomersID,a.CompanyName,a.CustomersName,b.UserName from tb_account b inner join ' . $sel1 . ' a on a.AgentID = b.AgentID) as d '
+                        $select = 'select d.CustomersID,d.CompanyName,d.Status,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                                . '(select a.CustomersID,a.CompanyName,a.CustomersName,b.UserName,a.Status from tb_account b inner join ' . $sel1 . ' a on a.AgentID = b.AgentID) as d '
                                 . $sel2 . ' c on d.CustomersID = c.CustomersID ' . $limit;
                         $cus = $DB->Select($select);
                     } elseif ($level == 2) {
-                        $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                                . '(select a.CustomersID,a.CompanyName,a.CustomersName,b.UserName from '
-                                . '(select AgentID,UserName from tb_account where BossAgentID=' . $agent_id . ' or AgentID=' . $agent_id . ') as b inner join ' . $sel1 . ' a on a.AgentID = b.AgentID) as d '
+                        $select = 'select d.CustomersID,d.CompanyName,d.UserName,d.Status,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                                . '(select a.CustomersID,a.CompanyName,a.CustomersName,b.UserName,a.Status from '
+                                . '(select AgentID,UserName from tb_account where BossAgentID=' . $agent_id . ' or AgentID=' . $agent_id . ') as b inner join ' . $sel1 . ' a on a.AgentID = b.AgentID and a.Status>0) as d '
                                 . $sel2 . ' c on d.CustomersID = c.CustomersID ' . $order . $limit;
                         $cus = $DB->Select($select);
                     } elseif ($level == 3) {
-                        $select = 'select d.CustomersID,d.CompanyName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                                . '(select CustomersID,CompanyName from tb_customers where AgentID=' . $agent_id . $search_cus . ') as d '
+                        $select = 'select d.CustomersID,d.CompanyName,d.Status,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                                . '(select CustomersID,CompanyName,Status from tb_customers where Status>0 and AgentID=' . $agent_id . $search_cus . ') as d '
                                 . $sel2 . ' c on d.CustomersID = c.CustomersID' . $order . $limit;
                         $cus = $DB->Select($select);
                     } else {
@@ -2158,6 +2176,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $data[$key]['id'] = $val['CustomersID'];
                     $data[$key]['company'] = $val['CompanyName'];
                     $data[$key]['agent'] = $val['UserName'];
+                    $data[$key]['Status'] = $val['Status'];
                     $data[$key]['name'] = $val['G_name'] ? $val['G_name'] : false;
                     $data[$key]['PCTimeStart'] = $val['PC_StartTime'] ? $val['PC_StartTime'] : false;
                     $data[$key]['PCTimeEnd'] = $val['PC_EndTime'] ? $val['PC_EndTime'] : false;
@@ -2172,18 +2191,18 @@ class Gbaopen extends InterfaceVIEWS {
             case 0:
                 //根据权限来获取客户信息量
                 if ($level == 1) {
-                    $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                            . '(select a.CustomersID,a.CompanyName,b.UserName from tb_account b inner join tb_customers a on b.AgentID = a.AgentID ' . $limit . ') as d '
+                    $select = 'select d.CustomersID,d.CompanyName,d.UserName,d.Status,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                            . '(select a.CustomersID,a.CompanyName,b.UserName,a.Status from tb_account b inner join tb_customers a on b.AgentID = a.AgentID and a.Status>0 ' . $limit . ') as d '
                             . 'left join tb_customers_project c on d.CustomersID = c.CustomersID';
                     $cus = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                            . '(select a.CustomersID,a.CompanyName,b.UserName from tb_account b inner join tb_customers a on (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ') and b.AgentID = a.AgentID ' . $limit . ') as d '
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                            . '(select a.CustomersID,a.CompanyName,a.Status,b.UserName from tb_account b inner join tb_customers a on (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ') and b.AgentID = a.AgentID  and a.Status>0 ' . $limit . ') as d '
                             . 'left join tb_customers_project c on d.CustomersID = c.CustomersID' . $order;
                     $cus = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select d.CustomersID,d.CompanyName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                            . '(select CustomersID,CompanyName from tb_customers where AgentID=' . $agent_id . $limit . ') as d '
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                            . '(select CustomersID,CompanyName,Status from tb_customers where AgentID=' . $agent_id.' and Status>0 ' . $limit . ') as d '
                             . 'left join tb_customers_project c on d.CustomersID = c.CustomersID' . $order;
                     $cus = $DB->Select($select);
                 } else {
@@ -2195,6 +2214,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $data[$key]['company'] = $val['CompanyName'];
                     $data[$key]['agent'] = $val['UserName'];
                     $data[$key]['name'] = $val['G_name'];
+                    $data[$key]['Status'] = $val['Status'];
                     $data[$key]['PCTimeStart'] = $val['PC_StartTime'] ? $val['PC_StartTime'] : false;
                     $data[$key]['PCTimeEnd'] = $val['PC_EndTime'] ? $val['PC_EndTime'] : false;
                     $data[$key]['MobileTimeStart'] = $val['Mobile_StartTime'] ? $val['Mobile_StartTime'] : false;
@@ -2208,18 +2228,18 @@ class Gbaopen extends InterfaceVIEWS {
             case 1:
                 //根据权限来获取客户信息量
                 if ($level == 1) {
-                    $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                            . '(select a.CustomersID,a.CompanyName,b.UserName from tb_account b inner join tb_customers a on b.AgentID = a.AgentID and a.GOpen = 1) as d '
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                            . '(select a.CustomersID,a.CompanyName,a.Status,b.UserName from tb_account b inner join tb_customers a on b.AgentID = a.AgentID and a.GOpen = 1 and a.Status>0 ) as d '
                             . 'inner join tb_customers_project c on d.CustomersID = c.CustomersID' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                            . '(select a.CustomersID,a.CompanyName,b.UserName from tb_account b inner join tb_customers a on b.AgentID = a.AgentID and a.GOpen = 1 and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')' . ') as d '
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                            . '(select a.CustomersID,a.CompanyName,a.Status,b.UserName from tb_account b inner join tb_customers a on b.AgentID = a.AgentID and a.GOpen = 1 and a.Status>0  and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')' . ') as d '
                             . 'inner join tb_customers_project c on d.CustomersID = c.CustomersID' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select d.CustomersID,d.CompanyName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers d '
-                            . 'inner join tb_customers_project c on d.CustomersID = c.CustomersID and d.GOpen = 1 and d.AgentID=' . $agent_id . $order . $limit;
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers d '
+                            . 'inner join tb_customers_project c on d.CustomersID = c.CustomersID and d.GOpen = 1 and d.Status>0  and d.AgentID=' . $agent_id . $order . $limit;
                     $cus = $DB->Select($select);
                 } else {
                     return false;
@@ -2230,6 +2250,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $data[$key]['company'] = $val['CompanyName'];
                     $data[$key]['agent'] = $val['UserName'];
                     $data[$key]['name'] = $val['G_name'];
+                    $data[$key]['Status'] = $val['Status'];
                     $data[$key]['PCTimeStart'] = $val['PC_StartTime'] ? $val['PC_StartTime'] : false;
                     $data[$key]['PCTimeEnd'] = $val['PC_EndTime'] ? $val['PC_EndTime'] : false;
                     $data[$key]['MobileTimeStart'] = $val['Mobile_StartTime'] ? $val['Mobile_StartTime'] : false;
@@ -2243,13 +2264,13 @@ class Gbaopen extends InterfaceVIEWS {
             case 2:
                 //根据权限来获取客户信息量
                 if ($level == 1) {
-                    $select = 'select CustomersID,CompanyName,b.UserName,d.AgentID from tb_account b inner join tb_customers d on b.AgentID = d.AgentID and d.GOpen = 0' . $order . $limit;
+                    $select = 'select CustomersID,CompanyName,b.UserName,d.AgentID,d.Status from tb_account b inner join tb_customers d on b.AgentID = d.AgentID and d.GOpen = 0 and d.Status>0 ' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select CustomersID,CompanyName,b.UserName,d.AgentID from tb_account b inner join tb_customers d on b.AgentID = d.AgentID and d.GOpen = 0 and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')' . $order . $limit;
+                    $select = 'select CustomersID,CompanyName,b.UserName,d.AgentID,d.Status from tb_account b inner join tb_customers d on b.AgentID = d.AgentID and d.GOpen = 0 and d.Status>0  and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select CustomersID,CompanyName,d.AgentID from tb_customers d where d.GOpen = 0 and d.AgentID=' . $agent_id . $order . $limit;
+                    $select = 'select CustomersID,CompanyName,d.AgentID,d.Status from tb_customers d where d.GOpen = 0 and d.Status>0  and d.AgentID=' . $agent_id . $order . $limit;
                     $cus = $DB->Select($select);
                 } else {
                     return false;
@@ -2260,6 +2281,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $data[$key]['company'] = $val['CompanyName'];
                     $data[$key]['agent'] = $val['UserName'];
                     $data[$key]['name'] = $val['G_name'];
+                    $data[$key]['Status'] = $val['Status'];
                     $data[$key]['PCTimeStart'] = false;
                     $data[$key]['PCTimeEnd'] = false;
                     $data[$key]['MobileTimeStart'] = false;
@@ -2271,18 +2293,18 @@ class Gbaopen extends InterfaceVIEWS {
                 $now = date("Y-m-d H:i:s", time());
                 //根据权限来获取客户信息量
                 if ($level == 1) {
-                    $select = 'select d.CustomersID,a.CompanyName,d.UserName,d.G_name,d.Cases,d.CPhone,d.PC_StartTime,d.PC_EndTime,d.Mobile_StartTime,d.Mobile_EndTime,a.AgentID from '
+                    $select = 'select d.CustomersID,a.CompanyName,a.Status,d.UserName,d.G_name,d.Cases,d.CPhone,d.PC_StartTime,d.PC_EndTime,d.Mobile_StartTime,d.Mobile_EndTime,a.AgentID from '
                             . '(select b.UserName,c.CustomersID,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime from tb_account b inner join tb_customers_project c on c.AgentID = b.AgentID and (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '")) as d '
-                            . 'inner join tb_customers a on d.CustomersID=a.CustomersID and a.GOpen = 1' . $order . $limit;
+                            . 'inner join tb_customers a on d.CustomersID=a.CustomersID and a.GOpen = 1 and a.Status>0 ' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select d.CustomersID,a.CompanyName,d.UserName,d.G_name,d.Cases,d.CPhone,d.PC_StartTime,d.PC_EndTime,d.Mobile_StartTime,d.Mobile_EndTime,a.AgentID from '
+                    $select = 'select d.CustomersID,a.CompanyName,a.Status,d.UserName,d.G_name,d.Cases,d.CPhone,d.PC_StartTime,d.PC_EndTime,d.Mobile_StartTime,d.Mobile_EndTime,a.AgentID from '
                             . '(select c.CustomersID,b.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime from tb_account b inner join tb_customers_project c on c.AgentID = b.AgentID and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ') and (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '")) d '
-                            . 'inner join tb_customers a on a.CustomersID=d.CustomersID' . $order . $limit;
+                            . 'inner join tb_customers a on a.CustomersID=d.CustomersID and a.Status>0 ' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select d.CustomersID,d.CompanyName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
-                            . 'tb_customers_project c inner join tb_customers d on c.CustomersID=d.CustomersID and c.AgentID = ' . $agent_id . ' and (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '")' . $order . $limit;
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                            . 'tb_customers_project c inner join tb_customers d on c.CustomersID=d.CustomersID and d.Status>0  and c.AgentID = ' . $agent_id . ' and (c.PC_EndTime<"' . $now . '" or c.Mobile_EndTime<"' . $now . '")' . $order . $limit;
                     $cus = $DB->Select($select);
                 } else {
                     return false;
@@ -2293,6 +2315,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $data[$key]['company'] = $val['CompanyName'];
                     $data[$key]['agent'] = $val['UserName'];
                     $data[$key]['name'] = $val['G_name'];
+                    $data[$key]['Status'] = $val['Status'];
                     $data[$key]['PCTimeStart'] = $val['PC_StartTime'] ? $val['PC_StartTime'] : false;
                     $data[$key]['PCTimeEnd'] = $val['PC_EndTime'] ? $val['PC_EndTime'] : false;
                     $data[$key]['MobileTimeStart'] = $val['Mobile_StartTime'] ? $val['Mobile_StartTime'] : false;
@@ -2308,17 +2331,17 @@ class Gbaopen extends InterfaceVIEWS {
                 $after = date("Y-m-d H:i:s", strtotime("+30 day"));
                 //根据权限来获取客户信息量
                 if ($level == 1) {
-                    $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers_project c '
-                            . 'inner join (select a.CustomersID,a.CompanyName,b.UserName from tb_account b inner join tb_customers a on a.AgentID = b.AgentID and a.GOpen = 1) d '
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers_project c '
+                            . 'inner join (select a.CustomersID,a.CompanyName,a.Status,b.UserName from tb_account b inner join tb_customers a on a.AgentID = b.AgentID and a.GOpen = 1 and a.Status>0 ) d '
                             . 'on c.CustomersID=d.CustomersID and ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '"))' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 2) {
-                    $select = 'select d.CustomersID,d.CompanyName,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers_project c '
-                            . 'inner join (select a.CustomersID,a.CompanyName,b.UserName from tb_account b inner join tb_customers a on a.AgentID = b.AgentID and a.GOpen = 1 and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')) d '
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers_project c '
+                            . 'inner join (select a.CustomersID,a.CompanyName,a.Status,b.UserName from tb_account b inner join tb_customers a on a.AgentID = b.AgentID and a.GOpen = 1 and a.Status>0  and (b.BossAgentID=' . $agent_id . ' or b.AgentID=' . $agent_id . ')) d '
                             . 'on c.CustomersID=d.CustomersID and ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '"))' . $order . $limit;
                     $cus = $DB->Select($select);
                 } elseif ($level == 3) {
-                    $select = 'select d.CustomersID,d.CompanyName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers_project c inner join tb_customers d on c.CustomersID=d.CustomersID and ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '")) and c.AgentID=' . $agent_id . $order . $limit;
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from tb_customers_project c inner join tb_customers d on c.CustomersID=d.CustomersID and d.Status>0  and ((c.PC_EndTime<"' . $after . '" and c.PC_EndTime>"' . $now . '") or (c.Mobile_EndTime<"' . $after . '" and c.Mobile_EndTime>"' . $now . '")) and c.AgentID=' . $agent_id . $order . $limit;
                     $cus = $DB->Select($select);
                 } else {
                     return false;
@@ -2330,6 +2353,34 @@ class Gbaopen extends InterfaceVIEWS {
                     $data[$key]['company'] = $val['CompanyName'];
                     $data[$key]['agent'] = $val['UserName'];
                     $data[$key]['name'] = $val['G_name'];
+                    $data[$key]['Status'] = $val['Status'];
+                    $data[$key]['PCTimeStart'] = $val['PC_StartTime'] ? $val['PC_StartTime'] : false;
+                    $data[$key]['PCTimeEnd'] = $val['PC_EndTime'] ? $val['PC_EndTime'] : false;
+                    $data[$key]['MobileTimeStart'] = $val['Mobile_StartTime'] ? $val['Mobile_StartTime'] : false;
+                    $data[$key]['MobileTimeEnd'] = $val['Mobile_EndTime'] ? $val['Mobile_EndTime'] : false;
+                    $cases = explode('-', $val['Cases']);
+                    $data[$key]['PlaceName'] = $cases[0] ? $cases[1] : '关闭';
+                    $data[$key]['Place'] = $cases[0];
+                    $data[$key]['agent_username'] = $usernames[$val["AgentID"]];
+                }
+                break;
+            case 5:
+                //根据权限来获取客户信息量
+                if ($level == 1) {
+                    $select = 'select d.CustomersID,d.CompanyName,d.Status,d.UserName,c.G_name,c.Cases,c.CPhone,c.PC_StartTime,c.PC_EndTime,c.Mobile_StartTime,c.Mobile_EndTime,c.AgentID from '
+                            . '(select a.CustomersID,a.CompanyName,a.Status,b.UserName from tb_account b inner join tb_customers a on b.AgentID = a.AgentID and a.Status=0 ) as d '
+                            . 'inner join tb_customers_project c on d.CustomersID = c.CustomersID' . $order . $limit;
+                    $cus = $DB->Select($select);
+                } else {
+                    return false;
+                }
+                foreach ($cus as $key => $val) {
+                    $data[$key]['type'] = $val['CPhone'] ? $val['CPhone'] : false;
+                    $data[$key]['id'] = $val['CustomersID'];
+                    $data[$key]['company'] = $val['CompanyName'];
+                    $data[$key]['agent'] = $val['UserName'];
+                    $data[$key]['name'] = $val['G_name'];
+                    $data[$key]['Status'] = $val['Status'];
                     $data[$key]['PCTimeStart'] = $val['PC_StartTime'] ? $val['PC_StartTime'] : false;
                     $data[$key]['PCTimeEnd'] = $val['PC_EndTime'] ? $val['PC_EndTime'] : false;
                     $data[$key]['MobileTimeStart'] = $val['Mobile_StartTime'] ? $val['Mobile_StartTime'] : false;
@@ -2398,8 +2449,12 @@ class Gbaopen extends InterfaceVIEWS {
     /**
      * 计算费用
      */
-    public function getcost(){
-        $post=$this->_POST;
+    public function getcost($data=array()){
+        if(count($data)>0){
+            $post=$data;
+        }else{
+            $post=$this->_POST;
+        }
         $price=0;
         if($post["Experience"]==1){
             $price=0;
@@ -2412,7 +2467,7 @@ class Gbaopen extends InterfaceVIEWS {
                 case 4:
                     $price = $package->GetOneByWhere(array('Youhui', 'PCNum', 'PhoneNum'), 'where PackagesNum=\'' . $post['PK_model'] . '\'');
                     if ($price) {
-                            $pk_exist = true;
+                        $pk_exist = true;
                     } else {
                         $pk_exist = false;
                     }
@@ -2477,24 +2532,121 @@ class Gbaopen extends InterfaceVIEWS {
                     break;
             }
             $result["model_price"]=$price;
-            if ($post["Capacity"] == 300) {
-                $price+=500;
-                $result["capacity_price"]=500;
-            } elseif($post["Capacity"] == 500){
-                $price+=800;
-                $result["capacity_price"]=800;
-            }elseif($post["Capacity"] == 1000){
-                $price+=1500;
-                $result["capacity_price"]=1500;
-            }elseif($post["Capacity"] == 100){
-                $price+=300;
-            }else{
-                $result['err'] = 1003;
-                $result['msg'] = '容量空间选择错误';
-                return $result;
+//            if ($post["Capacity"] == 300) {
+//                $price+=500;
+//                $result["capacity_price"]=500;
+//            } elseif($post["Capacity"] == 500){
+//                $price+=800;
+//                $result["capacity_price"]=800;
+//            }elseif($post["Capacity"] == 1000){
+//                $price+=1500;
+//                $result["capacity_price"]=1500;
+//            }elseif($post["Capacity"] == 100){
+//                $price+=300;
+//            }else{
+//                $result['err'] = 1003;
+//                $result['msg'] = '容量空间选择错误';
+//                return $result;
+//            }
+            $coupons=$post["coupons"];
+            $couprice=0;
+            if ($coupons) {
+                $couponsprice = file_get_contents(DAILI_DOMAIN . '?module=ApiModel&action=GetCoupons&code=' . $coupons);
+                if ($couponsprice > 0) {
+                    $couprice=$couponsprice;
+                }
             }
-            $result["price"]=$price*$post["stilltime"];
+            $result["price"]=$price*$post["stilltime"]-$couprice;
             return $result;
         }
+    }
+    public function SiteMove(){
+        $result = array('err' => 0, 'data' => '', 'msg' => '');
+        $post=$this->_POST;
+        $CustmoersID=$post["num"];
+        $level=$_SESSION["Level"];
+        $agent_id=$_SESSION["AgentID"];
+        $customer=new CustomersModule();
+        $customerInfo=$customer->GetOneInfoByKeyID($CustmoersID);
+        if($level!=1){
+            if($level==2){
+                $account=new AccountModule();
+                $account_lists=$account->GetListsByWhere(array("AgentID","BossAgentID"), " where BossAgentID=".$agent_id);
+                $childAgentIDs=array();
+                foreach($account_lists as $v){
+                    $childAgentIDs[]=$v["AgentID"];
+                }
+                $childAgentIDs[]=$agent_id;
+                if(!in_array($customerInfo["AgentID"], $agent_id)){
+                    $result['err'] = 1003;
+                    $result['msg'] = '没有该用户';
+                    return $result;
+                }
+            }else if($level==3){
+                if($customerInfo["AgentID"]!= $agent_id){
+                    $result['err'] = 1003;
+                    $result['msg'] = '没有该用户';
+                    return $result;
+                }
+            }
+        }
+        $info=array();
+        if($post["FTP"]==0){
+            $info["FuwuqiID"]="";
+            $info["G_Ftp_Address"]=$post["address"];
+            $info["G_Ftp_User"]=$post["user"];
+            $info["G_Ftp_Pwd"]=$post["pwd"];
+            $info["G_Ftp_FwAdress"]=$post["ftp_url"];
+            $info["G_Ftp_Duankou"]=$post["port"];
+            $info["G_Ftp_Mulu"]=$post["dir"];
+            $info["FTP"]=2;
+        }else{
+            $info["FuwuqiID"]=$post["FuwuqiID"];
+            $fuwuqi=new FuwuqiModule();
+            $fuwuqi_info=$fuwuqi->GetOneInfoByKeyID($info["FuwuqiID"]);
+            if($fuwuqi_info){
+                $info["G_Ftp_Address"]=$fuwuqi_info["FTP"];
+                $info["G_Ftp_User"]=$fuwuqi_info["FTPName"];
+                $info["G_Ftp_Pwd"]=$fuwuqi_info["FTPPassword"];
+                $info["G_Ftp_FwAdress"]=$fuwuqi_info["FwAdress"];
+                $info["G_Ftp_Duankou"]=$fuwuqi_info["FTPDuankou"];
+                $info["G_Ftp_Mulu"]=$fuwuqi_info["FTPMulu"];
+                $info["FTP"]=1;
+            }else{
+                $result['err'] = 1003;
+                $result['msg'] = '未找到该服务器';
+                $this->LogsFunction->LogsCusRecord(121, 3, $CustmoersID, $result['msg']);
+                return $result;
+            }
+        }
+        $custpro=new CustProModule();
+        if($custpro->UpdateArray($info,$CustmoersID)){
+            $cuspro_info=$custpro->GetOneByWhere(array(), " where CustomersID=".$CustmoersID);
+            $IsOk = $this->ToGbaoPenEditInfo($cuspro_info);
+            if ($IsOk['err'] != 1000) {
+                $result['err'] = 1002;
+                $result['msg'] = '数据同步失败，请重试';
+                $this->LogsFunction->LogsCusRecord(121, 6, $CustmoersID, $result['msg']);
+                $result['data'] = $IsOk;
+                return $result;
+            }
+            $result['msg'] = '网站迁移成功';
+            $result['data']['name'] = $customerInfo['CompanyName'];
+            $this->LogsFunction->LogsCusRecord(121, 1, $CustmoersID, $result['msg']);
+            return $result;
+        }else{
+            $result['err'] = 1003;
+            $result['msg'] = '网站迁移失败';
+            $this->LogsFunction->LogsCusRecord(121, 0, $CustmoersID, $result['msg']);
+            return $result;
+        }
+    }
+    /**
+     * 获取服务器列表
+     */
+    public function getFuwuqi() {
+        $fuwuqi=new FuwuqiModule();
+        $fuwuqiinfo = $fuwuqi->GetListsByWhere(array('ID','FuwuqiName','CName'),' order by ID asc');
+        return json_encode($fuwuqiinfo);
     }
 }
