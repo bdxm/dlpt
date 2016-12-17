@@ -2016,7 +2016,7 @@ class Gbaopen extends InterfaceVIEWS {
                     }elseif ($level == 3) {
                         if ($search_cuspro) {
                             $search_cus = $search_cus ? ' and ' . $search_cus : '';
-                            $select = 'select count(1) as Num from (select CustomersID from tb_customers where AgentID=' . $agent_id . $search_cus . ' and a.Status>0) as d inner join '
+                            $select = 'select count(1) as Num from (select CustomersID from tb_customers where AgentID=' . $agent_id . $search_cus . ' and Status>0) as d inner join '
                                     . '(select CustomersID from tb_customers_project where ' . $search_cuspro . ') c on d.CustomersID = c.CustomersID';
                         } else
                             $select = 'select count(1) as Num from tb_customers where AgentID=' . $agent_id . ' and Status>0 and (' . $search_cus . ')';
