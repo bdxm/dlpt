@@ -22,7 +22,7 @@
                         <table>
                             <tr><th class="text-left">订单编号</th><th>消费客户</th><th>消费金额</th><th>剩余金额</th><th>操作</th><th>操作客服</th><th class="last">操作时间</th></tr>
                             <?php foreach ($Data["log"] as $v) { ?>
-                                <tr class="data-item" data-type="<?php echo $v["type"]; ?>"><td class="text-left"><?php echo $v["OrderID"]; ?></td><td><?php echo $v["CompanyName"]; ?></td><td><?php echo $v["cost"]; ?></td><td><?php echo $v["Balance"]; ?></td><td><?php echo $v["description"]; ?></td><td><?php echo $v["UserName"]; ?></td><td class="last"><?php echo $v["adddate"]; ?></td></tr>
+                                <tr class="data-item" data-type="<?php echo $v["type"]; ?>"><td class="text-left"><?php echo $v["OrderID"]; ?></td><td><?php echo $v["CompanyName"]; ?></td><td><?php echo ($v["cost"]>0?("+".$v["cost"]):$v["cost"]); ?></td><td><?php echo $v["Balance"]; ?></td><td><?php echo $v["description"]; ?></td><td><?php echo $v["ContactName"]; ?></td><td class="last"><?php echo $v["adddate"]; ?></td></tr>
                                     <?php } ?>
                         </table>
                         <?php if(count($Data["log"])==0){?>

@@ -346,39 +346,61 @@ class Agent extends InterfaceVIEWS {
     }
 
     //客服充值(接口已关闭)
-    protected function Recharge() {
+    public function Recharge() {
         $result = array('err' => 1000, 'data' => '', 'msg' => '非法请求');
         $boss_id = (int) $_SESSION ['AgentID'];
         $power = $_SESSION ['Power'];
         $agent_id = (int) $this->_POST['num'];
-        $add = $this->_POST['add'];
-        if (($power & CUS_AGENT) && is_numeric($agent_id) && is_numeric($add)) {
-            $balancemodel = new BalanceModule;
-            $db = new DB;
-            $sql = 'select a.UserName,b.Balance,b.Pay from tb_account a inner join tb_balance b on a.AgentID=' . $agent_id . ' and a.BossAgentID=' . $boss_id . ' and a.AgentID=b.AgentID';
-            $agentmsg = $db->Select($sql);
-            if ($agentmsg) {
-                $agentmsg = $agentmsg[0];
-                $sql = 'select a.UserName,b.Balance,b.Pay,b.UpdateTime from tb_account a inner join tb_balance b on a.AgentID=' . $boss_id . ' and a.AgentID=b.AgentID';
-                $bossmsg = $db->Select($sql);
-                $bossmsg = $bossmsg[0];
-                if ($bossmsg['Balance'] < $add) {
-                    $result = array('err' => 1001, 'msg' => '充值失败，您的余额不足，您的余额为' . $bossmsg['Balance'] . '请及时充值');
-                } else {
-                    $boss_update = $agent_update = array();
-                    $updatetime = explode('-', $bossmsg['UpdateTime']);
-                    $boss_update['Pay'] = $bossmsg['Pay'] + $add;
-                    if (date('m', time()) != $updatetime[1]) {
-                        $boss_update['UpdateTime'] = date('Y-m-d', time());
-                        $boss_update['Pay'] = 0;
-                    }
-                    $boss_update['Balance'] = $bossmsg['Balance'] - $add;
-                    $agent_update['Balance'] = $agentmsg['Balance'] + $add;
-                    $balancemodel->UpdateArrayByAgentID($boss_update, $boss_id);
-                    $balancemodel->UpdateArrayByAgentID($agent_update, $agent_id);
-                    $result = array('err' => 0, 'data' => array('name' => $agentmsg['UserName']), 'msg' => '充值成功');
+        $add = (int)$this->_POST['price'];
+        if (($power & CUS_AGENT) && is_numeric($agent_id) && is_numeric($add)&&$_SESSION["Level"]==1) {
+            $account=new AccountModule();
+            $account_info=$account->GetOneInfoByKeyID($agent_id);
+            if($account_info["Level"]==2){
+                $self_update=array();
+                $balancemodel = new BalanceModule;
+                $balance_info=$balancemodel->GetBalance($agent_id);
+                $updatetime = explode('-', $balance_info['UpdateTime']);
+                if (date('m', time()) != $updatetime[1]) {
+                    $self_update['UpdateTime'] = date('Y-m-d', time());
+                    $self_update['CostMon'] = 0;
                 }
+                $self_update['Balance'] = $balance_info['Balance'] + $add;
+                if($balancemodel->UpdateArrayByAgentID($self_update, $agent_id)){
+                    $logcost_data = array("ip" => $_SERVER["REMOTE_ADDR"], "cost" => $add, "type" => 3, "description" => "账户充值", "adddate" => date('Y-m-d H:i:s', time()), "CustomersID" => "","AgentID"=>$boss_id,"CostID"=>$agent_id,"Balance"=>$self_update['Balance'],"OrderID"=>"");
+                    $logcost = new LogcostModule();
+                    $logcost->InsertArray($logcost_data);
+                    $result = array('err' => 0,'data' => array('name' => $account_info['UserName']), 'msg' => '充值成功');
+                }
+            }else{
+                $result = array('err' => 1001, 'msg' => '充值对象出错');
             }
+            
+//            $balancemodel = new BalanceModule;
+//            $db = new DB;
+//            $sql = 'select a.UserName,b.Balance,b.Pay from tb_account a inner join tb_balance b on a.AgentID=' . $agent_id . ' and a.BossAgentID=' . $boss_id . ' and a.AgentID=b.AgentID';
+//            $agentmsg = $db->Select($sql);
+//            if ($agentmsg) {
+//                $agentmsg = $agentmsg[0];
+//                $sql = 'select a.UserName,b.Balance,b.Pay,b.UpdateTime from tb_account a inner join tb_balance b on a.AgentID=' . $boss_id . ' and a.AgentID=b.AgentID';
+//                $bossmsg = $db->Select($sql);
+//                $bossmsg = $bossmsg[0];
+//                if ($bossmsg['Balance'] < $add) {
+//                    $result = array('err' => 1001, 'msg' => '充值失败，您的余额不足，您的余额为' . $bossmsg['Balance'] . '请及时充值');
+//                } else {
+//                    $boss_update = $agent_update = array();
+//                    $updatetime = explode('-', $bossmsg['UpdateTime']);
+//                    $boss_update['Pay'] = $bossmsg['Pay'] + $add;
+//                    if (date('m', time()) != $updatetime[1]) {
+//                        $boss_update['UpdateTime'] = date('Y-m-d', time());
+//                        $boss_update['Pay'] = 0;
+//                    }
+//                    $boss_update['Balance'] = $bossmsg['Balance'] - $add;
+//                    $agent_update['Balance'] = $agentmsg['Balance'] + $add;
+//                    $balancemodel->UpdateArrayByAgentID($boss_update, $boss_id);
+//                    $balancemodel->UpdateArrayByAgentID($agent_update, $agent_id);
+//                    $result = array('err' => 0, 'data' => array('name' => $agentmsg['UserName']), 'msg' => '充值成功');
+//                }
+//            }
         }
         return $result;
     }

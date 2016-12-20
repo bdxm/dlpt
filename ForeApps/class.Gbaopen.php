@@ -166,10 +166,32 @@ class Gbaopen extends ForeVIEWS {
         }else{
             $date_start=date('Y-m', strtotime(date("Y-m")));
         }
-//        $date_end=date('Y-m', strtotime("+1 month",$date_start));
         $DB=new DB();
         $Data=array();
-        $Data["log"]=$DB->Select("select a.OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.UserName from tb_logcost a inner join tb_customers b on a.CostID='".$_SESSION['AgentID']."' and a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
+        $log_cost=$DB->Select("select a.OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.ContactName from tb_logcost a inner join tb_customers b on a.CostID='".$_SESSION['AgentID']."' and a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
+        $log_recharge=$DB->Select("select '--' as OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,'--' as CompanyName,c.ContactName from tb_logcost a inner join tb_account c on a.AgentID=c.AgentID and a.type='3' and a.CostID='".$_SESSION['AgentID']."' and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' order by a.adddate desc");
+        $num_c=0;
+        $num_r=0;
+        $len_cost=count($log_cost);
+        $len_recharge=count($log_recharge);
+        $Data["log"]=array();
+        while($num_c<$len_cost&&$num_r<$len_recharge){
+            if($log_cost[$num_c]["adddate"]<$log_recharge[$num_r]["adddate"]){
+                $Data["log"][]=$log_recharge[$num_r];
+                $num_r++;
+            }else{
+                $Data["log"][]=$log_cost[$num_c];
+                $num_c++;
+            }
+        }
+        while($num_c<$len_cost){
+            $Data["log"][]=$log_cost[$num_c];
+            $num_c++;
+        }
+        while($num_r<$len_recharge){
+            $Data["log"][]=$log_recharge[$num_r];
+            $num_r++;
+        }
         $Data["month"]=$date_start;
         $this->Data = $Data;
     }

@@ -2577,7 +2577,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $childAgentIDs[]=$v["AgentID"];
                 }
                 $childAgentIDs[]=$agent_id;
-                if(!in_array($customerInfo["AgentID"], $agent_id)){
+                if(!in_array($customerInfo["AgentID"], $childAgentIDs)){
                     $result['err'] = 1003;
                     $result['msg'] = '没有该用户';
                     return $result;
@@ -2620,8 +2620,47 @@ class Gbaopen extends InterfaceVIEWS {
             }
         }
         $custpro=new CustProModule();
+        $cuspro_old=$cuspro_info=$custpro->GetOneByWhere(array(), " where CustomersID=".$CustmoersID);
+        if(strpos($cuspro_old["Mobile_domain"], '.n01.5067.org')!==false){
+            $info["Mobile_domain"]=  preg_replace("/^http:\/\/c/", 'http://m.'.$cuspro_info["G_name"], $info ['G_Ftp_FwAdress']);
+        }
+        if(strpos($cuspro_old["PC_domain"], '.n01.5067.org')!==false){
+            $info["PC_domain"]=  preg_replace("/^http:\/\/c/", 'http://'.$cuspro_info["G_name"], $info ['G_Ftp_FwAdress']);
+        }
         if($custpro->UpdateArray($info,$CustmoersID)){
             $cuspro_info=$custpro->GetOneByWhere(array(), " where CustomersID=".$CustmoersID);
+            $TuUrl = GBAOPEN_DOMAIN . 'api/webremove';
+            $ToString .= 'username=' . $cuspro_info["G_name"];
+            $ToString .= '&ftp_address=' . $info ['G_Ftp_Address'];
+            $ToString .= '&ftp_port=' . $info ['G_Ftp_Duankou'];
+            $ToString .= '&ftp_user=' . $info ['G_Ftp_User'];
+            $ToString .= '&ftp_pwd=' . $info ['G_Ftp_Pwd'];
+            $ToString .= '&ftp_dir=' . $info ['G_Ftp_Mulu'];
+            $ToString .= '&ftp_flag=' . ($info ['FuwuqiID']>0?"1":"0");
+            $ToString .= '&ftp_url=' . ($info ['FuwuqiID']>0?  preg_replace("/^http:\/\/c/", "http://".$cuspro_info["G_name"], $info ['G_Ftp_FwAdress']):$info ['G_Ftp_FwAdress']);
+            //随机文件名开始生成
+            $randomLock = getstr();
+            $password = md5($randomLock);
+            $password = md5($password);
+
+            //生成握手密钥
+            $text = getstr();
+
+            //生成dll文件
+            $myfile = @fopen('./token/' . $password . '.dll', "w+");
+            if (!$myfile) {
+                $custpro->UpdateArray($cuspro_old,$CustmoersID);
+                $result['err'] = 1003;
+                $result['msg'] = '网站迁移失败';
+                $this->LogsFunction->LogsCusRecord(121, 0, $CustmoersID, $result['msg']);
+                return $result;
+            }
+            fwrite($myfile, $text);
+            fclose($myfile);
+            $ToString .= '&timemap=' . $randomLock;
+            $ToString .= '&taget=' . md5($text . $password);
+            $ReturnString = request_by_other($TuUrl, $ToString);
+            $ReturnArray = json_decode($ReturnString, true);
             $IsOk = $this->ToGbaoPenEditInfo($cuspro_info);
             if ($IsOk['err'] != 1000) {
                 $result['err'] = 1002;

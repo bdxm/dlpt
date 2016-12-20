@@ -59,6 +59,9 @@
                                                         <!--                                                    <a href="javascript:;" class="recharge">充值</a>
                                                                                                             <font class="line">|</font>-->
                                                         <a href="javascript:;" class="modify">密码修改</a>
+                                                        <?php if($_SESSION["Level"]==1){?>
+                                                            <a href="javascript:;" class="recharge">充值</a>
+                                                        <?php }?>
                                                     <?php if(!$Type){ ?>
                                                         <a href="javascript:;" class="delete">删除</a>
                                                     <?php } ?>

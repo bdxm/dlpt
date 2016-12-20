@@ -3,20 +3,18 @@ $(function() {
         $("#tab .tabCon > div").removeClass().eq($(this).index()).addClass("cur");
         $(this).addClass("cur").siblings().removeClass("cur");
     });
-    /*
-     $('#listtbody').on('click',".recharge",function () {
-     var cus = $(this).parent().parent().find('input:hidden').attr('value'),
-     name = $(this).parent().siblings().eq(0).text(),
-     html = '<div class="userdata-content"><p style="font-size:20px;">正在对<span style="color:red;">'+name+'</span>进行充值操作</p>\
-     <p>\
-     <span class="content-l">充值金额：</span>\
-     <span><input type="text" name="recharge" class="Input" value="3000"></span>\
-     </p>\
-     <input type="hidden" class="Input" value="'+cus+'"></div>';
-     $(".dialog-content a.dia-ok").addClass('gorecharge');
-     popup(html);
-     });
-     */
+//     $('#listtbody').on('click',".recharge",function () {
+//     var cus = $(this).parent().parent().find('input:hidden').attr('value'),
+//     name = $(this).parent().siblings().eq(0).text(),
+//     html = '<div class="userdata-content"><p style="font-size:20px;">正在对<span style="color:red;">'+name+'</span>进行充值操作</p>\
+//     <p>\
+//     <span class="content-l">充值金额：</span>\
+//     <span><input type="text" name="recharge" class="Input" value="3000"></span>\
+//     </p>\
+//     <input type="hidden" class="Input" value="'+cus+'"></div>';
+//     $(".dialog-content a.dia-ok").addClass('gorecharge');
+//     popup(html);
+//     });
 
     /*删除客服，并检测客服状态*/
     $('#listtbody').on('click', ".delete", function() {
@@ -55,6 +53,17 @@ $(function() {
                         <p><span class="content-l">再次确认：</span><span><input type="password" placeholder="6-16位字符组合" class="Input" name="pwd2" value=""></span></p>\n\
                         <input type="hidden" class="Input" value="' + cus + '"></div>';
             $(".dialog-content a.dia-ok").addClass('gomodify');
+            popup(html);
+    });
+    /*充值*/
+    $('#listtbody').on('click', ".recharge", function() {
+        var cus = $(this).parent().parent().find('input:hidden').attr('value'),
+            name = $(this).parent().siblings().eq(0).text(),
+            html;
+            html = '<div class="userdata-content"><p style="font-size:20px;">正在对<span style="color:red;">'+name+'</span>进行充值操作</p>\n\
+                        <p><span class="content-l">充值金额：</span><span><input type="number" name="recharge" min="0" class="Input"value="3000"></span></p>\n\
+                        <input type="hidden" class="Input" value="' + cus + '"></div>';
+            $(".dialog-content a.dia-ok").addClass('gorecharge');
             popup(html);
     });
 
@@ -150,14 +159,6 @@ $(function() {
         }
     });
     
-    /*    $('#dialog-message').on('change',"input[name='recharge']",function () {
-     if(isNaN(this.value)){
-     Msg(0,"请填写数字");
-     var timer=(setTimeout(hideAllMessages(),2000));
-     $(this).val("");
-     }
-     });
-     */
     
     /*权限单击事件*/
     $(".input-wrapper").click(function(){
@@ -207,19 +208,21 @@ $(function() {
 
     $(".dialog-content a.dia-ok").click(function() {
         var number = $(".userdata-content input[type='hidden']").val();
-        /*if($(this).hasClass("gorecharge")){
-         var price = $(".userdata-content input[name='recharge']").val();
-         if(!isNaN(price)){
-         $.post("",{},function(result){
-         if(result.err == 0){
-         Msg(3,result.data.name+"已成功充值");
-         }else{
-         Msg(2,result.msg);
-         }
-         });
-         $(".dialog-content a.dia-ok").removeClass('gorecharge');
-         }
-         }else */if ($(this).hasClass("godelete")) {
+        if($(this).hasClass("gorecharge")){
+            var price = $(".userdata-content input[name='recharge']").val();
+            if(!isNaN(price)){
+                $.post("Apps?module=Agent&action=Recharge",{num: number, price: price},function(result){
+                    if(result.err == 0){
+                            Msg(3,result.data.name+"已成功充值");
+                        }else{
+                            Msg(2,result.msg);
+                    }
+                });
+                $(".dialog-content a.dia-ok").removeClass('gorecharge');
+            }else{
+                Msg(2,"请正确填写金额");
+            }
+        }else if ($(this).hasClass("godelete")) {
             var select = $(".userdata-content select").children("option:selected").val();
             $.post("Apps?module=Agent&action=Delete", {num: number, id: select}, function(result) {
                 if (result.err == 0) {
