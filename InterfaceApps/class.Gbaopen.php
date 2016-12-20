@@ -2621,10 +2621,10 @@ class Gbaopen extends InterfaceVIEWS {
         }
         $custpro=new CustProModule();
         $cuspro_old=$cuspro_info=$custpro->GetOneByWhere(array(), " where CustomersID=".$CustmoersID);
-        if(strpos($cuspro_old["Mobile_domain"], '.n01.5067.org')!==false){
+        if(strpos($cuspro_old["Mobile_domain"], '.5067.org')!==false){
             $info["Mobile_domain"]=  preg_replace("/^http:\/\/c/", 'http://m.'.$cuspro_info["G_name"], $info ['G_Ftp_FwAdress']);
         }
-        if(strpos($cuspro_old["PC_domain"], '.n01.5067.org')!==false){
+        if(strpos($cuspro_old["PC_domain"], '.5067.org')!==false){
             $info["PC_domain"]=  preg_replace("/^http:\/\/c/", 'http://'.$cuspro_info["G_name"], $info ['G_Ftp_FwAdress']);
         }
         if($custpro->UpdateArray($info,$CustmoersID)){
