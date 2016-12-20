@@ -386,7 +386,7 @@ jQuery(document).ready(function() {
                         operation[0] += '<a href="javascript:;" class="renew"> 续费 </a>';
                     else if (v2 == 'process'){
                         operation[0] += '<a href="javascript:;" class="processing"> 网站处理 </a>';
-                        operation[0] += '<a href="javascript:;" class="sitemove"> 网站迁移 </a>';
+//                        operation[0] += '<a href="javascript:;" class="sitemove"> 网站迁移 </a>';
                     }else if (v2 == 'transfer')
                         operation[0] += '<a href="javascript:;" class="custransfer"> 客户转接 </a>';
                     else if (v2 == 'manage')
