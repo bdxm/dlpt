@@ -386,7 +386,7 @@ jQuery(document).ready(function() {
                         operation[0] += '<a href="javascript:;" class="renew"> 续费 </a>';
                     else if (v2 == 'process'){
                         operation[0] += '<a href="javascript:;" class="processing"> 网站处理 </a>';
-//                        operation[0] += '<a href="javascript:;" class="sitemove"> 网站迁移 </a>';
+                        operation[0] += '<a href="javascript:;" class="sitemove"> 网站迁移 </a>';
                     }else if (v2 == 'transfer')
                         operation[0] += '<a href="javascript:;" class="custransfer"> 客户转接 </a>';
                     else if (v2 == 'manage')
@@ -1204,6 +1204,7 @@ jQuery(document).ready(function() {
                 data["port"]=$('.userdata-content #port').val();
                 data["dir"]=$('.userdata-content #dir').val();
             }
+            Msg(1, '<span>正在处理，请稍等...</span><span class="flower-loader" style="opacity: 1;"></span>');
             $.post("Apps?module=Gbaopen&action=SiteMove", data, function(result) {
                 if (!result.err) {
                     Msg(3, result.data.name + "已成功迁移");

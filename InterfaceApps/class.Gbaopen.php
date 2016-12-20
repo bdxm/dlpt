@@ -2662,7 +2662,6 @@ class Gbaopen extends InterfaceVIEWS {
             $ToString .= '&taget=' . md5($text . $password);
             $ReturnString = request_by_other($TuUrl, $ToString);
             $ReturnArray = json_decode($ReturnString, true);
-            var_dump($ReturnArray);
             $IsOk = $this->ToGbaoPenEditInfo($cuspro_info);
             if ($IsOk['err'] != 1000) {
                 $result['err'] = 1002;
