@@ -2689,4 +2689,192 @@ class Gbaopen extends InterfaceVIEWS {
         $fuwuqiinfo = $fuwuqi->GetListsByWhere(array('ID','FuwuqiName','CName'),' order by ID asc');
         return json_encode($fuwuqiinfo);
     }
+    /**
+     * 获取扩容计费信息
+     */
+    public function getCusCapacityInfo(){
+        $post=  $this->_POST;
+        $cuspro=new CustProModule();
+        $cuspro_info=$cuspro->GetOneByWhere(array(), " where CustomersID=".$post["num"]);
+        if($cuspro_info){
+            $l_time=($cuspro_info["PC_EndTime"]>$cuspro_info["Mobile_EndTime"]?$cuspro_info["PC_EndTime"]:$cuspro_info["Mobile_EndTime"]);
+            $s_time=($cuspro_info["PC_StartTime"]<$cuspro_info["Mobile_StartTime"]?$cuspro_info["PC_StartTime"]:$cuspro_info["Mobile_StartTime"]);
+            $now_time=date("Y-m-d H:i:s",time());
+            $now=time();
+            if($now_time<$s_time){
+                $now_time=$s_time;
+                $now=strtotime($s_time);
+            }
+            if($l_time>$now_time){
+                $months=ceil((strtotime($l_time)-$now)/60/60/24/30);
+                return array("err"=>0,"months"=>$months,"capacity"=>$cuspro_info["Capacity"]);
+            }else{
+                return array("err"=>0,"months"=>0,"capacity"=>$cuspro_info["Capacity"]);
+            }
+        }else{
+            return array("err"=>1001,"msg"=>"为找到该用户或该用户未开通");
+        }
+    }
+    /**
+     * 扩容
+     */
+    public function morecapacity() {
+        $result = array('err' => 0, 'data' => '', 'msg' => '');
+        $post=  $this->_POST;
+        $cus_id=$post["num"];
+        $morecapacity=$post["morecapacity"]*1024*1024;
+        $agent_id = (int) $_SESSION ['AgentID'];
+        $level = (int) $_SESSION ['Level'];
+        $cuspro=new CustProModule();
+        $cuspro_info=$cuspro->GetOneByWhere(array(), " where CustomersID=".$cus_id);
+        if($cuspro_info){
+            $l_time=($cuspro_info["PC_EndTime"]>$cuspro_info["Mobile_EndTime"]?$cuspro_info["PC_EndTime"]:$cuspro_info["Mobile_EndTime"]);
+            $s_time=($cuspro_info["PC_StartTime"]<$cuspro_info["Mobile_StartTime"]?$cuspro_info["PC_StartTime"]:$cuspro_info["Mobile_StartTime"]);
+            $now_time=date("Y-m-d H:i:s",time());
+            $now=time();
+            if($now_time<$s_time){
+                $now_time=$s_time;
+                $now=strtotime($s_time);
+            }
+            if($l_time>$now_time){
+                $months=ceil((strtotime($l_time)-$now)/60/60/24/30);
+            }else{
+                $months=0;
+            }
+            if($cuspro_info["Capacity"]<=$morecapacity){
+                switch ($cuspro_info["Capacity"]){
+                    case 100*1024*1024:$old_price=300;break;
+                    case 300*1024*1024:$old_price=500;break;
+                    case 500*1024*1024:$old_price=800;break;
+                    case 1000*1024*1024:$old_price=1500;break;
+                    default :$old_price=0;break;
+                }
+
+                switch ($morecapacity){
+                    case 100*1024*1024:$new_price=300;break;
+                    case 300*1024*1024:$new_price=500;break;
+                    case 500*1024*1024:$new_price=800;break;
+                    case 1000*1024*1024:$new_price=1500;break;
+                    default :
+                        $result['err']=1003;
+                        $result['msg']='非法请求';
+                        return $result;
+                }
+                $price=number_format(($new_price-$old_price)*$months/12,0);
+                $balance=new BalanceModule();
+                $agent=new AccountModule();
+                $agentinfo = $agent->GetOneInfoByKeyID($cuspro_info["AgentID"]);
+                if ($agentinfo["Level"] == 3) {
+                    $costID = $agentinfo['BossAgentID'];
+                    $agent_bal = $balance->GetOneInfoByAgentID($agent_id);
+                    $boss_agent_bal = $balance->GetOneInfoByAgentID($costID);
+                    unset($agent_bal['ID']);
+                    unset($boss_agent_bal['ID']);
+                } elseif ($agentinfo["Level"] == 2 or $agentinfo["Level"] == 1) {
+                    $costID = $agentinfo["AgentID"];
+                    $boss_agent_bal = $balance->GetOneInfoByAgentID($agentinfo["AgentID"]);
+                    unset($boss_agent_bal['ID']);
+                } else {
+                    $result['err'] = 1004;
+                    $result['msg'] = '此用户资料不存在';
+                    $this->LogsFunction->LogsCusRecord(122, 2, $cus_id, $result['msg']);
+                    return $result;
+                }
+                if ($agentinfo['Level'] == 3) {
+                    if ($boss_agent_bal['Balance'] < $price) {
+                        $result['err'] = 1003;
+                        $result['msg'] = '您的余额不足，请及时充值';
+                        $this->LogsFunction->LogsCusRecord(122, 4, $cus_id, $result['msg']);
+                        return $result;
+                    }
+                    //代理商消费计算
+                    $updatetime = explode('-', $boss_agent_bal['UpdateTime']);
+                    $update_boss['CostMon'] = $boss_agent_bal['CostMon'];
+                    if (date('m', time()) != $updatetime[1]) {
+                        $update_boss['UpdateTime'] = date('Y-m-d', time());
+                        $update_boss['CostMon'] = 0;
+                    }
+                    $update_boss['Balance'] = $boss_agent_bal['Balance'] - $price;
+                    $update_boss['CostMon'] = $update_boss['CostMon'] + $price;
+                    $update_boss['CostAll'] = $update_boss['CostAll'] + $price;
+                    //客服消费计算
+                    $updatetime = explode('-', $agent_bal['UpdateTime']);
+                    $update_self['CostMon'] = $agent_bal['CostMon'];
+                    if (date('m', time()) != $updatetime[1]) {
+                        $update_self['UpdateTime'] = date('Y-m-d', time());
+                        $update_self['CostMon'] = 0;
+                    }
+                    $update_self['CostMon'] = $update_self['CostMon'] + $price;
+                    $update_self['CostAll'] = $update_self['CostAll'] + $price;
+                    $balance_money=$update_boss['Balance'];
+                } else {
+                    if ($boss_agent_bal['Balance'] < $price) {
+                        $result['err'] = 1003;
+                        $result['msg'] = '您的余额不足，请及时充值';
+                        $this->LogsFunction->LogsCusRecord(122, 4, $cus_id, $result['msg']);
+                        return $result;
+                    }
+                    $updatetime = explode('-', $boss_agent_bal['UpdateTime']);
+                    $update_self['CostMon'] = $boss_agent_bal['CostMon'];
+                    if (date('m', time()) != $updatetime[1]) {
+                        $update_self['UpdateTime'] = date('Y-m-d', time());
+                        $update_self['CostMon'] = 0;
+                    }
+                    $update_self['Balance'] = $boss_agent_bal['Balance'] - $price;
+                    $update_self['CostMon'] = $update_self['CostMon'] + $price;
+                    $update_self['CostAll'] = $update_self['CostAll'] + $price;
+                    $balance_money=$update_self['Balance'];
+                }
+                
+                $IsOk = $this->ToGbaoPenEditInfo(array_replace($cuspro_info, array("Capacity"=>$morecapacity)));
+                if ($IsOk['err'] != 1000) {
+                    $result['err'] = 1002;
+                    $result['msg'] = '数据同步失败，请重试';
+                    $this->LogsFunction->LogsCusRecord(122, 6, $cus_id, $result['msg']);
+                    $result['data'] = $IsOk;
+                    return $result;
+                }
+                if (!$balance->UpdateArrayByAgentID($update_self, $costID)) {
+                    $this->ToGbaoPenEditInfo($cuspro_info);
+                    $result['err'] = 1004;
+                    $result['msg'] = '扩容失败，请重试，若依然无效，酌情联系管理员1';
+                    $this->LogsFunction->LogsCusRecord(122, 0, $cus_id, $result['msg']);
+                    return $result;
+                }
+                if ($agentinfo['Level'] == 3) {
+                    if (!$balance->UpdateArrayByAgentID($update_boss, $agentinfo['BossAgentID'])) {
+                        $this->ToGbaoPenEditInfo($cuspro_info);
+                        $balance->UpdateArrayByAgentID($agent_bal, $costID);
+                        $result['err'] = 1004;
+                        $result['msg'] = '扩容失败，请重试，若依然无效，酌情联系管理员2';
+                        $this->LogsFunction->LogsCusRecord(122, 0, $cus_id, $result['msg']);
+                        return $result;
+                    }
+                }
+                if (!$cuspro->UpdateArray(array("Capacity"=>$morecapacity), $cus_id)) {
+                    $this->ToGbaoPenEditInfo($cuspro_info);
+                    $balance->UpdateArrayByAgentID($agent_bal, $costID);
+                    $agentinfo['Level'] == 3 ? $balance->UpdateArrayByAgentID($boss_agent_bal, $costID) : '';
+                    $result['err'] = 1004;
+                    $result['msg'] = '扩容失败，请重试，若依然无效，酌情联系管理员3';
+                    $this->LogsFunction->LogsCusRecord(122, 0, $cus_id, $result['msg']);
+                    return $result;
+                }
+                $logcost_data = array("ip" => $_SERVER["REMOTE_ADDR"], "cost" => (0-$price), "type" => 4, "description" => "网站扩容", "adddate" => date('Y-m-d H:i:s', time()), "CustomersID" => $cus_id,"AgentID"=>$agent_id,"CostID"=>$costID,"Balance"=>$balance_money,"OrderID"=>'');
+                $logcost = new LogcostModule();
+                $logcost->InsertArray($logcost_data);
+                $this->LogsFunction->LogsCusRecord(122, 5, $cus_id, '扩容同步成功');
+                $cusmodel=new CustomersModule();
+                $cus = $cusmodel->GetOneByWhere(array('CompanyName'), 'where CustomersID=' . $cus_id);
+                $result['data']['name'] = $cus['CompanyName'];
+            }else{
+                $result['err']=1002;
+                $result['msg']='非法请求';
+            }
+        }else{
+            $result['err']=1001;
+            $result['msg']='为找到该用户或该用户未开通';
+        }
+        return $result;
+    }
 }

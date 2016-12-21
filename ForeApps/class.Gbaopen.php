@@ -168,31 +168,37 @@ class Gbaopen extends ForeVIEWS {
         }
         $DB=new DB();
         $Data=array();
-        $log_cost=$DB->Select("select a.OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.ContactName from tb_logcost a inner join tb_customers b on a.CostID='".$_SESSION['AgentID']."' and a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
+        $log_cost=$DB->Select("select a.OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.ContactName from tb_logcost a inner join tb_customers b on a.CostID='".$_SESSION['AgentID']."' and a.type<3 and a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
         $log_recharge=$DB->Select("select '--' as OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,'--' as CompanyName,c.ContactName from tb_logcost a inner join tb_account c on a.AgentID=c.AgentID and a.type='3' and a.CostID='".$_SESSION['AgentID']."' and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' order by a.adddate desc");
-        $num_c=0;
-        $num_r=0;
-        $len_cost=count($log_cost);
-        $len_recharge=count($log_recharge);
-        $Data["log"]=array();
-        while($num_c<$len_cost&&$num_r<$len_recharge){
-            if($log_cost[$num_c]["adddate"]<$log_recharge[$num_r]["adddate"]){
-                $Data["log"][]=$log_recharge[$num_r];
-                $num_r++;
-            }else{
-                $Data["log"][]=$log_cost[$num_c];
-                $num_c++;
-            }
-        }
-        while($num_c<$len_cost){
-            $Data["log"][]=$log_cost[$num_c];
-            $num_c++;
-        }
-        while($num_r<$len_recharge){
-            $Data["log"][]=$log_recharge[$num_r];
-            $num_r++;
-        }
+        $log_morecapacity=$DB->Select("select '--' as OrderID,a.cost,a.description,a.type,a.adddate,a.Balance,b.CompanyName,c.ContactName from tb_logcost a inner join tb_customers b on a.CostID='".$_SESSION['AgentID']."' and a.type='4' and a.CustomersID=b.CustomersID and a.adddate>'".$date_start."' and a.adddate like '".$date_start."%' inner join tb_account c on a.AgentID=c.AgentID order by a.adddate desc");
+        $Data["log"]=$this->myAdddteArrayMerge($log_cost,$log_recharge);
+        $Data["log"]=$this->myAdddteArrayMerge($Data["log"],$log_morecapacity);
         $Data["month"]=$date_start;
         $this->Data = $Data;
+    }
+    private function myAdddteArrayMerge($arr1,$arr2) {
+        $num_1=0;
+        $num_2=0;
+        $len_1=count($arr1);
+        $len_2=count($arr2);
+        $ret=array();
+        while($num_1<$len_1&&$num_2<$len_2){
+            if($arr1[$num_1]["adddate"]<$arr2[$num_2]["adddate"]){
+                $ret[]=$arr2[$num_2];
+                $num_2++;
+            }else{
+                $ret[]=$arr1[$num_1];
+                $num_1++;
+            }
+        }
+        while($num_1<$len_1){
+            $ret[]=$arr1[$num_1];
+            $num_1++;
+        }
+        while($num_2<$len_2){
+            $ret[]=$arr2[$num_2];
+            $num_2++;
+        }
+        return $ret;
     }
 }

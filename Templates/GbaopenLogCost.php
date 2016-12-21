@@ -15,6 +15,7 @@
                             <option value="1">创建客户</option>
                             <option value="2">网站续费</option>
                             <option value="3">充值</option>
+                            <option value="4">扩容</option>
                         </select>
                     </div>
                     <div class="table-panel">

@@ -382,9 +382,10 @@ jQuery(document).ready(function() {
                 var operation = ['', '--'];
                 result.data.operat = result.data.operat.split(',');
                 $.each(result.data.operat, function(i2, v2) {
-                    if (v2 == 'renew')
+                    if (v2 == 'renew'){
                         operation[0] += '<a href="javascript:;" class="renew"> 续费 </a>';
-                    else if (v2 == 'process'){
+                        operation[0] += '<a href="javascript:;" class="morecapacity"> 扩容 </a>';
+                    }else if (v2 == 'process'){
                         operation[0] += '<a href="javascript:;" class="processing"> 网站处理 </a>';
                         operation[0] += '<a href="javascript:;" class="sitemove"> 网站迁移 </a>';
                     }else if (v2 == 'transfer')
@@ -1032,7 +1033,48 @@ jQuery(document).ready(function() {
         var url = '?module=Gbaopen&action=GbaoPenManage';
         window.open(url + '&ID=' + cus, '正在跳转');
     });
-    
+    function morecapacity(months,oldcapacity){
+        var old_single_money=($(".userdata-content input[name='morecapacity'][value='"+oldcapacity+"']").data("money")?$(".userdata-content input[name='morecapacity'][value='"+oldcapacity+"']").data("money"):0);
+        $(".userdata-content input[name='morecapacity'][value='"+oldcapacity+"']").prop("checked",true);
+        $(".userdata-content input[name='morecapacity'][value='"+oldcapacity+"']").parent("span").prevAll().hide();
+        $(".userdata-content input[name='morecapacity']").unbind();
+        $(".userdata-content input[name='morecapacity']").change(function(){
+            var new_single_money=$(".userdata-content input[name='morecapacity']:checked").data("money");
+            $(".userdata-content .price").val(((new_single_money-old_single_money)*months/12).toFixed(0)+"元");
+        });
+    }
+    /*扩容模块*/
+    $('.leftbox ul,#listtbody').on('click', ".morecapacity", function() {
+        var cus = $(this).parent().parent().find('input:hidden').attr('value'),
+            html = '<div class="userdata-content"><p style="font-size:20px;">确定扩展此客户容量？</p>\
+                        <input type="hidden" class="Input" value="' + cus + '">\n\
+                            <p>\n\
+                                <span class="content-l">空间容量扩展至:</span>\n\
+                                <span class="Input">\n\
+                                    <span><input type="radio" name="morecapacity" value="100" data-money="300"/>100M</span>\n\
+                                    <span><input type="radio" name="morecapacity" value="300" data-money="500"/>300M</span>\n\
+                                    <span><input type="radio" name="morecapacity" value="500" data-money="800"/>500M</span>\n\
+                                    <span><input type="radio" name="morecapacity" value="1000" data-money="1500"/>1000M</span>\n\
+                                </span>\n\
+                            </p>\n\
+                            <p><span class="content-l">所需费用:</span><input type="text" class="Input price" value="0元"/></p>\
+                    </div>';
+        $(".dialog-content a.dia-ok").addClass('morecapacity');
+        popup(html);
+        $.ajax({
+            url:"Apps?module=Gbaopen&action=getCusCapacityInfo",
+            async:false,
+            type:"POST",
+            data:{num:cus},
+            success:function(result){
+                if (!result.err) {
+                    morecapacity(result.months,result.capacity/1024/1024);
+                } else {
+                    Msg(2, result.msg);
+                }
+            }
+        });
+    });
     //案例双站选择效果
     $(".dialog-content").on('click', "#caseCho1 span", function() {
         var _this = this;
@@ -1213,6 +1255,19 @@ jQuery(document).ready(function() {
                 }
             });
             $(".dialog-content a.dia-ok").removeClass('sitemove');
+        } else if ($(this).hasClass("morecapacity")) {
+            var data={};
+            data["morecapacity"]=$('.userdata-content input[name=morecapacity]:checked').val();
+            data["num"]=number;
+            Msg(1, '<span>正在处理，请稍等...</span><span class="flower-loader" style="opacity: 1;"></span>');
+            $.post("Apps?module=Gbaopen&action=morecapacity", data, function(result) {
+                if (!result.err) {
+                    Msg(3, result.data.name + "已成功扩容");
+                } else {
+                    Msg(2, result.msg);
+                }
+            });
+            $(".dialog-content a.dia-ok").removeClass('morecapacity');
         } else if ($(this).hasClass("goimgupload")) {
             var cases = $("#listtbody .cases.current");
             var area = $(".userdata-content input[type='hidden']").attr("data");
