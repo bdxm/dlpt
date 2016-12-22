@@ -207,18 +207,27 @@ class Report extends InterfaceVIEWS {
             $return["data"]['categories'][$k]=$v["CName"];
             $return["data"]['data'][$k]="".($data[$v["ID"]]?$data[$v["ID"]]:0);
         }
+        $return["data"]['categories'][]="其它";
+        $return["data"]['data'][]="".$data[0];
         return $return;
     }
     private function GetModelClassCount($data=array()){
         $return=array();
+        $return[0]=0;
         foreach($data as $v){
-            $ids=explode(",", $v["ID"]);
-            foreach((array)$ids as $id){
-                if($id!=""){
-                    if(!isset($return[$id])){
-                        $return[$id]=0;
+            $v["ID"]=ltrim($v["ID"],",");
+            $v["ID"]=rtrim($v["ID"],",");
+            if($v["ID"]==""){
+                $return[0]+=$v["num"];
+            }else{
+                $ids=explode(",", $v["ID"]);
+                foreach((array)$ids as $id){
+                    if($id!=""){
+                        if(!isset($return[$id])){
+                            $return[$id]=0;
+                        }
+                        $return[$id]+=$v["num"];
                     }
-                    $return[$id]+=$v["num"];
                 }
             }
         }
