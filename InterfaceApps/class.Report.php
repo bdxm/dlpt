@@ -165,6 +165,65 @@ class Report extends InterfaceVIEWS {
         $return['data'] = $data;
         return $return;
     }
+    //行业热度统计
+    public function ProCount(){
+        $level = $_SESSION['Level'];
+        $agent = $_SESSION['AgentID'];
+        $start = date('Y-m-d',strtotime($this->_GET['start']));
+        $end = date('Y-m-d',strtotime($this->_GET['end']));
+        $return = array('err' => 0, 'msg' => '');
+        $DB = new DB();
+        if ($level == 1) {
+            $pcsel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select PC_model as model,count(1) as num from tb_customers_project where CreateTime>= '$start' and CreateTime <= '$end' and (CPhone=1 or CPhone=3) group by PC_model) a ON b.NO=a.model";
+            $pcData = $DB->Select($pcsel);
+            $mobilesel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select Mobile_model as model,count(1) as num from tb_customers_project where CreateTime>= '$start' and CreateTime <= '$end' and (CPhone=2 or CPhone=3) group by Mobile_model) a ON b.NO=a.model";
+            $mobileData = $DB->Select($mobilesel);
+            $pksel = "select b.ModelClassID as ID,a.num as num from tb_model_packages b INNER JOIN (select PK_model as model,count(1) as num from tb_customers_project where CreateTime>= '$start' and CreateTime <= '$end' and CPhone=4 group by PK_model) a ON b.PackagesNum=a.model";
+            $pkData = $DB->Select($pksel);
+            $models=array_merge((array)$pcData,(array)$mobileData,(array)$pkData);
+            $data=$this->GetModelClassCount($models);
+        }else if($level==2){
+            $pcsel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select c.PC_model as model,count(1) as num from tb_customers_project c inner join tb_account d on c.AgentID=d.AgentID and ((d.BossAgentID='$agent') or (c.AgentID='$agent')) and c.CreateTime>= '$start' and c.CreateTime <= '$end' and (c.CPhone=1 or c.CPhone=3) group by c.PC_model) a ON b.NO=a.model";
+            $pcData = $DB->Select($pcsel);
+            $mobilesel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select c.Mobile_model as model,count(1) as num from tb_customers_project c inner join tb_account d on c.AgentID=d.AgentID and ((d.BossAgentID='$agent') or (c.AgentID='$agent')) and  c.CreateTime>= '$start' and c.CreateTime <= '$end' and (c.CPhone=2 or c.CPhone=3) group by c.Mobile_model) a ON b.NO=a.model";
+            $mobileData = $DB->Select($mobilesel);
+            $pksel = "select b.ModelClassID as ID,a.num as num from tb_model_packages b INNER JOIN (select c.PK_model as model,count(1) as num from tb_customers_project c inner join tb_account d on c.AgentID=d.AgentID and ((d.BossAgentID='$agent') or (c.AgentID='$agent')) and  c.CreateTime>= '$start' and c.CreateTime <= '$end' and c.CPhone=4 group by c.PK_model) a ON b.PackagesNum=a.model";
+            $pkData = $DB->Select($pksel);
+            $models=array_merge((array)$pcData,(array)$mobileData,(array)$pkData);
+            $data=$this->GetModelClassCount($models);
+        }else if($level==3){
+            $pcsel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select c.PC_model as model,count(1) as num from tb_customers_project c where c.AgentID='$agent' and c.CreateTime>= '$start' and c.CreateTime <= '$end' and (c.CPhone=1 or c.CPhone=3) group by c.PC_model) a ON b.NO=a.model";
+            $pcData = $DB->Select($pcsel);
+            $mobilesel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select c.Mobile_model as model,count(1) as num from tb_customers_project c where c.AgentID='$agent' and c.CreateTime>= '$start' and c.CreateTime <= '$end' and (c.CPhone=2 or c.CPhone=3) group by c.Mobile_model) a ON b.NO=a.model";
+            $mobileData = $DB->Select($mobilesel);
+            $pksel = "select b.ModelClassID as ID,a.num as num from tb_model_packages b INNER JOIN (select c.PK_model as model,count(1) as num from tb_customers_project c where c.AgentID='$agent' and c.CreateTime>= '$start' and c.CreateTime <= '$end' and c.CPhone=4 group by c.PK_model) a ON b.PackagesNum=a.model";
+            $pkData = $DB->Select($pksel);
+            $models=array_merge((array)$pcData,(array)$mobileData,(array)$pkData);
+            $data=$this->GetModelClassCount($models);
+        }
+        $modelclassmodule=new ModelClassModule();
+        $modelclasslists=$modelclassmodule->GetListsAll();
+        foreach($modelclasslists as $k=>$v){
+            $return["data"]['categories'][$k]=$v["CName"];
+            $return["data"]['data'][$k]="".($data[$v["ID"]]?$data[$v["ID"]]:0);
+        }
+        return $return;
+    }
+    private function GetModelClassCount($data=array()){
+        $return=array();
+        foreach($data as $v){
+            $ids=explode(",", $v["ID"]);
+            foreach((array)$ids as $id){
+                if($id!=""){
+                    if(!isset($return[$id])){
+                        $return[$id]=0;
+                    }
+                    $return[$id]+=$v["num"];
+                }
+            }
+        }
+        return $return;
+    }
     //时间格式初始判断
     protected function ErrJudge($start, $end, $type) {
         $return = array('err' => 0, 'msg' => '');

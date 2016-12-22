@@ -113,18 +113,17 @@
                     </a>
                 </li>
                 <?PHP } ?>
-                <!--
+<!--                
                 <li <?PHP if ($MyAction == 'CostStatistics') { ?>class="on"<?php } ?>>
-                    <a href="<?php echo UrlRewriteSimple('Model', 'CostStatistics', true); ?>">
+                    <a href="<?php echo UrlRewriteSimple('Report', 'CostStatistics', true); ?>">
                         <span>消费统计</span>
                     </a>
-                </li>
+                </li>-->
                 <li <?PHP if ($MyAction == 'ProStatistics') { ?>class="on"<?php } ?>>
-                    <a href="<?php echo UrlRewriteSimple('Model', 'ProStatistics', true); ?>">
+                    <a href="<?php echo UrlRewriteSimple('Report', 'ProStatistics', true); ?>">
                         <span>行业热度</span>
                     </a>
                 </li>
-                -->
             </ul>
         </div>
     </div>
