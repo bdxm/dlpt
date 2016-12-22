@@ -21,18 +21,11 @@
                         <div class="search">
                             <div class="leftS"> 
                                     <font>请输入生成报表的时间段：</font>
-                                    <font style="position: absolute;top: 40px;left: 21px;color: burlywood;">按天计算下，期间间隔不超过20天</font>
                                     <input class="Input" id="txtBeginDate" placeholder="输入开始时间"/>
                                     <div id="beginDD"></div>
                                     <i>-</i>
                                     <input class="Input" id="txtEndDate" placeholder="输入截止时间"/>
                                     <div id="endDD"></div>
-                                    <select name="mathType" id="mathType" class="formstyle">
-                                        <option value="day">按天计算</option>
-                                        <option value="week">按周计算</option>
-                                        <option value="month">按月计算</option>
-                                        <option value="year">按年计算</option>
-                                    </select>
                                     <button type="submit" id="product" class="searchbottom">生成</button>
                                     <span class="flower-loader" style="opacity: 0;"></span>
                             </div>

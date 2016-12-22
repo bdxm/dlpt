@@ -100,15 +100,11 @@ $(function(){
         };
         this.getData = function(){
             var _this = this;
-            $.get('Apps?module=Report&action=ProCount&type=' + _this.proType + '&start=' + _this.startTime + '&end=' + _this.endTime, function(json){
+            $.get('Apps?module=Report&action=ProCount&start=' + _this.startTime + '&end=' + _this.endTime, function(json){
                 _this.load(true);
                 if(json.err == 0){
-                    var data = json.data,
-                        text = _this.proType == 'day' ? '每天' : _this.proType == 'week' ? '每周' : _this.proType == 'month' ? '每月' : '每年';
+                    var data = json.data;
                     _this.chart.setOption({     /*数据表格重载*/
-                        title: {
-                            subtext: text
-                        },
                         xAxis: {
                             data: data.categories
                         },
@@ -126,32 +122,18 @@ $(function(){
             var _this = this;
             $("#product").click(function(){
                 var startTime = $("#txtBeginDate").val(),
-                    endTime = $("#txtEndDate").val(),
-                    proType = $("#mathType option:selected").val();
-                if(_this.startTime != startTime || _this.endTime != endTime || _this.proType != proType){
+                    endTime = $("#txtEndDate").val();
+                if(_this.startTime != startTime || _this.endTime != endTime){
                     var interval,data;
                     _this.startTime = startTime;
                     _this.endTime = endTime;
-                    _this.proType = proType;
                     startTime = startTime.toDate();
                     endTime = endTime.toDate();
-                    interval = endTime - startTime;
                     _this.load();
+                    interval = endTime - startTime;
                     /*初步数据审核*/
-                    switch(proType){
-                        case 'day':
-                            interval > 0 ? interval/1000 < 20 * 24 * 60 * 60 ? _this.getData() : Msg(0, '按天计算不能大于20天') : Msg(0, '起始时间不能小于中止时间');
-                            break;
-                        case 'week':
-                            interval > 0 ? interval/1000 < 10 * 7 * 24 * 60 * 60 ? _this.getData() : Msg(0, '按周计算不能大于10周') : Msg(0, '起始时间不能小于中止时间');
-                            break;
-                        case 'month':
-                            interval > 0 ? interval/1000 < 366 * 24 * 60 * 60 ? _this.getData() : Msg(0, '按月计算不能大于12月') : Msg(0, '起始时间不能小于中止时间');
-                            break;
-                        case 'year':
-                            interval > 0 ? interval/1000 < 12 * 366 * 24 * 60 * 60 ? _this.getData() : Msg(0, '按年计算不能大于12年') : Msg(0, '起始时间不能小于中止时间');
-                            break;
-                    }
+                    if(interval)
+                        _this.getData();
                 }else{
                     _this.load(true);
                     Msg(0, '不要重复生成同种表单');
