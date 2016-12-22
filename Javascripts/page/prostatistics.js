@@ -72,7 +72,7 @@ $(function(){
                 series: [
                     {   /*类目标题，类型，数据*/
                         "name": "G宝盆",    
-                        "type": "line",
+                        "type": "bar",
                         "data": []
                     }
                 ]
