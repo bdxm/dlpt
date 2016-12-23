@@ -192,11 +192,11 @@ class Report extends InterfaceVIEWS {
             $models=array_merge((array)$pcData,(array)$mobileData,(array)$pkData);
             $data=$this->GetModelClassCount($models);
         }else if($level==3){
-            $pcsel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select c.PC_model as model,count(1) as num from tb_customers_project c where c.AgentID='$agent' and c.CreateTime>= '$start' and c.CreateTime <= '$end' and (c.CPhone=1 or c.CPhone=3) group by c.PC_model) a ON b.NO=a.model";
+            $pcsel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select PC_model as model,count(1) as num from tb_customers_project where AgentID='$agent' and CreateTime>= '$start' and CreateTime <= '$end' and (CPhone=1 or CPhone=3) group by PC_model) a ON b.NO=a.model";
             $pcData = $DB->Select($pcsel);
-            $mobilesel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select c.Mobile_model as model,count(1) as num from tb_customers_project c where c.AgentID='$agent' and c.CreateTime>= '$start' and c.CreateTime <= '$end' and (c.CPhone=2 or c.CPhone=3) group by c.Mobile_model) a ON b.NO=a.model";
+            $mobilesel = "select b.ModelClassID as ID,a.num as num from tb_model b INNER JOIN (select Mobile_model as model,count(1) as num from tb_customers_project where AgentID='$agent' and CreateTime>= '$start' and CreateTime <= '$end' and (CPhone=2 or CPhone=3) group by Mobile_model) a ON b.NO=a.model";
             $mobileData = $DB->Select($mobilesel);
-            $pksel = "select b.ModelClassID as ID,a.num as num from tb_model_packages b INNER JOIN (select c.PK_model as model,count(1) as num from tb_customers_project c where c.AgentID='$agent' and c.CreateTime>= '$start' and c.CreateTime <= '$end' and c.CPhone=4 group by c.PK_model) a ON b.PackagesNum=a.model";
+            $pksel = "select b.ModelClassID as ID,a.num as num from tb_model_packages b INNER JOIN (select PK_model as model,count(1) as num from tb_customers_project where AgentID='$agent' and CreateTime>= '$start' and CreateTime <= '$end' and CPhone=4 group by PK_model) a ON b.PackagesNum=a.model";
             $pkData = $DB->Select($pksel);
             $models=array_merge((array)$pcData,(array)$mobileData,(array)$pkData);
             $data=$this->GetModelClassCount($models);
@@ -232,6 +232,110 @@ class Report extends InterfaceVIEWS {
             }
         }
         return $return;
+    }
+    //消费统计
+    public function CostCount() {
+        $level = $_SESSION['Level'];
+        $agent = $_SESSION['AgentID'];
+        $result=array();
+        if($level>2){
+            $result['err'] = 1002;
+            $result['msg'] = '非法请求';
+            return $result;
+        }
+        $type = $this->_GET['type'];
+        $start = date('Y-m-d',strtotime($this->_GET['start']));
+        $end = date('Y-m-d',strtotime($this->_GET['end']));
+        $startInt = strtotime($start);
+        $endInt = strtotime($end);
+        $result = $this->ErrJudge($startInt, $endInt, $type);
+        if($result['err'] !== 0)
+            return $result;
+        if ($level == 1) {
+            if ($type == 'day')
+                $sel = "select DATE(adddate) as date,0-sum(cost) as count from tb_logcost where type<>3 and adddate >= '$start' and adddate <= '$end' group by date";
+            elseif ($type == 'week')
+                //已7天为单位统计数量
+                $sel = "select DATE(adddate) as date,0-sum(cost) as count,(DATEDIFF(adddate, '$start') DIV 7) as groupNum from tb_logcost where type<>3 and adddate>='$start' and adddate<='$end' group by groupNum";
+            elseif ($type == 'month')
+                $sel = "select DATE_FORMAT(adddate,'%Y-%m') date,0-sum(cost) as count from tb_logcost where type<>3 and adddate >= '$start' and adddate <= '$end' group by date";
+            else
+                $sel = "select DATE_FORMAT(adddate,'%Y') date,0-sum(cost) as count from tb_logcost where type<>3 and adddate >= '$start' and adddate <= '$end' group by date";
+        }elseif ($level == 2) {
+            if ($type == 'day')
+                $sel = "select DATE(adddate) as date,0-sum(cost) as count from tb_logcost where CostID=$agent and type<>3 and adddate >= '$start' and adddate <= '$end' group by date";
+            elseif ($type == 'week')
+                $sel = "select DATE(adddate) as date,0-sum(cost) as count,(DATEDIFF(adddate, '$start') DIV 7) as groupNum from tb_logcost where CostID=$agent and type<>3 and adddate>='$start' and adddate<='$end' group by groupNum";
+            elseif ($type == 'month')
+                $sel = "select DATE_FORMAT(adddate,'%Y-%m') date,0-sum(cost) as count from tb_logcost where CostID=$agent and type<>3 and adddate >= '$start' and adddate <= '$end' group by date";
+            else
+                $sel = "select DATE_FORMAT(adddate,'%Y') date,0-sum(cost) as count from tb_logcost where CostID=$agent and type<>3 and adddate >= '$start' and adddate <= '$end' group by date";
+        }
+        $DB = new DB();
+        $selData = $DB->Select($sel);
+        $data = array();
+        switch ($type){
+            case 'day':
+                $interval = $endInt - $startInt;
+                $day = $interval/(24 * 60 * 60) + 1;
+                for($k = 0; $k < $day; $k++){
+                    $data['categories'][] = $k ? date('Y-m-d',strtotime('+' . $k . ' day', $startInt)) : $start;
+                    $data['data'][] = 0;
+                }
+                if($selData){
+                    foreach ($selData as $v){
+                        $data['data'][array_search($v['date'], $data['categories'])] = $v['count'];
+                    }
+                }
+                break;
+            case 'week':
+                $interval = $endInt - $startInt;
+                $day = $interval/(24 * 60 * 60 * 7);
+                $day = $day == ceil($day) ? ceil($day) + 2 : ceil($day) + 1;
+                $timeStart = $startInt;
+                for($k = 1; $k < $day; $k++){
+                    $timeLast = strtotime('+6 day', $timeStart);
+                    $data['categories'][] = $timeStart == $endInt ? date('Y-m-d', $timeStart) : date('Y-m-d', $timeStart) . '/' . ($timeLast < $endInt ? date('Y-m-d', $timeLast) : $end);
+                    $timeStart = strtotime('+1 day', $timeLast);
+                    $data['data'][] = 0;
+                }
+                if($selData){
+                    foreach ($selData as $v){
+                        $data['data'][$v['groupNum']] = $v['count'];
+                    }
+                }
+                break;
+            case 'month':
+                $timeStart = strtotime(date('Y-m', $startInt));
+                $timeLast = strtotime(date('Y-m', $endInt));
+                for($k = $timeStart; $k <= $timeLast;){
+                    $data['categories'][] = date('Y-m', $k);
+                    $data['data'][] = 0;
+                    $k = strtotime('+1 months', $k);
+                }
+                if($selData){
+                    foreach ($selData as $v){
+                        $data['data'][array_search($v['date'], $data['categories'])] = $v['count'];
+                    }
+                }
+                break;
+            case 'year':
+                $timeStart = (int)date('Y', $startInt);
+                $timeLast = (int)date('Y', $endInt);
+                for($k = $timeStart; $k <= $timeLast;){
+                    $data['categories'][] = $k;
+                    $data['data'][] = 0;
+                    $k += 1;
+                }
+                if($selData){
+                    foreach ($selData as $v){
+                        $data['data'][array_search($v['date'], $data['categories'])] = $v['count'];
+                    }
+                }
+                break;
+        }
+        $result['data'] = $data;
+        return $result;
     }
     //时间格式初始判断
     protected function ErrJudge($start, $end, $type) {

@@ -112,13 +112,14 @@
                         <span>模板热度</span>
                     </a>
                 </li>
-                <?PHP } ?>
-<!--                
+                <?PHP } ?> 
+                <?PHP if ($_SESSION['Level'] == 1||$_SESSION['Level'] == 2) { ?>
                 <li <?PHP if ($MyAction == 'CostStatistics') { ?>class="on"<?php } ?>>
                     <a href="<?php echo UrlRewriteSimple('Report', 'CostStatistics', true); ?>">
                         <span>消费统计</span>
                     </a>
-                </li>-->
+                </li>
+                <?PHP } ?> 
                 <li <?PHP if ($MyAction == 'ProStatistics') { ?>class="on"<?php } ?>>
                     <a href="<?php echo UrlRewriteSimple('Report', 'ProStatistics', true); ?>">
                         <span>行业热度</span>
