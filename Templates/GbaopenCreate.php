@@ -75,7 +75,7 @@
                                     <input type="text" name="account" class="Input" size="25">
                                     <span class="content-l">密码</span>
                                     <span>
-                                        <input type="text" name="password" class="Input" value="初始密码与账号一致" disabled="true">
+                                        <input type="text" name="password" class="Input" value="" placeholder="初始密码与账号一致" />
                                     </span>
                             </p>
                             <p>

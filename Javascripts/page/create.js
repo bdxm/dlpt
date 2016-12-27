@@ -184,6 +184,13 @@ jQuery(document).ready(function() {
     $('.Btn3').click(function() {
         var html = '<div class="userdata-content"><p style="font-size:20px;color:red;">请确认下面的信息，一旦创建，不可修改！！！！</p>\n';
         if ($(this).attr('value') == '创建并开通') {
+            var password=$("input[name='password']").val();
+            if(password!=""){
+                if(!(/^\w+$/.test(password))){
+                    Msg(1, '密码不可使用特殊字符');
+                    return false;
+                }
+            }
             if (/.*[\u4e00-\u9fa5]+.*$/.test($(".userdata-content input[name='account']").val()) || ($(".userdata-content input[name='account']").val() == '')) {
                 Msg(1, '账号不能为空或含有中文');
                 return false;
@@ -194,7 +201,7 @@ jQuery(document).ready(function() {
             }
             html += '<p><span>邮箱地址：</span><span class="major">' + $(".userdata-content input[name='email']").val() + '</span></p>\n';
             html += '<p><span>客户账号：</span><span class="major">' + $(".userdata-content input[name='account']").val() + '</span></p></div>';
-
+            
             var data = {};
             data["Experience"] = ($(".Experience").val() == "是") ? 1 : 0;
             data["Capacity"] = $(".capacity:checked").val()>0?$(".capacity:checked").val():300;

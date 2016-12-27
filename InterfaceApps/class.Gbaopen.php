@@ -1911,6 +1911,9 @@ class Gbaopen extends InterfaceVIEWS {
         $ToString .= '&mobile_endtime=' . $CustProInfo ['Mobile_EndTime'];
         $ToString .= '&switch_cus_name=' . $CustProInfo ['Link_Cus'];
         $ToString .= '&status=' . $CustProInfo ['status'];
+        if(isset($_POST["password"])&&!empty($_POST["password"])){
+            $ToString .= '&password=' . $_POST["password"];
+        }
         /*
           $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
           fwrite($myfile, GBAOPEN_MD5KEY.'|');
