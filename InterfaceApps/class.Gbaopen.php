@@ -431,6 +431,18 @@ class Gbaopen extends InterfaceVIEWS {
                         $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
                     }
                     break;
+                case 'sitemove':
+                    if ($this->Assess($power, $this->process)) {
+                        $custpromodel = new CustProModule();
+                        $custpro = $custpromodel->GetOneByWhere('where CustomersID=' . $cus_id);
+                        $data = array("FuwuqiID"=>$custpro["FuwuqiID"]);
+                        $result['data'] = $data;
+                    } else {
+                        $result['err'] = 1002;
+                        $result['msg'] = '非法请求--客户信息修改';
+                        $this->LogsFunction->LogsCusRecord(115, 3, $cus_id, $result['msg']);
+                    }
+                    break;
                 case 'transfer':
                     if ($this->Assess($power, $this->transfer)) {
                         $accountModel = new AccountModule;

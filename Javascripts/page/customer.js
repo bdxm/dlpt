@@ -956,16 +956,32 @@ jQuery(document).ready(function() {
     });
     $('.leftbox ul,#listtbody').on('click', ".sitemove", function() {
         var option_html="";
+        var cus = $(this).parent().parent().find('input:hidden').attr('value');
+        var fuwuqiid=0;
+        $.ajax({
+            url:"Apps?module=Gbaopen&action=Operation&type=sitemove&cus=" + cus,
+            async:false,
+            type:"GET",
+            dataType:"json",
+            success:function(result){
+                if (!result.err) {
+                    fuwuqiid=result.data.FuwuqiID;
+                }else {
+                    Msg(2, result.msg);
+                }
+            }
+        });
         $.ajax({
             url:"Apps?module=Gbaopen&action=getFuwuqi",
             async:false,
             type:"GET",
             dataType:"json",
             success:function(data){
-                console.log($.parseJSON(data));
                 var lists=$.parseJSON(data);
                 $.each(lists,function(k,v){
-                    option_html+='<option value="'+v["ID"]+'">'+v["FuwuqiName"]+'</option>';
+                    if(fuwuqiid!=v["ID"]){
+                        option_html+='<option value="'+v["ID"]+'">'+v["FuwuqiName"]+'</option>';
+                    }
                 });
             }
         });
