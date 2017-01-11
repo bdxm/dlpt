@@ -1237,7 +1237,7 @@ jQuery(document).ready(function() {
                     Msg(2, result.msg);
                 }
             });
-            $(".dialog-content a.dia-ok").removeClass('delete');
+            $(".dialog-content a.dia-ok").removeClass('godelete');
         } else if ($(this).hasClass("reduction")) {
             $.post("Apps?module=Agent&action=reductionCustomer", {num: number}, function(result) {
                 if (!result.err) {
