@@ -714,10 +714,11 @@ jQuery(document).ready(function() {
                     </div>\
                     <script type="text/javascript">\n\
                     var jsUserdata = function (){\n\
+                        theTime=(new Date()).Format("yyyy-MM-dd hh:mm:ss");\n\
                         this.radioCho;\n\
                         this.year\n\
-                        ;this.pcDate = "' + data.pc.time + '";\n\
-                        ;this.mobileDate = "' + data.mobile.time + '";\n\
+                        ;this.pcDate = "' + data.pc.time + '">theTime?"' + data.pc.time + '":theTime;\n\
+                        ;this.mobileDate = "' + data.mobile.time + '">theTime?"' + data.mobile.time + '":theTime;\n\
                         ;this.change = function(){\n\
                             var _this = this;\n\
                             $(".userdata-content select").change(function(){\n\
@@ -1073,7 +1074,7 @@ jQuery(document).ready(function() {
                                     <span><input type="radio" name="morecapacity" value="1000" data-money="1500"/>1000M</span>\n\
                                 </span>\n\
                             </p>\n\
-                            <p><span class="content-l">所需费用:</span><input type="text" class="Input price" value="0元"/></p>\
+                            <p><span class="content-l">所需费用:</span><input type="text" class="Input price" value="0元" disabled="true"/></p>\
                     </div>';
         $(".dialog-content a.dia-ok").addClass('morecapacity');
         popup(html);

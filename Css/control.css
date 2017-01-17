@@ -82,7 +82,7 @@
 .money-left p i{font-style: normal;color: #ea1212}
 
 .listbox{overflow: hidden;}
-.leftbox{width: 66%;background: #fff;float: left;margin-bottom: 2%;min-height: 200px;}
+.leftbox{width: 66%;background: #fff;float: left;margin-bottom: 2%;min-height: 200px;overflow: hidden;}
 .leftbox-top{height: 45px;line-height: 45px;padding: 0 4%;background: #f1f2f5;overflow: hidden;}
 .leftbox-top span{color: #333;font-size: 14px;}
 .leftbox-top a{float: right;color: #1b9dd9;}

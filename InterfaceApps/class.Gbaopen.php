@@ -738,12 +738,12 @@ class Gbaopen extends InterfaceVIEWS {
                 //PC续费处理
                 $cuspro_time = array('UpdateTime' => date('Y-m-d H:i:s', time()));
                 if ($type == 1 or $type == 3 or $type == 4) {
-                    $nowyear = strtotime($cuspro['PC_EndTime']);
+                    $nowyear = (strtotime($cuspro['PC_EndTime'])>time())?strtotime($cuspro['PC_EndTime']):time();
                     $newyear = (date('Y', $nowyear) + $addyear) . '-' . date('m-d H:i:s', $nowyear);
                     $cuspro_time['PC_EndTime'] = $newyear;
                 }
                 if ($type == 2 or $type == 3 or $type == 4) {
-                    $nowyear = strtotime($cuspro['Mobile_EndTime']);
+                    $nowyear =  (strtotime($cuspro['Mobile_EndTime'])>time())?strtotime($cuspro['Mobile_EndTime']):time();
                     $newyear = (date('Y', $nowyear) + $addyear) . '-' . date('m-d H:i:s', $nowyear);
                     $cuspro_time['Mobile_EndTime'] = $newyear;
                 }
