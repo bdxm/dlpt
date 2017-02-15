@@ -2969,7 +2969,7 @@ class Gbaopen extends InterfaceVIEWS {
         if (!$cust_info) {
             return 0;
         }
-        $TuUrl = 'http://www.yqx6.com/index.php?c=user&a=dlregister';
+        $TuUrl = 'http://cd.5067.org/index.php?c=user&a=dlregister';
         $ToString .= 'uname=' . $cust_info ['CompanyName'];
 
         $ToString .= '&email_varchar=' . $data ['Email'];
