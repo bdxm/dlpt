@@ -390,9 +390,10 @@ jQuery(document).ready(function() {
                         operation[0] += '<a href="javascript:;" class="sitemove"> 网站迁移 </a>';
                     }else if (v2 == 'transfer')
                         operation[0] += '<a href="javascript:;" class="custransfer"> 客户转接 </a>';
-                    else if (v2 == 'manage')
+                    else if (v2 == 'manage'){
+                        operation[0] += '<a href="javascript:;" class="g-show"> 微传单 </a>';
                         operation[0] += '<a href="javascript:;" class="g-manage"> 管理 </a>';
-                    else if (v2 == 'create')
+                    }else if (v2 == 'create')
                         operation[1] = '<a href="javascript:;" class="g-create"> 开通 </a>';
                     else if (v2 == 'delete'){
                         operation[0] += '<a href="javascript:;" class="delete"> 删除 </a>';
@@ -1050,6 +1051,71 @@ jQuery(document).ready(function() {
         var url = '?module=Gbaopen&action=GbaoPenManage';
         window.open(url + '&ID=' + cus, '正在跳转');
     });
+    /**
+     * 微传单
+     */
+    $('.leftbox ul,#listtbody').on('click', ".g-show", function() {
+        var cus = $(this).parent().parent().find('input:hidden').attr('value');
+        var html="";
+        $.ajax({
+            url:'/Apps?module=Gbaopen&action=getGshow',
+            type:'POST',
+            data:{num:cus},
+            async:false,
+            success:function(data){
+                if(data.data==false){
+                    html = '<div class="userdata-content"><p style="font-size:20px;">是否开通该客户微传单？</p>\
+                        <input type="hidden" class="Input" value="' + cus + '">\n\
+                            <p>\n\
+                                <span class="content-l">年限:</span>\n\
+                                <input class="Input years" type="number" min="1" value="1"/>\n\
+                            </p>\n\
+                    </div>';
+                }else{
+                    html = '<div class="userdata-content"><p style="font-size:20px;">是否续费该客户微传单？</p>\
+                        <input type="hidden" class="Input" value="' + cus + '">\n\
+                            <p>\n\
+                                <span class="content-l">年限:</span>\n\
+                                <input class="Input years" type="number" min="1" value="1"/>\n\
+                            </p>\n\
+                            <p>\n\
+                                <span class="content-l">续费至:</span>\n\
+                                <input class="Input date" name="date" type="text" value="" disabled="true"/>\n\
+                            </p>\n\
+                    </div><script type="text/javascript">\n\
+                    var jsUserdata = function (){\n\
+                        theTime=(new Date()).Format("yyyy-MM-dd hh:mm:ss");\n\
+                        this.radioCho;\n\
+                        this.year;\n\
+                        var _this = this;\n\
+                        ;this.EndTime = "' + data.data.EndTime + '">theTime?"' + data.data.EndTime + '":theTime;\n\
+                        ;this.change = function(){\n\
+                            _this.year = $(".userdata-content .years").val();\n\
+                            $(".userdata-content .years").change(function(){\n\
+                                _this.year = $(this).val();\n\
+                                _this.reset();\n\
+                            });\n\
+                        };\n\
+                        this.reset = function(){\n\
+                            var newyear;\n\
+                            newyear = new Date(_this.EndTime);\n\
+                            newyear.setFullYear(parseInt(newyear.getFullYear())+parseInt(_this.year));\n\
+                            newyear = newyear.Format("yyyy-MM-dd hh:mm:ss");\n\
+                            $(".userdata-content input[name=\'date\']").val(newyear);\n\
+                        }\n\
+                        this.init = function(){\n\
+                            this.change();this.reset();\n\
+                            $(".userdata-content .years").change();\n\
+                        },\n\
+                        this.init();\n\
+                    }();\n\
+                    </script>';
+                }
+            }
+        });
+        $(".dialog-content a.dia-ok").addClass('g-show');
+        popup(html);
+    });
     function morecapacity(months,oldcapacity){
         var old_single_money=($(".userdata-content input[name='morecapacity'][value='"+oldcapacity+"']").data("money")?$(".userdata-content input[name='morecapacity'][value='"+oldcapacity+"']").data("money"):0);
         $(".userdata-content input[name='morecapacity'][value='"+oldcapacity+"']").prop("checked",true);
@@ -1285,6 +1351,19 @@ jQuery(document).ready(function() {
                 }
             });
             $(".dialog-content a.dia-ok").removeClass('morecapacity');
+        } else if ($(this).hasClass("g-show")) {
+            var data={};
+            data["year"]=$('.userdata-content .years').val();
+            data["num"]=number;
+            Msg(1, '<span>正在处理，请稍等...</span><span class="flower-loader" style="opacity: 1;"></span>');
+            $.post("Apps?module=Gbaopen&action=Gshow", data, function(result) {
+                if (!result.err) {
+                    Msg(3, result.msg);
+                } else {
+                    Msg(2, result.msg);
+                }
+            });
+            $(".dialog-content a.dia-ok").removeClass('g-show');
         } else if ($(this).hasClass("goimgupload")) {
             var cases = $("#listtbody .cases.current");
             var area = $(".userdata-content input[type='hidden']").attr("data");

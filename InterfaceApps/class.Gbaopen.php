@@ -2892,4 +2892,117 @@ class Gbaopen extends InterfaceVIEWS {
         }
         return $result;
     }
+    /**
+     *获取微传单是否开启情况
+     */
+    public function getGshow(){
+        $result = array('err' => 0, 'data' => '', 'msg' => '');
+        $post=$this->_POST;
+        $gshow=new GshowModule();
+        $gshowinfo=$gshow->GetOneByWhere(array(), " where CustomersID = ".$post["num"]);
+        $result["data"]=$gshowinfo;
+        return $result;
+    }
+    /**
+     *设置开启微传单
+     */
+    public function Gshow(){
+        $result = array('err' => 0, 'data' => '', 'msg' => '');
+        $post=$this->_POST;
+        $cus_id=$post["num"];
+        $gshow=new GshowModule();
+        $gshowinfo=$gshow->GetOneByWhere(array(), " where CustomersID = ".$post["num"]);
+        if($gshowinfo){
+            $madify_info=$gshowinfo;
+            $nowtime=strtotime($gshowinfo["EndTime"])>time()?strtotime($gshowinfo["EndTime"]):time();
+            $madify_info["EndTime"]=(date('Y', $nowtime) + $post["year"]) . '-' . date('m-d H:i:s',$nowtime);
+            $madify_info["UpdateTime"]=date('Y-m-d H:i:s',time());
+            $ret=$gshow->UpdateArray($madify_info, array("CustomersID"=>$post["num"]));
+            if($ret){
+                $ret=$this->toGshow($madify_info);
+                if($ret["code"]!=200){
+                    $gshow->UpdateArray($gshowinfo, array("CustomersID"=>$post["num"]));
+                    $result["err"]=1;
+                    $result["msg"]="微传单同步数据失败";
+                }else{
+                    $result["msg"]="微传单操作成功";
+                }
+            }else{
+                $result["err"]=2;
+                $result["msg"]="微传单数据更新失败";
+            }
+        }else{
+            $cust=new CustomersModule();
+            $cust_info=$cust->GetOneByWhere(array(), " where CustomersID = ".$post["num"]);
+            $ins_info=array();
+            $ins_info["EndTime"]=(date('Y', time()) + $post["year"]) . '-' . date('m-d H:i:s', time());
+            $ins_info["UpdateTime"]=date('Y-m-d H:i:s',time());
+            $ins_info["StartTime"]=date('Y-m-d H:i:s',time());
+            $ins_info["Email"]=$cust_info["Email"];
+            $ins_info["CustomersID"]=$post["num"];
+            $ret=$gshow->InsertArray($ins_info);
+            if($ret){
+                $ret=$this->toGshow($ins_info);
+                if($ret["code"]!=200){
+                    $gshow->DeleteInfo(' where CustomersID='.$post["num"]);
+                    $result["err"]=1;
+                    $result["msg"]="微传单同步数据失败";
+                    $this->LogsFunction->LogsCusRecord(123, 6, $cus_id, $result['msg']);
+                }else{
+                    $result["msg"]="微传单操作成功";
+                    $this->LogsFunction->LogsCusRecord(123, 1, $cus_id, $result['msg']);
+                }
+            }else{
+                $result["err"]=2;
+                $result["msg"]="微传单数据更新失败";
+                $this->LogsFunction->LogsCusRecord(123, 0, $cus_id, $result['msg']);
+            }
+        }
+        return $result;
+    }
+    private function toGshow($data){
+        if (!$data) {
+            return 0;
+        }
+        $cust=new CustomersModule();
+        $cust_info=$cust->GetOneByWhere(array(), " where CustomersID = ".$data["CustomersID"]);
+        if (!$cust_info) {
+            return 0;
+        }
+        $TuUrl = 'http://www.yqx6.com/index.php?c=user&a=dlregister';
+        $ToString .= 'uname=' . $cust_info ['CompanyName'];
+
+        $ToString .= '&email_varchar=' . $data ['Email'];
+        $ToString .= '&tel=' . $cust_info ['Tel'];
+        $ToString .= '&allow_nums=10';
+        $ToString .= '&end_time=' . $data ['EndTime'];
+        $ToString .= '&type=1';
+        $ToString .= '&level_int=0';
+        $ToString .= '&status_int=1';
+        $ToString .= '&password_varchar=passwords';
+        $ToString .= '&phone=';
+        $ToString .= '&qq=';
+        $ToString .= '&id=';
+        //随机文件名开始生成
+        $randomLock = getstr();
+        $password = md5($randomLock);
+        $password = md5($password);
+
+        //生成握手密钥
+        $text = getstr();
+
+        //生成dll文件
+        $myfile = @fopen('./token/' . $password . '.dll', "w+");
+        if (!$myfile) {
+            return 0;
+        }
+        fwrite($myfile, $text);
+        fclose($myfile);
+
+        $ToString .= '&timemap=' . $randomLock;
+        $ToString .= '&taget=' . md5($text . $password);
+        $ReturnString = request_by_other($TuUrl, $ToString);
+        $ReturnArray = json_decode($ReturnString, true);
+        return $ReturnArray;
+    }
 }
