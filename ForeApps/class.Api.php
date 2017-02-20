@@ -681,5 +681,28 @@ class Api extends ForeVIEWS {
 		exit;
        
     }
+    /**
+     *获取微传单是否开启情况（通过用户名）
+     */
+    public function getGshowByname(){
+        header('Access-Control-Allow-Origin:*');
+        $post=$this->_GET;
+        $custpro=new CustProModule();
+        $cusprodata=$custpro->GetInfoByWhere(" where G_name = '".$post["name"]."'");    
+        if($cusprodata){
+            $gshow=new GshowModule();
+            $gshowinfo=$gshow->GetOneByWhere(array(), " where CustomersID = '".$cusprodata["CustomersID"]."'");
+            $result["data"]=$gshowinfo;
+            if($gshowinfo){
+                $result=1;
+            }else{
+                $result=0;
+            }
+        }else{
+            $result=0;    
+        }
+        echo $result;
+        exit();
+    }
 
 }
