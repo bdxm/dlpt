@@ -2948,6 +2948,7 @@ class Gbaopen extends InterfaceVIEWS {
                     $result["err"]=1;
                     $result["msg"]="微传单同步数据失败";
                     $this->LogsFunction->LogsCusRecord(123, 6, $cus_id, $result['msg']);
+                    var_dump($ret);
                 }else{
                     $result["msg"]="微传单操作成功";
                     $this->LogsFunction->LogsCusRecord(123, 1, $cus_id, $result['msg']);
